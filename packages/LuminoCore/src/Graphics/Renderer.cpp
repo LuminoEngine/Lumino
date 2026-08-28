@@ -706,74 +706,88 @@ Result<rhi::BindGroup*> Renderer::getOrCreateMaterialBindGroup(Material* mat, Sh
     auto& cache = m_materialCache[MaterialBindKey{mat, pass}];
 
     // Initialize vectors on first access.
-    if (cache.dirty.empty()) {
+    if (cache.uboDirty.empty()) {
         cache.paramBuffers.resize(m_framesInFlight);
         cache.bindGroups.resize(m_framesInFlight);
-        cache.dirty.assign(m_framesInFlight, true);
+        cache.uboDirty.assign(m_framesInFlight, true);
     }
 
-    // Check if the material's parameters have changed since last cache update.
+    // UBO の内容が変わっていたら、全フレームスロットを書き直し対象にする。
+    // BindGroup が参照しているのはバッファ・テクスチャビュー・サンプラーという
+    // 「オブジェクトの構成」だけであり、UBO の中身が変わっても作り直す必要は無い。
+    // そのためここでは BindGroup に一切触らない。
     if (mat->paramVersion() != cache.paramVersion) {
-        // Mark all frame slots dirty so each gets updated when used.
-        for (auto&& d : cache.dirty) d = true;
+        for (auto&& d : cache.uboDirty) d = true;
         cache.paramVersion = mat->paramVersion();
-    }
-
-    if (!cache.dirty[frameSlot]) {
-        return cache.bindGroups[frameSlot].get();
     }
 
     // Use reflection to discover all texture bindings in the material set
     const auto& layoutDesc = pass->materialLayoutDesc();
     const auto& bindingNames = pass->materialBindingNames();
 
-    // For each SampledTexture binding, resolve the texture and create/update views
-    for (size_t i = 0; i < layoutDesc.entries.size(); ++i) {
-        const auto& layoutEntry = layoutDesc.entries[i];
-        if (layoutEntry.type != rhi::BindingType::SampledTexture) continue;
+    // テクスチャ/サンプラーの構成が変わったときだけ解決し直す。
+    // BindGroup の作り直しが必要になるのはこの経路だけなので、パラメータを
+    // 毎フレーム更新するだけのマテリアルはここを一切通らない。
+    if (mat->bindingVersion() != cache.bindingVersion) {
+        cache.bindingVersion = mat->bindingVersion();
 
-        // Look up named texture, fall back to baseTexture
-        rhi::Texture* tex = mat->baseTexture(); // default
-        if (i < bindingNames.size()) {
-            auto it = mat->namedTextures().find(bindingNames[i]);
-            if (it != mat->namedTextures().end()) {
-                tex = it->second.get();
+        // 構成が変わった BindGroup は捨てる。null になったスロットは後段で作り直される。
+        // 使用中のフレームスロットのものも一緒に捨てるが、Vulkan は
+        // VulkanBindGroup::finalize() が FrameResourceManager 経由で遅延解放し、
+        // WebGPU は参照カウントで保持されるため、GPU 使用中の破棄にはならない。
+        auto dropAllBindGroups = [&cache]() {
+            for (auto&& bg : cache.bindGroups) bg.reset();
+        };
+
+        // For each SampledTexture binding, resolve the texture and create/update views
+        for (size_t i = 0; i < layoutDesc.entries.size(); ++i) {
+            const auto& layoutEntry = layoutDesc.entries[i];
+            if (layoutEntry.type != rhi::BindingType::SampledTexture) continue;
+
+            // Look up named texture, fall back to baseTexture
+            rhi::Texture* tex = mat->baseTexture(); // default
+            if (i < bindingNames.size()) {
+                auto it = mat->namedTextures().find(bindingNames[i]);
+                if (it != mat->namedTextures().end()) {
+                    tex = it->second.get();
+                }
+            }
+
+            uint32_t binding = layoutEntry.binding;
+            if (tex && (!cache.textureViews.count(binding) || cache.lastTextures[binding] != tex)) {
+                auto tvResult = device->createTextureView(tex);
+                if (!tvResult) return LN_FORWARD_ERROR(tvResult);
+                cache.textureViews[binding] = std::move(*tvResult);
+                cache.lastTextures[binding] = tex;
+                dropAllBindGroups();
             }
         }
 
-        uint32_t binding = layoutEntry.binding;
-        if (tex && (!cache.textureViews.count(binding) || cache.lastTextures[binding] != tex)) {
-            auto tvResult = device->createTextureView(tex);
-            if (!tvResult) return LN_FORWARD_ERROR(tvResult);
-            cache.textureViews[binding] = std::move(*tvResult);
-            cache.lastTextures[binding] = tex;
-            // Texture view changed, all bind groups must be recreated
-            for (auto&& d : cache.dirty) d = true;
+        // Sampler バインディングごとにサンプラーを解決する。
+        // 名前付きの上書きが無ければマテリアル単位の設定が使われる。
+        static const std::string kNoTextureName;
+        const auto& samplerTextureNames = pass->materialSamplerTextureNames();
+        for (size_t i = 0; i < layoutDesc.entries.size(); ++i) {
+            const auto& layoutEntry = layoutDesc.entries[i];
+            if (layoutEntry.type != rhi::BindingType::Sampler) continue;
+
+            const std::string& texName =
+                (i < samplerTextureNames.size()) ? samplerTextureNames[i] : kNoTextureName;
+            auto sampResult = getOrCreateSampler(mat->resolveSamplerState(texName));
+            if (!sampResult) return LN_FORWARD_ERROR(sampResult);
+
+            auto* sampler = *sampResult;
+            auto it = cache.samplers.find(layoutEntry.binding);
+            if (it == cache.samplers.end() || it->second.get() != sampler) {
+                cache.samplers[layoutEntry.binding] = Ref<rhi::Sampler>::retain(sampler);
+                dropAllBindGroups();
+            }
         }
     }
 
-    // Sampler バインディングごとにサンプラーを解決する。
-    // 名前付きの上書きが無ければマテリアル単位の設定が使われる。
-    // マテリアルのサンプラー設定変更は paramVersion を進めるため、上の dirty 判定で
-    // ここまで到達し、新しい設定の Sampler で BindGroup が作り直される。
-    static const std::string kNoTextureName;
-    const auto& samplerTextureNames = pass->materialSamplerTextureNames();
-    for (size_t i = 0; i < layoutDesc.entries.size(); ++i) {
-        const auto& layoutEntry = layoutDesc.entries[i];
-        if (layoutEntry.type != rhi::BindingType::Sampler) continue;
-
-        const std::string& texName =
-            (i < samplerTextureNames.size()) ? samplerTextureNames[i] : kNoTextureName;
-        auto sampResult = getOrCreateSampler(mat->resolveSamplerState(texName));
-        if (!sampResult) return LN_FORWARD_ERROR(sampResult);
-
-        auto* sampler = *sampResult;
-        auto it = cache.samplers.find(layoutEntry.binding);
-        if (it == cache.samplers.end() || it->second.get() != sampler) {
-            cache.samplers[layoutEntry.binding] = Ref<rhi::Sampler>::retain(sampler);
-            // サンプラーが変わったので全フレームスロットの BindGroup を作り直す。
-            for (auto&& d : cache.dirty) d = true;
-        }
+    // このスロットの UBO も BindGroup も最新なら、そのまま使い回す。
+    if (!cache.uboDirty[frameSlot] && cache.bindGroups[frameSlot]) {
+        return cache.bindGroups[frameSlot].get();
     }
 
     // Create per-frame buffer if missing.
@@ -792,7 +806,10 @@ Result<rhi::BindGroup*> Renderer::getOrCreateMaterialBindGroup(Material* mat, Sh
     }
 
     // Write UBO data via writeBuffer (compatible with all backends).
-    if (mat->materialParamBufferSize() > 0) {
+    // uboDirty はスロットごとに初期値 true で、書き込み後にだけ false になる。
+    // つまり paramBuffers[frameSlot] を新規作成した直後は必ず true なので、
+    // 未初期化のバッファをそのまま使ってしまうことは無い。
+    if (mat->materialParamBufferSize() > 0 && cache.uboDirty[frameSlot]) {
         auto uboSize = mat->materialParamBufferSize();
         uint8_t uboStaging[512];
         std::vector<uint8_t> uboStagingHeap;
@@ -809,7 +826,7 @@ Result<rhi::BindGroup*> Renderer::getOrCreateMaterialBindGroup(Material* mat, Sh
 
     // Create BindGroup via the pass's PipelineLayout at the material set index.
     // Use reflection to build entries dynamically.
-    {
+    if (!cache.bindGroups[frameSlot]) {
         int16_t matSet = pass->materialSetIndex();
         std::vector<rhi::BindGroupEntry> entries;
 
@@ -841,7 +858,7 @@ Result<rhi::BindGroup*> Renderer::getOrCreateMaterialBindGroup(Material* mat, Sh
         cache.bindGroups[frameSlot] = std::move(*bgResult);
     }
 
-    cache.dirty[frameSlot] = false;
+    cache.uboDirty[frameSlot] = false;
     return cache.bindGroups[frameSlot].get();
 }
 

@@ -164,8 +164,23 @@ public:
     bool depthTestEnabled() const { return m_depthTestEnabled; }
     bool depthWriteEnabled() const { return m_depthWriteEnabled; }
 
-    /** Parameter version counter. Incremented whenever material parameters change. */
+    /**
+     * $Material 定数バッファの内容のバージョン。setFloat/setColor 等で進みます。
+     *
+     * これが変わったときに必要なのは UBO の書き直しだけで、BindGroup の作り直しは
+     * 不要です。BindGroup の構成が変わったかどうかは bindingVersion() を見てください。
+     */
     uint64_t paramVersion() const { return m_paramVersion; }
+
+    /**
+     * BindGroup の構成 (テクスチャ / サンプラー) のバージョン。
+     * setTexture / setNamedTexture / setSamplerState / setNamedSamplerState で進みます。
+     *
+     * paramVersion() と分けているのは、パラメータを毎フレーム更新するだけの
+     * マテリアルで BindGroup の再生成 (GPU/JS オブジェクトの生成と破棄) が
+     * 走らないようにするためです。
+     */
+    uint64_t bindingVersion() const { return m_bindingVersion; }
 
     // Accessors for Renderer-side BindGroup construction
     rhi::Texture* baseTexture() const { return m_baseTexture.get(); }
@@ -211,8 +226,12 @@ private:
     // from doing map lookups.
     Ref<ShaderPass> m_defaultShaderPass;
 
-    // Parameter version counter (incremented on any parameter change)
+    // $Material 定数バッファの内容のバージョン (UBO の書き直しが必要かの判定に使う)
     uint64_t m_paramVersion;
+
+    // BindGroup の構成 (テクスチャ/サンプラー) のバージョン
+    // (BindGroup の作り直しが必要かの判定に使う)
+    uint64_t m_bindingVersion;
 
     // Generic material parameter buffer (matches $Global CB layout from reflection)
     std::vector<uint8_t> m_paramBuffer;
@@ -236,7 +255,11 @@ private:
     bool m_depthTestEnabled;
     bool m_depthWriteEnabled;
 
-    void markDirty() { ++m_paramVersion; }
+    /** UBO の内容だけが変わったことを記録する (BindGroup の作り直しは不要)。 */
+    void markParamDirty() { ++m_paramVersion; }
+
+    /** BindGroup の構成が変わったことを記録する (テクスチャ/サンプラーの差し替え)。 */
+    void markBindingDirty() { ++m_bindingVersion; }
 
     /** Find offset of a named member in $Global CB. Returns -1 if not found. */
     int findMemberOffset(const std::string& name) const;

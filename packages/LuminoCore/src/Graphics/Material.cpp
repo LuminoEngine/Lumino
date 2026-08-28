@@ -14,6 +14,7 @@ Material::Material()
     : Object()
     , m_defaultShaderPass(nullptr)
     , m_paramVersion(1)
+    , m_bindingVersion(1)
     , m_baseColor(Color::white())
     , m_baseTexture(nullptr)
     , m_cullMode(rhi::CullMode::Back)
@@ -34,14 +35,14 @@ void Material::setFloat4(const std::string& name, const float* values) {
     int offset = findMemberOffset(name);
     if (offset < 0 || static_cast<size_t>(offset) + sizeof(float) * 4 > m_paramBuffer.size()) return;
     std::memcpy(m_paramBuffer.data() + offset, values, sizeof(float) * 4);
-    markDirty();
+    markParamDirty();
 }
 
 void Material::setFloat(const std::string& name, float value) {
     int offset = findMemberOffset(name);
     if (offset < 0 || static_cast<size_t>(offset) + sizeof(float) > m_paramBuffer.size()) return;
     std::memcpy(m_paramBuffer.data() + offset, &value, sizeof(float));
-    markDirty();
+    markParamDirty();
 }
 
 void Material::setColor(const Color& color) {
@@ -61,7 +62,7 @@ void Material::setColor(const Color& color) {
     if (m_paramBuffer.size() >= sizeof(float) * 4) {
         float rgba[4] = { color.r, color.g, color.b, color.a };
         std::memcpy(m_paramBuffer.data(), rgba, sizeof(rgba));
-        markDirty();
+        markParamDirty();
     }
 }
 
@@ -70,7 +71,7 @@ void Material::setSpecular(const Color& color, float shininess) {
     if (m_paramBuffer.size() >= sizeof(float) * 8) {
         float spec[4] = { color.r, color.g, color.b, shininess };
         std::memcpy(m_paramBuffer.data() + sizeof(float) * 4, spec, sizeof(spec));
-        markDirty();
+        markParamDirty();
     }
 }
 
@@ -81,7 +82,7 @@ void Material::setTexture(rhi::Texture* texture) {
     } else {
         m_baseTexture = CoreInstance::instance()->graphicsModule()->whiteTexture();
     }
-    markDirty();
+    markBindingDirty();
 }
 
 void Material::writeMaterialUBO(void* dst) const {
@@ -97,21 +98,21 @@ void Material::setNamedTexture(const std::string& name, rhi::Texture* texture) {
     } else {
         m_namedTextures[name] = CoreInstance::instance()->graphicsModule()->whiteTexture();
     }
-    markDirty();
+    markBindingDirty();
 }
 
 void Material::setSamplerState(const SamplerState& state) {
     if (m_samplerState == state) return;
     m_samplerState = state;
-    // サンプラーが変わると BindGroup を作り直す必要があるため paramVersion を進める。
-    markDirty();
+    // サンプラーが変わると BindGroup を作り直す必要があるため bindingVersion を進める。
+    markBindingDirty();
 }
 
 void Material::setNamedSamplerState(const std::string& name, const SamplerState& state) {
     auto it = m_namedSamplerStates.find(name);
     if (it != m_namedSamplerStates.end() && it->second == state) return;
     m_namedSamplerStates[name] = state;
-    markDirty();
+    markBindingDirty();
 }
 
 void Material::setBlendMode(BlendMode mode) { m_blendMode = mode; }

@@ -73,33 +73,64 @@ TEST_F(Test_Material, SamplerDescDefaultMatchesSamplerState) {
     EXPECT_EQ(desc.addressW, state.address);
 }
 
-// サンプラー設定を変えたら paramVersion が上がることを確認するテスト。
+// サンプラー設定を変えたら bindingVersion が上がることを確認するテスト。
 // これが上がらないと Renderer 側の BindGroup キャッシュが無効化されず、
 // 「設定したのに反映されない」不具合になる。
-TEST_F(Test_Material, SamplerStateBumpsParamVersion) {
+TEST_F(Test_Material, SamplerStateBumpsBindingVersion) {
     auto* module = ln::CoreInstance::instance()->graphicsModule();
     auto matResult = ln::MaterialFactory::createUnlit(module);
     ASSERT_TRUE(matResult);
     auto material = *matResult;
 
-    uint64_t version = material->paramVersion();
+    uint64_t version = material->bindingVersion();
     material->setSamplerState({ln::rhi::FilterMode::Nearest, ln::rhi::AddressMode::ClampToEdge});
-    EXPECT_GT(material->paramVersion(), version);
+    EXPECT_GT(material->bindingVersion(), version);
 
     // 同じ値の再設定では上がらない (無駄な BindGroup 再構築を避ける)。
-    version = material->paramVersion();
+    version = material->bindingVersion();
     material->setSamplerState({ln::rhi::FilterMode::Nearest, ln::rhi::AddressMode::ClampToEdge});
-    EXPECT_EQ(version, material->paramVersion());
+    EXPECT_EQ(version, material->bindingVersion());
 
-    version = material->paramVersion();
+    version = material->bindingVersion();
     material->setNamedSamplerState("u_baseTexture",
         {ln::rhi::FilterMode::Linear, ln::rhi::AddressMode::Repeat});
-    EXPECT_GT(material->paramVersion(), version);
+    EXPECT_GT(material->bindingVersion(), version);
 
-    version = material->paramVersion();
+    version = material->bindingVersion();
     material->setNamedSamplerState("u_baseTexture",
         {ln::rhi::FilterMode::Linear, ln::rhi::AddressMode::Repeat});
-    EXPECT_EQ(version, material->paramVersion());
+    EXPECT_EQ(version, material->bindingVersion());
+}
+
+// paramVersion と bindingVersion が独立して動くことを確認するテスト。
+// パラメータ変更で bindingVersion が上がってしまうと、色を毎フレーム変える
+// だけのマテリアルで BindGroup が毎フレーム作り直される (B-1 の課題)。
+TEST_F(Test_Material, ParamAndBindingVersionAreIndependent) {
+    auto* module = ln::CoreInstance::instance()->graphicsModule();
+    auto matResult = ln::MaterialFactory::createUnlit(module);
+    ASSERT_TRUE(matResult);
+    auto material = *matResult;
+
+    // パラメータ変更は paramVersion だけを進める。
+    uint64_t paramVer = material->paramVersion();
+    uint64_t bindVer = material->bindingVersion();
+    material->setColor(ln::Color(1.0f, 0.0f, 0.0f, 1.0f));
+    EXPECT_GT(material->paramVersion(), paramVer);
+    EXPECT_EQ(bindVer, material->bindingVersion());
+
+    // テクスチャ変更は bindingVersion だけを進める。
+    paramVer = material->paramVersion();
+    bindVer = material->bindingVersion();
+    material->setTexture(nullptr);
+    EXPECT_EQ(paramVer, material->paramVersion());
+    EXPECT_GT(material->bindingVersion(), bindVer);
+
+    // サンプラー変更も bindingVersion だけを進める。
+    paramVer = material->paramVersion();
+    bindVer = material->bindingVersion();
+    material->setSamplerState({ln::rhi::FilterMode::Nearest, ln::rhi::AddressMode::Repeat});
+    EXPECT_EQ(paramVer, material->paramVersion());
+    EXPECT_GT(material->bindingVersion(), bindVer);
 }
 
 // Sampler バインディングから、それが担当するテクスチャ名を逆引きできることを確認するテスト。

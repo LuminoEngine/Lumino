@@ -327,7 +327,12 @@ private:
 
     /** Cached GPU resources for a single Material, double-buffered per in-flight frame. */
     struct CachedMaterialBind {
+        // Material::paramVersion() の追随値。ズレたら全スロットの UBO を書き直す。
         uint64_t paramVersion = 0;
+        // Material::bindingVersion() の追随値。ズレたらテクスチャ/サンプラーを解決し直し、
+        // 全スロットの BindGroup を捨てる。Material 側の初期値が 1 なので、
+        // ここが 0 であることが「まだ一度も解決していない」印になる。
+        uint64_t bindingVersion = 0;
         // Per-binding texture tracking (binding index -> last texture pointer)
         std::unordered_map<uint32_t, rhi::Texture*> lastTextures;
         std::unordered_map<uint32_t, Ref<rhi::TextureView>> textureViews;
@@ -336,8 +341,11 @@ private:
         // 実体は m_samplerPool で設定が同じもの同士が共有される。
         std::unordered_map<uint32_t, Ref<rhi::Sampler>> samplers;
         std::vector<Ref<rhi::Buffer>>    paramBuffers;
+        // 空 (nullptr) のスロットは「BindGroup を作り直す必要がある」ことを表す。
+        // 専用の dirty フラグを持たせず、この null 判定をそのまま印として使う。
         std::vector<Ref<rhi::BindGroup>> bindGroups;
-        std::vector<bool> dirty;
+        // スロットごとの「UBO の内容が古い」フラグ。
+        std::vector<bool> uboDirty;
     };
 
     /** Composite key: Material's bind group depends on both the Material's parameters
