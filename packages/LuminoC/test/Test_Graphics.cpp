@@ -27,6 +27,47 @@ protected:
     void TearDown() override {
         if (window != LN_NULL_HANDLE) LNObject_Release(window);
     }
+
+    /** 画面サイズの正射影カメラを作る。 */
+    void createOrthoCamera(LNHandle* outCamera) {
+        ASSERT_EQ(LN_OK, LNCamera_Create(outCamera));
+        ASSERT_EQ(LN_OK, LNCamera_SetOrthographic(
+            *outCamera, (float)TEST_W, (float)TEST_H, -1000.0f, 1000.0f));
+        ASSERT_EQ(LN_OK, LNCamera_SetLookAt(
+            *outCamera, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f));
+    }
+
+    /** material を全画面スプライト 1 枚として黒背景に描画し、(x, y) の RGB を返す。 */
+    void drawFullscreenSpriteAndSample(LNHandle material, LNHandle camera, int x, int y, uint8_t* outRgb) {
+        LNHandle renderer, colorBuffer, depthBuffer;
+        ASSERT_EQ(LN_OK, LNGraphicsContext_BeginFrame(
+            graphicsContext, TEST_W, TEST_H, &renderer, &colorBuffer, &depthBuffer));
+
+        LNRenderPassDesc rpDesc;
+        LNRenderPassDesc_Init(&rpDesc);
+        rpDesc.colorAttachments[0].clearColor[3] = 1.0f;
+        ASSERT_EQ(LN_OK, LNRenderer_BeginRenderPass(renderer, graphicsContext, &rpDesc, camera));
+
+        LNMatrix identity = translationMatrix(0.0f, 0.0f, 0.0f);
+        ASSERT_EQ(LN_OK, LNRenderer_DrawSprite(
+            renderer, material, 0, &identity,
+            0.0f, 0.0f,
+            (float)TEST_W, (float)TEST_H,
+            0.5f, 0.5f,
+            0.0f, 0.0f, 1.0f, 1.0f,
+            1.0f, 1.0f, 1.0f, 1.0f));
+
+        ASSERT_EQ(LN_OK, LNRenderer_EndRenderPass(renderer));
+        ASSERT_EQ(LN_OK, LNGraphicsContext_RequestCaptureBackbuffer(graphicsContext));
+        ASSERT_EQ(LN_OK, LNGraphicsContext_EndFrame(graphicsContext));
+
+        const uint8_t* data = nullptr;
+        int32_t w = 0, h = 0;
+        ASSERT_EQ(LN_OK, LNGraphicsContext_CaptureBackbuffer(graphicsContext, &data, &w, &h));
+        ASSERT_NE(nullptr, data);
+        const uint8_t* p = data + (static_cast<size_t>(y) * w + x) * 4;
+        outRgb[0] = p[0]; outRgb[1] = p[1]; outRgb[2] = p[2];
+    }
 };
 
 TEST_F(Test_Graphics, ClearScreen) {
@@ -1336,59 +1377,20 @@ TEST_F(Test_Graphics, GraphicsProfiler) {
 }
 
 //------------------------------------------------------------------------------
-// マテリアルの状態をフレームをまたいで変更したときに、その変更が正しく反映される
-// ことを検証するテスト群。
-//
-// Renderer はフレームスロットごとに UBO と BindGroup をキャッシュしており、
-// 「UBO の内容が変わった (Material::paramVersion)」と
-// 「BindGroup の構成が変わった (Material::bindingVersion)」を別々に追跡している。
-// この分離を間違えると「設定したのに次のフレームで反映されない」「古いテクスチャを
-// 使い続ける」という不具合になるため、フレームスロットが一巡する回数だけ回して固定する。
+// マテリアルの状態をフレームをまたいで変更したときに、それが正しく反映されることを
+// 検証するテスト群。フレームスロットが一巡する回数だけ回して、変更が全スロットへ
+// 伝播することを見る。
 //------------------------------------------------------------------------------
 
 // 毎フレーム色を変えたときに、各フレームで正しい色が出ることを確認する。
-// UBO はフレームスロットごとに別のバッファなので、変更時に全スロットを
-// 書き直し対象にしていないと 2 フレーム前の色が出る。
+// UBO はフレームスロットごとに別のバッファなので、スロットごとに書き直していないと
+// 2 フレーム前の色が出る。
 TEST_F(Test_Graphics, MaterialColorChangeAcrossFrames) {
     LNHandle material = LN_NULL_HANDLE;
     ASSERT_EQ(LN_OK, LNMaterial_CreateFromBuiltinShader(graphicsContext, LN_BUILTIN_SHADER_UNLIT, &material));
 
     LNHandle camera = LN_NULL_HANDLE;
-    ASSERT_EQ(LN_OK, LNCamera_Create(&camera));
-    ASSERT_EQ(LN_OK, LNCamera_SetOrthographic(camera, (float)TEST_W, (float)TEST_H, -1000.0f, 1000.0f));
-    ASSERT_EQ(LN_OK, LNCamera_SetLookAt(camera, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f));
-
-    // 全画面スプライトを 1 枚描いて、中央ピクセルの RGB を返す。
-    auto renderAndSampleCenter = [&](uint8_t* outRgb) {
-        LNHandle renderer, colorBuffer, depthBuffer;
-        ASSERT_EQ(LN_OK, LNGraphicsContext_BeginFrame(
-            graphicsContext, TEST_W, TEST_H, &renderer, &colorBuffer, &depthBuffer));
-
-        LNRenderPassDesc rpDesc;
-        LNRenderPassDesc_Init(&rpDesc);
-        rpDesc.colorAttachments[0].clearColor[3] = 1.0f; // 黒でクリア
-        ASSERT_EQ(LN_OK, LNRenderer_BeginRenderPass(renderer, graphicsContext, &rpDesc, camera));
-
-        LNMatrix identity = { { 1, 0, 0, 0,  0, 1, 0, 0,  0, 0, 1, 0,  0, 0, 0, 1 } };
-        ASSERT_EQ(LN_OK, LNRenderer_DrawSprite(
-            renderer, material, 0, &identity,
-            0.0f, 0.0f,
-            (float)TEST_W, (float)TEST_H,
-            0.5f, 0.5f,
-            0.0f, 0.0f, 1.0f, 1.0f,
-            1.0f, 1.0f, 1.0f, 1.0f));
-
-        ASSERT_EQ(LN_OK, LNRenderer_EndRenderPass(renderer));
-        ASSERT_EQ(LN_OK, LNGraphicsContext_RequestCaptureBackbuffer(graphicsContext));
-        ASSERT_EQ(LN_OK, LNGraphicsContext_EndFrame(graphicsContext));
-
-        const uint8_t* data = nullptr;
-        int32_t w = 0, h = 0;
-        ASSERT_EQ(LN_OK, LNGraphicsContext_CaptureBackbuffer(graphicsContext, &data, &w, &h));
-        ASSERT_NE(nullptr, data);
-        const uint8_t* p = data + (static_cast<size_t>(h / 2) * w + (w / 2)) * 4;
-        outRgb[0] = p[0]; outRgb[1] = p[1]; outRgb[2] = p[2];
-    };
+    createOrthoCamera(&camera);
 
     // フレームスロットは 2 枚なので、2 巡させて両スロットが 2 回ずつ更新されることを見る。
     const float colors[4][3] = {
@@ -1400,7 +1402,7 @@ TEST_F(Test_Graphics, MaterialColorChangeAcrossFrames) {
     for (int i = 0; i < 4; i++) {
         ASSERT_EQ(LN_OK, LNMaterial_SetColor(material, colors[i][0], colors[i][1], colors[i][2], 1.0f));
         uint8_t rgb[3] = {};
-        renderAndSampleCenter(rgb);
+        drawFullscreenSpriteAndSample(material, camera, TEST_W / 2, TEST_H / 2, rgb);
         for (int c = 0; c < 3; c++) {
             if (colors[i][c] > 0.5f) {
                 EXPECT_GT((int)rgb[c], 200)
@@ -1436,47 +1438,14 @@ TEST_F(Test_Graphics, MaterialTextureSwapAcrossFrames) {
     ASSERT_EQ(LN_OK, LNMaterial_CreateFromBuiltinShader(graphicsContext, LN_BUILTIN_SHADER_UNLIT, &material));
 
     LNHandle camera = LN_NULL_HANDLE;
-    ASSERT_EQ(LN_OK, LNCamera_Create(&camera));
-    ASSERT_EQ(LN_OK, LNCamera_SetOrthographic(camera, (float)TEST_W, (float)TEST_H, -1000.0f, 1000.0f));
-    ASSERT_EQ(LN_OK, LNCamera_SetLookAt(camera, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f));
-
-    auto renderAndSampleCenter = [&](uint8_t* outRgb) {
-        LNHandle renderer, colorBuffer, depthBuffer;
-        ASSERT_EQ(LN_OK, LNGraphicsContext_BeginFrame(
-            graphicsContext, TEST_W, TEST_H, &renderer, &colorBuffer, &depthBuffer));
-
-        LNRenderPassDesc rpDesc;
-        LNRenderPassDesc_Init(&rpDesc);
-        rpDesc.colorAttachments[0].clearColor[3] = 1.0f;
-        ASSERT_EQ(LN_OK, LNRenderer_BeginRenderPass(renderer, graphicsContext, &rpDesc, camera));
-
-        LNMatrix identity = { { 1, 0, 0, 0,  0, 1, 0, 0,  0, 0, 1, 0,  0, 0, 0, 1 } };
-        ASSERT_EQ(LN_OK, LNRenderer_DrawSprite(
-            renderer, material, 0, &identity,
-            0.0f, 0.0f,
-            (float)TEST_W, (float)TEST_H,
-            0.5f, 0.5f,
-            0.0f, 0.0f, 1.0f, 1.0f,
-            1.0f, 1.0f, 1.0f, 1.0f));
-
-        ASSERT_EQ(LN_OK, LNRenderer_EndRenderPass(renderer));
-        ASSERT_EQ(LN_OK, LNGraphicsContext_RequestCaptureBackbuffer(graphicsContext));
-        ASSERT_EQ(LN_OK, LNGraphicsContext_EndFrame(graphicsContext));
-
-        const uint8_t* data = nullptr;
-        int32_t w = 0, h = 0;
-        ASSERT_EQ(LN_OK, LNGraphicsContext_CaptureBackbuffer(graphicsContext, &data, &w, &h));
-        ASSERT_NE(nullptr, data);
-        const uint8_t* p = data + (static_cast<size_t>(h / 2) * w + (w / 2)) * 4;
-        outRgb[0] = p[0]; outRgb[1] = p[1]; outRgb[2] = p[2];
-    };
+    createOrthoCamera(&camera);
 
     // 赤 -> 緑 -> 赤 -> 緑。フレームスロット 2 枚を 2 巡させる。
     for (int i = 0; i < 4; i++) {
         const bool useRed = (i % 2) == 0;
         ASSERT_EQ(LN_OK, LNMaterial_SetMainTexture(material, useRed ? redTex : greenTex));
         uint8_t rgb[3] = {};
-        renderAndSampleCenter(rgb);
+        drawFullscreenSpriteAndSample(material, camera, TEST_W / 2, TEST_H / 2, rgb);
         if (useRed) {
             EXPECT_GT((int)rgb[0], 200) << "frame " << i << ": 赤テクスチャが反映されていません。";
             EXPECT_LT((int)rgb[1], 60) << "frame " << i << ": 前のフレームの緑テクスチャが残っています。";
@@ -1509,46 +1478,12 @@ TEST_F(Test_Graphics, MaterialNamedSamplerStateChangeAcrossFrames) {
     ASSERT_EQ(LN_OK, LNMaterial_SetMainTexture(material, texture));
 
     LNHandle camera = LN_NULL_HANDLE;
-    ASSERT_EQ(LN_OK, LNCamera_Create(&camera));
-    ASSERT_EQ(LN_OK, LNCamera_SetOrthographic(camera, (float)TEST_W, (float)TEST_H, -1000.0f, 1000.0f));
-    ASSERT_EQ(LN_OK, LNCamera_SetLookAt(camera, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f));
+    createOrthoCamera(&camera);
 
-    // 全画面スプライトに UV 0..1 を張る。画面 x から u = x / TEST_W、y から v = y / TEST_H。
-    // サンプル点 (152, 60) は u=0.475, v=0.25。
+    // 全画面スプライトに UV 0..1 を張るので、サンプル点 (152, 60) は u=0.475, v=0.25。
     // テクセル中心は u=0.25 / 0.75 なので、Nearest なら左列 (赤)、
     // Linear なら赤と緑が 0.55 : 0.45 で混ざり G が持ち上がる。
     // v=0.25 は上段のテクセル中心なので、縦方向の補間は起きない。
-    auto renderAndSample = [&](uint8_t* outRgb) {
-        LNHandle renderer, colorBuffer, depthBuffer;
-        ASSERT_EQ(LN_OK, LNGraphicsContext_BeginFrame(
-            graphicsContext, TEST_W, TEST_H, &renderer, &colorBuffer, &depthBuffer));
-
-        LNRenderPassDesc rpDesc;
-        LNRenderPassDesc_Init(&rpDesc);
-        rpDesc.colorAttachments[0].clearColor[3] = 1.0f;
-        ASSERT_EQ(LN_OK, LNRenderer_BeginRenderPass(renderer, graphicsContext, &rpDesc, camera));
-
-        LNMatrix identity = { { 1, 0, 0, 0,  0, 1, 0, 0,  0, 0, 1, 0,  0, 0, 0, 1 } };
-        ASSERT_EQ(LN_OK, LNRenderer_DrawSprite(
-            renderer, material, 0, &identity,
-            0.0f, 0.0f,
-            (float)TEST_W, (float)TEST_H,
-            0.5f, 0.5f,
-            0.0f, 0.0f, 1.0f, 1.0f,
-            1.0f, 1.0f, 1.0f, 1.0f));
-
-        ASSERT_EQ(LN_OK, LNRenderer_EndRenderPass(renderer));
-        ASSERT_EQ(LN_OK, LNGraphicsContext_RequestCaptureBackbuffer(graphicsContext));
-        ASSERT_EQ(LN_OK, LNGraphicsContext_EndFrame(graphicsContext));
-
-        const uint8_t* data = nullptr;
-        int32_t w = 0, h = 0;
-        ASSERT_EQ(LN_OK, LNGraphicsContext_CaptureBackbuffer(graphicsContext, &data, &w, &h));
-        ASSERT_NE(nullptr, data);
-        const uint8_t* p = data + (static_cast<size_t>(60) * w + 152) * 4;
-        outRgb[0] = p[0]; outRgb[1] = p[1]; outRgb[2] = p[2];
-    };
-
     // Nearest -> Linear -> Nearest -> Linear。フレームスロット 2 枚を 2 巡させる。
     for (int i = 0; i < 4; i++) {
         const bool nearest = (i % 2) == 0;
@@ -1557,7 +1492,7 @@ TEST_F(Test_Graphics, MaterialNamedSamplerStateChangeAcrossFrames) {
             nearest ? LN_TEXTURE_FILTER_MODE_NEAREST : LN_TEXTURE_FILTER_MODE_LINEAR,
             LN_TEXTURE_ADDRESS_MODE_CLAMP_TO_EDGE));
         uint8_t rgb[3] = {};
-        renderAndSample(rgb);
+        drawFullscreenSpriteAndSample(material, camera, 152, 60, rgb);
         if (nearest) {
             EXPECT_LT((int)rgb[1], 60)
                 << "frame " << i << ": Nearest が反映されていません (赤と緑が補間されています)。"

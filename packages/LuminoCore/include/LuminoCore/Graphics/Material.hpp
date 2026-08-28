@@ -164,21 +164,14 @@ public:
     bool depthTestEnabled() const { return m_depthTestEnabled; }
     bool depthWriteEnabled() const { return m_depthWriteEnabled; }
 
-    /**
-     * $Material 定数バッファの内容のバージョン。setFloat/setColor 等で進みます。
-     *
-     * これが変わったときに必要なのは UBO の書き直しだけで、BindGroup の作り直しは
-     * 不要です。BindGroup の構成が変わったかどうかは bindingVersion() を見てください。
-     */
+    /** $Material 定数バッファの内容のバージョン。setFloat/setColor 等で進みます (UBO の書き直しのみ必要)。 */
     uint64_t paramVersion() const { return m_paramVersion; }
 
     /**
-     * BindGroup の構成 (テクスチャ / サンプラー) のバージョン。
-     * setTexture / setNamedTexture / setSamplerState / setNamedSamplerState で進みます。
-     *
-     * paramVersion() と分けているのは、パラメータを毎フレーム更新するだけの
-     * マテリアルで BindGroup の再生成 (GPU/JS オブジェクトの生成と破棄) が
-     * 走らないようにするためです。
+     * BindGroup の構成 (テクスチャ/サンプラー) のバージョン。setTexture/setSamplerState 等で進みます。
+     * paramVersion() と分けることで、パラメータだけを毎フレーム更新するマテリアルで
+     * BindGroup の再生成 (GPU/JS オブジェクトの生成と破棄) が走らないようにしています。
+     * 初期値が 1 なのは、Renderer 側の 0 を「まだ一度も解決していない」印にするためです。
      */
     uint64_t bindingVersion() const { return m_bindingVersion; }
 
@@ -226,11 +219,7 @@ private:
     // from doing map lookups.
     Ref<ShaderPass> m_defaultShaderPass;
 
-    // $Material 定数バッファの内容のバージョン (UBO の書き直しが必要かの判定に使う)
     uint64_t m_paramVersion;
-
-    // BindGroup の構成 (テクスチャ/サンプラー) のバージョン
-    // (BindGroup の作り直しが必要かの判定に使う)
     uint64_t m_bindingVersion;
 
     // Generic material parameter buffer (matches $Global CB layout from reflection)
@@ -255,10 +244,7 @@ private:
     bool m_depthTestEnabled;
     bool m_depthWriteEnabled;
 
-    /** UBO の内容だけが変わったことを記録する (BindGroup の作り直しは不要)。 */
     void markParamDirty() { ++m_paramVersion; }
-
-    /** BindGroup の構成が変わったことを記録する (テクスチャ/サンプラーの差し替え)。 */
     void markBindingDirty() { ++m_bindingVersion; }
 
     /** Find offset of a named member in $Global CB. Returns -1 if not found. */

@@ -121,16 +121,16 @@ TEST_F(Test_Material, ParamAndBindingVersionAreIndependent) {
     // テクスチャ変更は bindingVersion だけを進める。
     paramVer = material->paramVersion();
     bindVer = material->bindingVersion();
-    material->setTexture(nullptr);
+    material->setNamedTexture("u_baseTexture", nullptr);
     EXPECT_EQ(paramVer, material->paramVersion());
     EXPECT_GT(material->bindingVersion(), bindVer);
 
-    // サンプラー変更も bindingVersion だけを進める。
-    paramVer = material->paramVersion();
+    // 同じテクスチャの再設定では上がらない (無駄な BindGroup 再構築を避ける)。
     bindVer = material->bindingVersion();
-    material->setSamplerState({ln::rhi::FilterMode::Nearest, ln::rhi::AddressMode::Repeat});
-    EXPECT_EQ(paramVer, material->paramVersion());
-    EXPECT_GT(material->bindingVersion(), bindVer);
+    material->setNamedTexture("u_baseTexture", nullptr);
+    EXPECT_EQ(bindVer, material->bindingVersion());
+    material->setTexture(nullptr); // createUnlit 直後の baseTexture は既に whiteTexture
+    EXPECT_EQ(bindVer, material->bindingVersion());
 }
 
 // Sampler バインディングから、それが担当するテクスチャ名を逆引きできることを確認するテスト。

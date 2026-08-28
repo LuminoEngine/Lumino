@@ -76,12 +76,13 @@ void Material::setSpecular(const Color& color, float shininess) {
 }
 
 void Material::setTexture(rhi::Texture* texture) {
-    if (texture) {
-        texture->addRef();
-        m_baseTexture = Ref<rhi::Texture>::adopt(texture);
-    } else {
-        m_baseTexture = CoreInstance::instance()->graphicsModule()->whiteTexture();
-    }
+    // 同じテクスチャの再設定でバージョンを進めない。Renderer 側は bindingVersion が
+    // 動いたら BindGroup を捨てるだけなので、ここで弾かないと無駄な再生成になる。
+    rhi::Texture* newTexture =
+        texture ? texture : CoreInstance::instance()->graphicsModule()->whiteTexture().get();
+    if (m_baseTexture.get() == newTexture) return;
+    newTexture->addRef();
+    m_baseTexture = Ref<rhi::Texture>::adopt(newTexture);
     markBindingDirty();
 }
 
@@ -92,19 +93,18 @@ void Material::writeMaterialUBO(void* dst) const {
 }
 
 void Material::setNamedTexture(const std::string& name, rhi::Texture* texture) {
-    if (texture) {
-        texture->addRef();
-        m_namedTextures[name] = Ref<rhi::Texture>::adopt(texture);
-    } else {
-        m_namedTextures[name] = CoreInstance::instance()->graphicsModule()->whiteTexture();
-    }
+    rhi::Texture* newTexture =
+        texture ? texture : CoreInstance::instance()->graphicsModule()->whiteTexture().get();
+    auto it = m_namedTextures.find(name);
+    if (it != m_namedTextures.end() && it->second.get() == newTexture) return;
+    newTexture->addRef();
+    m_namedTextures[name] = Ref<rhi::Texture>::adopt(newTexture);
     markBindingDirty();
 }
 
 void Material::setSamplerState(const SamplerState& state) {
     if (m_samplerState == state) return;
     m_samplerState = state;
-    // サンプラーが変わると BindGroup を作り直す必要があるため bindingVersion を進める。
     markBindingDirty();
 }
 

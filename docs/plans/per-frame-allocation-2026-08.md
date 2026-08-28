@@ -22,7 +22,7 @@ wasm32 では 32bit アドレス空間かつメモリ上限が環境依存で小
 
 | # | 分類 | 課題 | 発生頻度 | 効果 | 難易度 | 所要時間 | 優先度 |
 |---|---|---|---|---|---|---|---|
-| B-1 | B | マテリアルパラメータ変更で BindGroup を毎フレーム再生成 | 変更のあるマテリアル数 x フレーム | 最高 | 中 | 半日 | S |
+| B-1 | B | マテリアルパラメータ変更で BindGroup を毎フレーム再生成 | 変更のあるマテリアル数 x フレーム | 最高 | 中 | 半日 | 済 (6dabd6a01) |
 | A-1 | A | `RenderPassDesc::colorAttachments` 等が `std::vector` | 4 回 x パス数 x フレーム | 高 | 低 | 2-3h | S |
 | B-2 | B | `Renderer::m_materialCache` にエビクションが無い | Material 生成数に比例して単調増加 | 高 | 中 | 半日 | A |
 | A-2 | A | `DebugPrint::render()` のローカル vector | 3 回 x フレーム (デスクトップのみ) | 中 | 低 | 30分 | A |
@@ -79,31 +79,9 @@ wasm32 では 32bit アドレス空間かつメモリ上限が環境依存で小
 
 ### B-1. BindGroup の再生成条件を「UBO の内容変更」から切り離す
 
-- 解決する課題:
-  `Renderer::getOrCreateMaterialBindGroup()` (`Renderer.cpp:702-845`) は `Material::paramVersion()` の変化を検出すると全フレームスロットを dirty にし、dirty のスロットでは **UBO への書き込みと BindGroup の再生成を両方**行う。
-  一方 `Material::setColor()` / `setFloat4()` / `setFloat()` はいずれも `markDirty()` を呼んで `paramVersion` を進める (`Material.cpp:33-75`)。
-  つまり「マテリアルの色を毎フレーム変える」だけで、マテリアル 1 個あたり毎フレーム次のコストが発生する。
+**実装済み (6dabd6a01)**。`Material` のバージョンを `paramVersion` (UBO の内容) と `bindingVersion` (テクスチャ/サンプラーの構成) に分離し、`CachedMaterialBind` はスロットごとに「UBO へ書き込み済みの `paramVersion`」を持つようにした。パラメータを毎フレーム更新するマテリアルのコストは `writeBuffer` 1 回だけになる。検証は `Test_Graphics` の `MaterialColorChangeAcrossFrames` ほか 2 件と `Test_Material.ParamAndBindingVersionAreIndependent`。
 
-  - `std::vector<rhi::BindGroupEntry> entries` の構築 (`Renderer.cpp:814`)。`reserve` なしの `push_back` ループなので realloc も伴う
-  - WebGPU: `new WebGPUBindGroup` + `std::vector<WGPUBindGroupEntry>` + `wgpuDeviceCreateBindGroup` (wasm では JS オブジェクト生成)
-  - Vulkan: `new VulkanBindGroup` + `bgDesc.entries = entries` の無駄な vector コピー (`VulkanBackend.cpp:268`) + `vkAllocateDescriptorSets`
-  - 旧 BindGroup の破棄。Vulkan では `FrameResourceManager::queueDelete()` に `std::function` を渡すためさらに 1 回の確保が起きる (`VulkanBackend.cpp:222`)
-
-  **BindGroup が参照しているのはバッファ・テクスチャビュー・サンプラーという「オブジェクトの構成」だけであり、UBO の中身が変わっても作り直す必要はない。** `cache.paramBuffers[frameSlot]` はフレームスロットごとに一度作られたあと差し替えられず、内容は `device->writeBuffer()` で更新されている。したがって現在の再生成は完全に無駄である。
-
-- 期待効果: パラメータを毎フレーム更新するマテリアルのコストが `writeBuffer` 1 回だけになる。ヒープ確保だけでなく GPU/JS オブジェクトの生成と破棄が消えるため、A 系の malloc 削減より桁違いに効く
-- 作るもの:
-  - `CachedMaterialBind` の `std::vector<bool> dirty` を 2 つに分割する
-    - `uboDirty` : `paramVersion` の変化で全スロットを立てる。立っているスロットで `writeBuffer` を行う
-    - `bindGroupDirty` : 「そのスロットの `paramBuffers` を新規作成したとき」「`textureViews[binding]` が差し替わったとき」「`samplers[binding]` が差し替わったとき」のみ全スロットを立てる
-  - 早期リターンの条件を `!uboDirty[slot] && !bindGroupDirty[slot]` に変更する。テクスチャ/サンプラーの解決処理は `uboDirty` でも通る必要がある (差し替え検出のため) が、`bindGroupDirty` が立たなければ BindGroup 構築ブロックはスキップする
-  - `entries` を `SmallVector<rhi::BindGroupEntry, kMaxBindGroupEntries>` にする (`kMaxBindGroupEntries` = 16)。`PipelineLayout::createBindGroup()` のシグネチャを `const std::vector<BindGroupEntry>&` から `SmallVector` もしくは `(const BindGroupEntry*, size_t)` に変更する必要があるため、`Rhi.hpp` の仮想関数と両バックエンドの実装、`DynamicUniformAllocator::createPage()` の呼び出しも追随する
-  - `VulkanPipelineLayout::createBindGroup()` の `BindGroupDesc bgDesc; bgDesc.entries = entries;` を削除する。`VulkanBindGroup::init()` は `layout` を別引数で受けており `BindGroupDesc` の `layout` を使っていないため、entries を直接渡せば `BindGroupDesc` 経由のコピーは不要
-- 実装難易度: 中 (dirty の意味を 2 つに分ける判断が要る) / 所要時間: 半日
-- リスク:
-  - dirty の分割を誤ると「テクスチャを差し替えたのに古い BindGroup を使い続ける」という描画バグになる。テクスチャ差し替え、名前付きサンプラー変更、パラメータ変更の 3 パターンをそれぞれテストで固定してから着手する
-  - `createBindGroup` のシグネチャ変更は RHI の公開インタフェース変更にあたる。両バックエンドと `DynamicUniformAllocator` を同時に直す必要がある。ここだけ分けて先に `SmallVector` 化せず、dirty 分割を先に入れて効果を確認してから行ってもよい
-- 優先度: S
+- 積み残し: `Renderer.cpp` の `std::vector<rhi::BindGroupEntry> entries` は BindGroup 生成時のみの確保になったため優先度は下がったが、`SmallVector<rhi::BindGroupEntry, kMaxBindGroupEntries>` 化と `PipelineLayout::createBindGroup()` のシグネチャ変更 (両バックエンドと `DynamicUniformAllocator::createPage()` の追随が必要) は未着手。優先度: C
 
 ### B-2. Renderer のマテリアルキャッシュにエビクションを入れる
 
@@ -176,8 +154,8 @@ wasm32 では 32bit アドレス空間かつメモリ上限が環境依存で小
 
 ## 5. 着手順
 
-1. **B-1 (dirty 分割のみ)**: `createBindGroup` のシグネチャ変更は後回しにして、dirty を 2 つに分ける部分だけを入れる。効果が最大で、他の変更と競合しない
-2. **A-1**: `SmallVector` 化。B-1 で `entries` の `SmallVector` 化まで進める場合は、`createBindGroup` のシグネチャ変更と同じコミットにまとめる
+1. ~~**B-1 (dirty 分割のみ)**~~: 実装済み (6dabd6a01)
+2. **A-1**: `SmallVector` 化。B-1 の積み残しである `entries` の `SmallVector` 化まで進める場合は、`createBindGroup` のシグネチャ変更と同じコミットにまとめる
 3. **D-1, D-2**: どちらも局所的で独立している。A-1 の途中に挟んでもよい
 4. **A-2**: 独立。いつでも入れられる
 5. **B-2**: エビクションの仕組みが必要なため最後。着手前に「Material を毎フレーム作る使い方を実際にするのか」を確認し、しないなら優先度を落とす判断もありえる

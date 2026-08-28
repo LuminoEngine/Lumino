@@ -122,6 +122,16 @@ void VulkanSwapChain::finalize() {
     auto dev = m_device->vkDevice();
     vkDeviceWaitIdle(dev);
 
+    // デバイスが握っている「現在アクティブな SwapChain」の参照を外す。
+    // これを外さないと、SwapChain 破棄後に呼ばれる VulkanDevice::currentFrameIndex()
+    // (リソース解放時の queueDelete が使う) が解放済みの this を読む。
+    // 実際に踏むのはデバイスロスト復旧の経路で、GraphicsContext が SwapChain を
+    // 捨てた後にクライアントが stale な Texture / Mesh / Material を解放したとき。
+    // 自分がアクティブでない場合 (別ウィンドウが acquire 済み) は触らない。
+    if (m_device->activeSwapChain() == this) {
+        m_device->setActiveSwapChain(nullptr);
+    }
+
     for (uint32_t i = 0; i < m_maxFrames; ++i) {
         if (m_imageAvailableSemaphores[i])
             vkDestroySemaphore(dev, m_imageAvailableSemaphores[i], nullptr);

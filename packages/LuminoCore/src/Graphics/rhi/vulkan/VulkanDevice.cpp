@@ -459,6 +459,9 @@ Result<Ref<RenderPipeline>> VulkanDevice::createRenderPipeline(const RenderPipel
 }
 
 uint32_t VulkanDevice::currentFrameIndex() const {
+    // アクティブな SwapChain が無いのは、まだ 1 フレームも回していないか、
+    // SwapChain を破棄した後 (デバイスロスト復旧など) のどちらか。
+    // どちらも GPU は待機済みなので、どのキューに積んでも解放の安全性は変わらない。
     return m_activeSwapChain ? m_activeSwapChain->currentFrame() : 0u;
 }
 

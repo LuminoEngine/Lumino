@@ -706,38 +706,22 @@ Result<rhi::BindGroup*> Renderer::getOrCreateMaterialBindGroup(Material* mat, Sh
     auto& cache = m_materialCache[MaterialBindKey{mat, pass}];
 
     // Initialize vectors on first access.
-    if (cache.uboDirty.empty()) {
+    if (cache.writtenParamVersion.empty()) {
         cache.paramBuffers.resize(m_framesInFlight);
         cache.bindGroups.resize(m_framesInFlight);
-        cache.uboDirty.assign(m_framesInFlight, true);
+        cache.writtenParamVersion.assign(m_framesInFlight, 0);
     }
 
-    // UBO の内容が変わっていたら、全フレームスロットを書き直し対象にする。
-    // BindGroup が参照しているのはバッファ・テクスチャビュー・サンプラーという
-    // 「オブジェクトの構成」だけであり、UBO の中身が変わっても作り直す必要は無い。
-    // そのためここでは BindGroup に一切触らない。
-    if (mat->paramVersion() != cache.paramVersion) {
-        for (auto&& d : cache.uboDirty) d = true;
-        cache.paramVersion = mat->paramVersion();
-    }
-
-    // Use reflection to discover all texture bindings in the material set
     const auto& layoutDesc = pass->materialLayoutDesc();
     const auto& bindingNames = pass->materialBindingNames();
 
-    // テクスチャ/サンプラーの構成が変わったときだけ解決し直す。
-    // BindGroup の作り直しが必要になるのはこの経路だけなので、パラメータを
-    // 毎フレーム更新するだけのマテリアルはここを一切通らない。
     if (mat->bindingVersion() != cache.bindingVersion) {
         cache.bindingVersion = mat->bindingVersion();
 
-        // 構成が変わった BindGroup は捨てる。null になったスロットは後段で作り直される。
-        // 使用中のフレームスロットのものも一緒に捨てるが、Vulkan は
+        // 使用中のフレームスロットの BindGroup も一緒に捨てるが、Vulkan は
         // VulkanBindGroup::finalize() が FrameResourceManager 経由で遅延解放し、
         // WebGPU は参照カウントで保持されるため、GPU 使用中の破棄にはならない。
-        auto dropAllBindGroups = [&cache]() {
-            for (auto&& bg : cache.bindGroups) bg.reset();
-        };
+        for (auto&& bg : cache.bindGroups) bg.reset();
 
         // For each SampledTexture binding, resolve the texture and create/update views
         for (size_t i = 0; i < layoutDesc.entries.size(); ++i) {
@@ -759,7 +743,6 @@ Result<rhi::BindGroup*> Renderer::getOrCreateMaterialBindGroup(Material* mat, Sh
                 if (!tvResult) return LN_FORWARD_ERROR(tvResult);
                 cache.textureViews[binding] = std::move(*tvResult);
                 cache.lastTextures[binding] = tex;
-                dropAllBindGroups();
             }
         }
 
@@ -776,17 +759,13 @@ Result<rhi::BindGroup*> Renderer::getOrCreateMaterialBindGroup(Material* mat, Sh
             auto sampResult = getOrCreateSampler(mat->resolveSamplerState(texName));
             if (!sampResult) return LN_FORWARD_ERROR(sampResult);
 
-            auto* sampler = *sampResult;
-            auto it = cache.samplers.find(layoutEntry.binding);
-            if (it == cache.samplers.end() || it->second.get() != sampler) {
-                cache.samplers[layoutEntry.binding] = Ref<rhi::Sampler>::retain(sampler);
-                dropAllBindGroups();
-            }
+            // Sampler は m_samplerPool で共有されるため、毎回代入しても再生成は起きない。
+            cache.samplers[layoutEntry.binding] = Ref<rhi::Sampler>::retain(*sampResult);
         }
     }
 
     // このスロットの UBO も BindGroup も最新なら、そのまま使い回す。
-    if (!cache.uboDirty[frameSlot] && cache.bindGroups[frameSlot]) {
+    if (cache.writtenParamVersion[frameSlot] == mat->paramVersion() && cache.bindGroups[frameSlot]) {
         return cache.bindGroups[frameSlot].get();
     }
 
@@ -806,10 +785,7 @@ Result<rhi::BindGroup*> Renderer::getOrCreateMaterialBindGroup(Material* mat, Sh
     }
 
     // Write UBO data via writeBuffer (compatible with all backends).
-    // uboDirty はスロットごとに初期値 true で、書き込み後にだけ false になる。
-    // つまり paramBuffers[frameSlot] を新規作成した直後は必ず true なので、
-    // 未初期化のバッファをそのまま使ってしまうことは無い。
-    if (mat->materialParamBufferSize() > 0 && cache.uboDirty[frameSlot]) {
+    if (mat->materialParamBufferSize() > 0 && cache.writtenParamVersion[frameSlot] != mat->paramVersion()) {
         auto uboSize = mat->materialParamBufferSize();
         uint8_t uboStaging[512];
         std::vector<uint8_t> uboStagingHeap;
@@ -858,7 +834,7 @@ Result<rhi::BindGroup*> Renderer::getOrCreateMaterialBindGroup(Material* mat, Sh
         cache.bindGroups[frameSlot] = std::move(*bgResult);
     }
 
-    cache.uboDirty[frameSlot] = false;
+    cache.writtenParamVersion[frameSlot] = mat->paramVersion();
     return cache.bindGroups[frameSlot].get();
 }
 
