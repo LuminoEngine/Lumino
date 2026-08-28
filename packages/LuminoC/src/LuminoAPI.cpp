@@ -1446,6 +1446,9 @@ LNResult LNRenderer_BeginRenderPass(
     LNHandle renderer, LNHandle graphicsContext,
     const LNRenderPassDesc* desc, LNHandle camera) {
     if (!desc) return LN_ERROR_INVALID_ARGUMENT;
+    // colorAttachments は固定長配列で、RHI 側も同じ上限のスタック領域に積むため、
+    // 超過はここで弾く。
+    if (desc->colorAttachmentCount > LN_MAX_COLOR_ATTACHMENTS) return LN_ERROR_INVALID_ARGUMENT;
 
     auto* instance = ln::CoreInstance::instance();
     if (!instance) return LN_RUNTIME_UNINITIALIZED;

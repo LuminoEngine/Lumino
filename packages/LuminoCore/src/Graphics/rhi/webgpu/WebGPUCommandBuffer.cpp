@@ -110,10 +110,12 @@ VoidResult WebGPUCommandBuffer::begin() {
 
 RenderPass* WebGPUCommandBuffer::beginRenderPass(const RenderPassDesc& desc) {
     // Build WGPURenderPassColorAttachment array
-    std::vector<WGPURenderPassColorAttachment> colorAttachments(desc.colorAttachments.size());
+    // 毎フレーム呼ばれるためヒープ確保を避け、上限固定のスタック配列で組み立てる。
+    WGPURenderPassColorAttachment colorAttachments[kMaxMultiRenderTargets];
+    const size_t colorAttachmentCount = desc.colorAttachments.size();
     RenderPassLayoutDesc layoutDesc;
 
-    for (size_t i = 0; i < desc.colorAttachments.size(); ++i) {
+    for (size_t i = 0; i < colorAttachmentCount; ++i) {
         auto& src = desc.colorAttachments[i];
         auto* view = static_cast<WebGPUTextureView*>(src.view);
 
@@ -151,8 +153,8 @@ RenderPass* WebGPUCommandBuffer::beginRenderPass(const RenderPassDesc& desc) {
     }
 
     WGPURenderPassDescriptor rpDesc = WGPU_RENDER_PASS_DESCRIPTOR_INIT;
-    rpDesc.colorAttachmentCount = colorAttachments.size();
-    rpDesc.colorAttachments = colorAttachments.data();
+    rpDesc.colorAttachmentCount = colorAttachmentCount;
+    rpDesc.colorAttachments = colorAttachments;
     rpDesc.depthStencilAttachment = hasDepthStencil ? &depthStencilAttachment : nullptr;
 
     WGPURenderPassEncoder rpEncoder = wgpuCommandEncoderBeginRenderPass(m_encoder, &rpDesc);

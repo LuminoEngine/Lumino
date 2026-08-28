@@ -209,7 +209,7 @@ void Renderer::beginRenderPass(
     const Color& clearColor) {
 
     rhi::RenderPassDesc rpDesc;
-    rpDesc.colorAttachments = {{colorTarget, rhi::LoadOp::Clear, rhi::StoreOp::Store, clearColor}};
+    rpDesc.colorAttachments.push_back({colorTarget, rhi::LoadOp::Clear, rhi::StoreOp::Store, clearColor});
 
     rhi::DepthStencilAttachment depthAttachment;
     if (depthTarget) {
@@ -323,7 +323,7 @@ void Renderer::beginOverlayRenderPass(rhi::TextureView* colorTarget) {
     colorAttach.clearColor = Color{0.0f, 0.0f, 0.0f, 0.0f};
 
     rhi::RenderPassDesc rpDesc;
-    rpDesc.colorAttachments      = {colorAttach};
+    rpDesc.colorAttachments.push_back(colorAttach);
     rpDesc.depthStencilAttachment = nullptr;
 
     m_currentPass = m_currentCmd->beginRenderPass(rpDesc);

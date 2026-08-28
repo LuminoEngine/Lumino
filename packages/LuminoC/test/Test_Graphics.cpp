@@ -94,6 +94,17 @@ TEST_F(Test_Graphics, ClearScreen) {
     ASSERT_TRUE(VisualTest::captureAndCompare("Test_Graphics.ClearScreen", data, w, h, TEST_DATA_DIR));
 }
 
+TEST_F(Test_Graphics, ColorAttachmentCountOverLimitIsRejected) {
+    LNHandle renderer, colorBuffer, depthBuffer;
+    ASSERT_EQ(LN_OK, LNGraphicsContext_BeginFrame(graphicsContext, TEST_W, TEST_H, &renderer, &colorBuffer, &depthBuffer));
+    LNRenderPassDesc rpDesc;
+    LNRenderPassDesc_Init(&rpDesc);
+    rpDesc.colorAttachmentCount = LN_MAX_COLOR_ATTACHMENTS + 1;
+    ASSERT_EQ(LN_ERROR_INVALID_ARGUMENT,
+        LNRenderer_BeginRenderPass(renderer, graphicsContext, &rpDesc, LN_NULL_HANDLE));
+    ASSERT_EQ(LN_OK, LNGraphicsContext_EndFrame(graphicsContext));
+}
+
 TEST_F(Test_Graphics, HelloTexture) {
     // Load texture (Sprite.png)
     LNHandle texture = LN_NULL_HANDLE;

@@ -23,7 +23,7 @@ wasm32 では 32bit アドレス空間かつメモリ上限が環境依存で小
 | # | 分類 | 課題 | 発生頻度 | 効果 | 難易度 | 所要時間 | 優先度 |
 |---|---|---|---|---|---|---|---|
 | B-1 | B | マテリアルパラメータ変更で BindGroup を毎フレーム再生成 | 変更のあるマテリアル数 x フレーム | 最高 | 中 | 半日 | 済 (6dabd6a01) |
-| A-1 | A | `RenderPassDesc::colorAttachments` 等が `std::vector` | 4 回 x パス数 x フレーム | 高 | 低 | 2-3h | S |
+| A-1 | A | `RenderPassDesc::colorAttachments` 等が `std::vector` | 4 回 x パス数 x フレーム | 高 | 低 | 2-3h | 済 |
 | B-2 | B | `Renderer::m_materialCache` にエビクションが無い | Material 生成数に比例して単調増加 | 高 | 中 | 半日 | A |
 | A-2 | A | `DebugPrint::render()` のローカル vector | 3 回 x フレーム (デスクトップのみ) | 中 | 低 | 30分 | A |
 | D-1 | D | Vulkan の `vkMapMemory`/`vkUnmapMemory` が毎フレーム | バッファ数 x フレーム | 中 | 低 | 1h | A |
@@ -36,6 +36,8 @@ wasm32 では 32bit アドレス空間かつメモリ上限が環境依存で小
 ## 2. A: 無条件に毎フレーム発生するアロケーション
 
 ### A-1. RenderPassDesc 系の `std::vector` を SmallVector へ置き換える
+
+**実装済み**。`RenderPassDesc::colorAttachments` と `RenderPassLayoutDesc::colorFormats`、`WebGPURenderPassLayoutKey::colorFormats` を `SmallVector<..., kMaxMultiRenderTargets>` へ変更し、`WebGPUCommandBuffer::beginRenderPass()` の `std::vector<WGPURenderPassColorAttachment>` をスタック配列 + カウンタに置き換えた。`LNRenderer_BeginRenderPass` に `colorAttachmentCount > LN_MAX_COLOR_ATTACHMENTS` の検証を追加し、`Test_Graphics.ColorAttachmentCountOverLimitIsRejected` で確認している。B-1 の積み残しである `BindGroupEntry` の `SmallVector` 化は未着手 (優先度 C のまま)。
 
 - 解決する課題: レンダーパス 1 本を開くたびに、アタッチメント配列のためのヒープ確保と解放が最大 4 回発生する。パス 4 本のフレームで毎フレーム 16 回の malloc/free になる。内訳は次の通り。
 
@@ -155,7 +157,7 @@ wasm32 では 32bit アドレス空間かつメモリ上限が環境依存で小
 ## 5. 着手順
 
 1. ~~**B-1 (dirty 分割のみ)**~~: 実装済み (6dabd6a01)
-2. **A-1**: `SmallVector` 化。B-1 の積み残しである `entries` の `SmallVector` 化まで進める場合は、`createBindGroup` のシグネチャ変更と同じコミットにまとめる
+2. ~~**A-1**~~: 実装済み
 3. **D-1, D-2**: どちらも局所的で独立している。A-1 の途中に挟んでもよい
 4. **A-2**: 独立。いつでも入れられる
 5. **B-2**: エビクションの仕組みが必要なため最後。着手前に「Material を毎フレーム作る使い方を実際にするのか」を確認し、しないなら優先度を落とす判断もありえる

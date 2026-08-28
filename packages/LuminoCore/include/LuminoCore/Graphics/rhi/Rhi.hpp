@@ -17,6 +17,7 @@
 #include <LuminoBase/RefObject.hpp>
 #include <LuminoBase/math/Math.hpp>
 #include <LuminoBase/math/Matrix4x4.hpp>
+#include <LuminoBase/SmallVector.hpp>
 #include "RHIObject.hpp"
 
 #include <atomic>
@@ -327,7 +328,7 @@ struct PipelineLayoutDesc {
 };
 
 struct RenderPassLayoutDesc {
-    std::vector<TextureFormat> colorFormats;
+    SmallVector<TextureFormat, kMaxMultiRenderTargets> colorFormats;
     TextureFormat depthStencilFormat = TextureFormat::Undefined;
     uint32_t sampleCount = 1;
 };
@@ -371,7 +372,7 @@ struct DepthStencilAttachment {
 };
 
 struct RenderPassDesc {
-    std::vector<ColorAttachment> colorAttachments;
+    SmallVector<ColorAttachment, kMaxMultiRenderTargets> colorAttachments;
     DepthStencilAttachment* depthStencilAttachment = nullptr;
 };
 

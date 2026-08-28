@@ -14,7 +14,7 @@ class WebGPUDevice;
 // belong here (formats + sample count); load/store ops and clear values don't
 // affect pipeline compatibility.
 struct WebGPURenderPassLayoutKey {
-    std::vector<TextureFormat> colorFormats;
+    SmallVector<TextureFormat, kMaxMultiRenderTargets> colorFormats;
     TextureFormat depthStencilFormat = TextureFormat::Undefined;
     uint32_t sampleCount = 1;
 
