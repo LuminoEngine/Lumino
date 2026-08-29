@@ -49,6 +49,7 @@ describe("readGraphicsProfiler", () => {
         view.setFloat32(4, 59.5, true);   // fps
         view.setFloat32(8, 16.75, true);  // lastFrameTimeMs
         view.setInt32(12, 7, true);       // shaderPassCount
+        view.setInt32(16, 3, true);       // materialCacheCount
 
         const p = readGraphicsProfiler(view);
 
@@ -56,11 +57,12 @@ describe("readGraphicsProfiler", () => {
         expect(p.fps).toBeCloseTo(59.5, 6);
         expect(p.lastFrameTimeMs).toBeCloseTo(16.75, 6);
         expect(p.shaderPassCount).toBe(7);
+        expect(p.materialCacheCount).toBe(3);
     });
 
     it("ゼロクリアされたバッファからは全て 0 が読める", () => {
         const p = readGraphicsProfiler(makeView(SIZEOF_GRAPHICS_PROFILER));
-        expect(p).toEqual({ drawCallCount: 0, fps: 0, lastFrameTimeMs: 0, shaderPassCount: 0 });
+        expect(p).toEqual({ drawCallCount: 0, fps: 0, lastFrameTimeMs: 0, shaderPassCount: 0, materialCacheCount: 0 });
     });
 
     // drawCallCount は C 側で int32_t。符号付きとして読めていることを固定する

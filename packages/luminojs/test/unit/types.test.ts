@@ -65,8 +65,8 @@ describe("types.ts SIZEOF_* layout constants", () => {
         expect(SIZEOF_MATRIX).toBe(64);
     });
 
-    it("SIZEOF_GRAPHICS_PROFILER = drawCallCount(i32,4) + fps(f32,4) + lastFrameTimeMs(f32,4) + shaderPassCount(i32,4)", () => {
-        expect(SIZEOF_GRAPHICS_PROFILER).toBe(4 + 4 + 4 + 4);
-        expect(SIZEOF_GRAPHICS_PROFILER).toBe(16);
+    it("SIZEOF_GRAPHICS_PROFILER = drawCallCount(i32,4) + fps(f32,4) + lastFrameTimeMs(f32,4) + shaderPassCount(i32,4) + materialCacheCount(i32,4)", () => {
+        expect(SIZEOF_GRAPHICS_PROFILER).toBe(4 + 4 + 4 + 4 + 4);
+        expect(SIZEOF_GRAPHICS_PROFILER).toBe(20);
     });
 });
