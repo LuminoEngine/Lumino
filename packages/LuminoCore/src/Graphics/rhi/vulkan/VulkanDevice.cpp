@@ -489,12 +489,11 @@ VoidResult VulkanDevice::writeBuffer(Buffer* dst, uint64_t dstOffset, const void
         m_stagingPool.uploadImmediate(m_graphicsQueue, m_commandPool,
                                       vkBuffer->handle(), data, size, dstOffset);
     } else {
-        void* mapped = vkBuffer->map();
+        void* mapped = vkBuffer->mappedMemory();
         if (!mapped) {
             return LN_MAKE_ERROR("Failed to map buffer for writeBuffer.");
         }
         std::memcpy(static_cast<uint8_t*>(mapped) + dstOffset, data, size);
-        vkBuffer->unmap();
     }
     return LN_MAKE_SUCCESS();
 }

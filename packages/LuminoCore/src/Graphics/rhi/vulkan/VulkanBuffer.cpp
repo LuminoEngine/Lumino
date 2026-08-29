@@ -50,10 +50,9 @@ VoidResult VulkanBuffer::init(VulkanDevice* device, VkPhysicalDevice physicalDev
     // Device-local buffers: initialData is uploaded by the caller (via StagingBufferPool).
     // Host-visible buffers: copy directly.
     if (!deviceLocal && desc.initialData) {
-        void* mapped = map();
+        void* mapped = mappedMemory();
         if (mapped) {
             std::memcpy(mapped, desc.initialData, desc.size);
-            unmap();
         }
     }
     return LN_MAKE_SUCCESS();
@@ -70,18 +69,16 @@ void VulkanBuffer::finalize() {
     Buffer::finalize();
 }
 
-void* VulkanBuffer::map() {
+void* VulkanBuffer::mappedMemory() {
     if (m_deviceLocal) return nullptr;  // device-local memory cannot be CPU-mapped
-    if (!m_mapped) vkMapMemory(m_device->vkDevice(), m_memory, 0, m_size, 0, &m_mapped);
-    return m_mapped;
-}
-
-void VulkanBuffer::unmap() {
-    // 永続マップのため何もしない。ホストビジブルなメモリは HOST_COHERENT で確保しているので
-    // flush も不要で、書き込みは memcpy のみで完結する。
-    // マップはバッファの寿命が尽きるまで保持し続ける。finalize() 側の追加処理は不要:
+    // 永続マップ。一度マップしたらバッファの寿命が尽きるまで保持し続けるので、毎フレームの
+    // vkMapMemory/vkUnmapMemory が不要になる。ホストビジブルなメモリは HOST_COHERENT で
+    // 確保しているため flush も不要で、書き込みは memcpy のみで完結する。
+    // マップしたまま解放してよい (finalize() 側の追加処理は不要):
     // "If a memory object is mapped at the time it is freed, it is implicitly unmapped."
     // https://docs.vulkan.org/refpages/latest/refpages/source/vkFreeMemory.html
+    if (!m_mapped) vkMapMemory(m_device->vkDevice(), m_memory, 0, m_size, 0, &m_mapped);
+    return m_mapped;
 }
 
 } // namespace ln::rhi::vulkan

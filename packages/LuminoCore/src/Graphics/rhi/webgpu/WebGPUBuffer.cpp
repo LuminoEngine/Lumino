@@ -46,21 +46,5 @@ void WebGPUBuffer::finalize() {
     Buffer::finalize();
 }
 
-void* WebGPUBuffer::map() {
-    // WebGPU's wgpuBufferMapAsync is asynchronous and incompatible with
-    // the synchronous map() interface. Use a CPU shadow buffer instead;
-    // unmap() flushes it via wgpuQueueWriteBuffer.
-    if (m_shadow.size() != m_size) {
-        m_shadow.resize(static_cast<size_t>(m_size));
-    }
-    return m_shadow.data();
-}
-
-void WebGPUBuffer::unmap() {
-    if (!m_shadow.empty() && m_buffer) {
-        wgpuQueueWriteBuffer(m_device->wgpuQueue(), m_buffer, 0,
-                             m_shadow.data(), m_shadow.size());
-    }
-}
 
 } // namespace ln::rhi::webgpu

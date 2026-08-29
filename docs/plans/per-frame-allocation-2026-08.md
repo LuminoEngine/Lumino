@@ -27,7 +27,7 @@ wasm32 では 32bit アドレス空間かつメモリ上限が環境依存で小
 | B-2 | B | `Renderer::m_materialCache` にエビクションが無い | Material 生成数に比例して単調増加 | 高 | 中 | 半日 | 済 |
 | A-2 | A | `DebugPrint::render()` のローカル vector | 3 回 x フレーム (デスクトップのみ) | 中 | 低 | 30分 | 済 |
 | D-1 | D | Vulkan の `vkMapMemory`/`vkUnmapMemory` が毎フレーム | バッファ数 x フレーム | 中 | 低 | 1h | 済 |
-| D-2 | D | `WebGPUBuffer::m_shadow` が未使用のまま常駐リスクを持つ | 常駐 | 中 | 低 | 1h | A |
+| D-2 | D | `WebGPUBuffer::m_shadow` が未使用のまま常駐リスクを持つ | 常駐 | 中 | 低 | 1h | 済 |
 | D-3 | D | `Material::findPass()` がドローコールごとに文字列ハッシュ | ドローコール数 x フレーム | 低 | 低 | 1-2h | B |
 | D-4 | D | `ForwardRenderer::renderFrame()` が `std::vector` を要求する API 形状 | 呼び出し側で 1 回 x フレーム | 低 | 低 | 30分 | C |
 
@@ -131,6 +131,10 @@ wasm32 では 32bit アドレス空間かつメモリ上限が環境依存で小
 
 ### D-2. 使われていない WebGPUBuffer のシャドウバッファを削除する
 
+**実装済み**。第一候補を採用し、`rhi::Buffer` から `map()` / `unmap()` の純粋仮想関数を削除した。`WebGPUBuffer` の `map()` / `unmap()` と `m_shadow` は丸ごと消え、Vulkan 側は非仮想の `VulkanBuffer::mappedMemory()` (D-1 の永続マップ) だけが残る。D-1 で no-op になった `unmap()` は呼び出し元が無くなったため削除した。バッファへの書き込みは全バックエンドで `Device::writeBuffer()` に一本化されている。
+
+将来 WebGL2 バックエンドを追加する場合もこの形が正しい。WebGL2 は仕様 3.7 で `MapBufferRange` を意図的に公開しておらず、書き込みは `bufferSubData`、読み戻しは `getBufferSubData` に限られるため、`writeBuffer` 1 本で足りる。CPU マップは Vulkan 固有の実装手段であるという整理を `Rhi.hpp` のコメントに残した。
+
 - 解決する課題: `WebGPUBuffer::map()` はバッファ全サイズの CPU コピー `m_shadow` を確保する (`WebGPUBuffer.cpp:49-57`) が、WebGPU 経路で `map()` を呼ぶコードは存在しない。描画はすべて `writeBuffer` (= `wgpuQueueWriteBuffer`) 経由である。将来この経路を踏むと、wasm32 の線形メモリ上に全バッファの二重持ちが発生する。AGENTS.md の「デバイスロスト時の再アップロード用データは C/C++ 側ではなく JavaScript 側で管理する」という方針にも反する
 - 期待効果: 踏んだ瞬間にメモリが倍になる罠を、使われていない今のうちに消せる
 - 作るもの:
@@ -166,7 +170,7 @@ wasm32 では 32bit アドレス空間かつメモリ上限が環境依存で小
 
 1. ~~**B-1 (dirty 分割のみ)**~~: 実装済み (6dabd6a01)
 2. ~~**A-1**~~: 実装済み
-3. **D-1**: 実装済み / **D-2**: 局所的で独立している
+3. ~~**D-1, D-2**~~: 実装済み
 4. ~~**A-2**~~: 実装済み
 5. ~~**B-2**~~: 実装済み
 6. **D-3, D-4**: 効果測定の結果を見てから

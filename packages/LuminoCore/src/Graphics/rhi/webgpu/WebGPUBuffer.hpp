@@ -1,7 +1,6 @@
 ﻿#pragma once
 #include <LuminoCore/Graphics/rhi/Rhi.hpp>
 #include <webgpu/webgpu.h>
-#include <vector>
 
 namespace ln::rhi::webgpu {
 
@@ -13,8 +12,6 @@ public:
     VoidResult init(WebGPUDevice* device, const BufferDesc& desc);
 
     uint64_t size() const override { return m_size; }
-    void* map() override;
-    void unmap() override;
 
     WGPUBuffer handle() const { return m_buffer; }
 
@@ -25,7 +22,6 @@ private:
     WebGPUDevice* m_device = nullptr;
     WGPUBuffer m_buffer = nullptr;
     uint64_t m_size = 0;
-    std::vector<uint8_t> m_shadow;
 };
 
 } // namespace ln::rhi::webgpu
