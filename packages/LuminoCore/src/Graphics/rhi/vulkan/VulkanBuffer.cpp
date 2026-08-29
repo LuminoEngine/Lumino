@@ -77,10 +77,11 @@ void* VulkanBuffer::map() {
 }
 
 void VulkanBuffer::unmap() {
-    if (m_mapped) {
-        vkUnmapMemory(m_device->vkDevice(), m_memory);
-        m_mapped = nullptr;
-    }
+    // 永続マップのため何もしない。ホストビジブルなメモリは HOST_COHERENT で確保しているので
+    // flush も不要で、書き込みは memcpy のみで完結する。
+    // マップはバッファの寿命が尽きるまで保持し続ける。finalize() 側の追加処理は不要:
+    // "If a memory object is mapped at the time it is freed, it is implicitly unmapped."
+    // https://docs.vulkan.org/refpages/latest/refpages/source/vkFreeMemory.html
 }
 
 } // namespace ln::rhi::vulkan

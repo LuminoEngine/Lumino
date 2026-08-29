@@ -396,6 +396,7 @@ public:
     virtual uint64_t size() const = 0;
     /** Map the buffer for CPU write. Returns nullptr if not mappable. */
     virtual void* map() = 0;
+    /** 書き込みの終了を通知する。永続マップで実装されている場合は何もしない。 */
     virtual void unmap() = 0;
 };
 

@@ -26,7 +26,7 @@ wasm32 では 32bit アドレス空間かつメモリ上限が環境依存で小
 | A-1 | A | `RenderPassDesc::colorAttachments` 等が `std::vector` | 4 回 x パス数 x フレーム | 高 | 低 | 2-3h | 済 |
 | B-2 | B | `Renderer::m_materialCache` にエビクションが無い | Material 生成数に比例して単調増加 | 高 | 中 | 半日 | 済 |
 | A-2 | A | `DebugPrint::render()` のローカル vector | 3 回 x フレーム (デスクトップのみ) | 中 | 低 | 30分 | 済 |
-| D-1 | D | Vulkan の `vkMapMemory`/`vkUnmapMemory` が毎フレーム | バッファ数 x フレーム | 中 | 低 | 1h | A |
+| D-1 | D | Vulkan の `vkMapMemory`/`vkUnmapMemory` が毎フレーム | バッファ数 x フレーム | 中 | 低 | 1h | 済 |
 | D-2 | D | `WebGPUBuffer::m_shadow` が未使用のまま常駐リスクを持つ | 常駐 | 中 | 低 | 1h | A |
 | D-3 | D | `Material::findPass()` がドローコールごとに文字列ハッシュ | ドローコール数 x フレーム | 低 | 低 | 1-2h | B |
 | D-4 | D | `ForwardRenderer::renderFrame()` が `std::vector` を要求する API 形状 | 呼び出し側で 1 回 x フレーム | 低 | 低 | 30分 | C |
@@ -118,6 +118,8 @@ wasm32 では 32bit アドレス空間かつメモリ上限が環境依存で小
 
 ### D-1. Vulkan のホストビジブルバッファを永続マップにする
 
+**実装済み**。`VulkanBuffer::unmap()` を no-op にし、`map()` が取得したポインタをバッファの寿命が尽きるまで保持し続けるようにした。`VulkanDevice::writeBuffer()` の非 device-local 経路は 2 フレーム目以降 memcpy のみになる。メモリは `HOST_VISIBLE | HOST_COHERENT` なので flush は不要。`vkFreeMemory` がマップ中のメモリを暗黙にアンマップすることは Vulkan 仕様に明記されている ("If a memory object is mapped at the time it is freed, it is implicitly unmapped." - <https://docs.vulkan.org/refpages/latest/refpages/source/vkFreeMemory.html>) ため `finalize()` の変更も不要。この根拠は `VulkanBuffer::unmap()` に URL 付きのコメントとして残した。`Rhi.hpp` の `Buffer::unmap()` のコメントも「永続マップの実装では何もしない」旨に更新済み。デスクトップ既定バックエンドが Vulkan のため、`ctest` の 120 件が本経路を通る回帰確認になっている。
+
 - 解決する課題: `VulkanBuffer::map()` は `m_mapped` をキャッシュしているのに `unmap()` が即座に `vkUnmapMemory` してしまう (`VulkanBuffer.cpp:73-84`)。`VulkanDevice::writeBuffer()` は非 device-local バッファに対して map/memcpy/unmap を行うため、UBO ページ 3 本 (view/scene/object) とスプライトの動的頂点・インデックスバッファに対して、毎フレーム map/unmap のドライバ呼び出しが走る
 - 期待効果: 毎フレームのドライバ呼び出しが消える。メモリは `HOST_VISIBLE | HOST_COHERENT` で確保しているため flush も不要で、memcpy のみになる
 - 作るもの:
@@ -164,7 +166,7 @@ wasm32 では 32bit アドレス空間かつメモリ上限が環境依存で小
 
 1. ~~**B-1 (dirty 分割のみ)**~~: 実装済み (6dabd6a01)
 2. ~~**A-1**~~: 実装済み
-3. **D-1, D-2**: どちらも局所的で独立している。A-1 の途中に挟んでもよい
+3. **D-1**: 実装済み / **D-2**: 局所的で独立している
 4. ~~**A-2**~~: 実装済み
 5. ~~**B-2**~~: 実装済み
 6. **D-3, D-4**: 効果測定の結果を見てから
