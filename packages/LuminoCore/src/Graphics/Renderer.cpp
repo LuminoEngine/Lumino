@@ -828,7 +828,11 @@ Result<rhi::BindGroup*> Renderer::getOrCreateMaterialBindGroup(Material* mat, Sh
     // Use reflection to build entries dynamically.
     if (!cache.bindGroups[frameSlot]) {
         int16_t matSet = pass->materialSetIndex();
-        std::vector<rhi::BindGroupEntry> entries;
+        if (layoutDesc.entries.size() > rhi::kMaxBindGroupEntries) {
+            return LN_MAKE_ERROR("Material bind group has too many entries.");
+        }
+        rhi::BindGroupEntry entries[rhi::kMaxBindGroupEntries] = {};
+        size_t entryCount = 0;
 
         for (size_t i = 0; i < layoutDesc.entries.size(); ++i) {
             const auto& layoutEntry = layoutDesc.entries[i];
@@ -849,11 +853,11 @@ Result<rhi::BindGroup*> Renderer::getOrCreateMaterialBindGroup(Material* mat, Sh
                     entry.sampler = sampIt->second.get();
                 }
             }
-            entries.push_back(entry);
+            entries[entryCount++] = entry;
         }
 
         auto bgResult = pass->pipelineLayout()->createBindGroup(
-            static_cast<uint32_t>(matSet), entries);
+            static_cast<uint32_t>(matSet), entries, entryCount);
         if (!bgResult) return LN_FORWARD_ERROR(bgResult);
         cache.bindGroups[frameSlot] = std::move(*bgResult);
     }

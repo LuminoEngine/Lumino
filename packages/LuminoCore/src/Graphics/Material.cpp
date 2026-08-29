@@ -143,7 +143,14 @@ void MaterialFactory::registerPass(Material* mat, Ref<ShaderPass> pass) {
     if (!mat->m_defaultShaderPass) {
         mat->m_defaultShaderPass = pass;
     }
-    mat->m_shaderPasses[name] = std::move(pass);
+    // 同名パスの再登録は上書き (unordered_map だったときの挙動を維持する)。
+    for (auto& existing : mat->m_shaderPasses) {
+        if (existing->passName() == name) {
+            existing = std::move(pass);
+            return;
+        }
+    }
+    mat->m_shaderPasses.push_back(std::move(pass));
 }
 
 // Initialize Material's $Material param buffer from the default pass's reflection.

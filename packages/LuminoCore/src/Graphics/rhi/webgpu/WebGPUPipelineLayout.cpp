@@ -86,12 +86,17 @@ void WebGPUBindGroupLayout::finalize() {
 WebGPUBindGroup::WebGPUBindGroup() = default;
 
 VoidResult WebGPUBindGroup::init(WebGPUDevice* device, WebGPUBindGroupLayout* layout,
-                                  const std::vector<BindGroupEntry>& entries) {
+                                  const BindGroupEntry* entries, size_t entryCount) {
     m_device = device;
 
-    std::vector<WGPUBindGroupEntry> wgpuEntries;
-    wgpuEntries.reserve(entries.size());
-    for (const auto& e : entries) {
+    // wgpuEntries は固定長のスタック配列なので、ここで弾かないと範囲外書き込みになる。
+    if (entryCount > kMaxBindGroupEntries) {
+        return LN_MAKE_ERROR("BindGroup entry count exceeds kMaxBindGroupEntries.");
+    }
+
+    WGPUBindGroupEntry wgpuEntries[kMaxBindGroupEntries];
+    for (size_t i = 0; i < entryCount; ++i) {
+        const auto& e = entries[i];
         WGPUBindGroupEntry entry = WGPU_BIND_GROUP_ENTRY_INIT;
         entry.binding = e.binding;
         if (e.buffer) {
@@ -105,14 +110,14 @@ VoidResult WebGPUBindGroup::init(WebGPUDevice* device, WebGPUBindGroupLayout* la
         } else {
             return LN_MAKE_ERROR("WebGPUBindGroup: BindGroupEntry has no resource set.");
         }
-        wgpuEntries.push_back(entry);
+        wgpuEntries[i] = entry;
     }
 
     WGPUBindGroupDescriptor desc = WGPU_BIND_GROUP_DESCRIPTOR_INIT;
     desc.label      = {"LuminoBindGroup", WGPU_STRLEN};
     desc.layout     = layout->handle();
-    desc.entryCount = wgpuEntries.size();
-    desc.entries    = wgpuEntries.empty() ? nullptr : wgpuEntries.data();
+    desc.entryCount = entryCount;
+    desc.entries    = (entryCount > 0) ? wgpuEntries : nullptr;
 
     m_bindGroup = wgpuDeviceCreateBindGroup(m_device->wgpuDevice(), &desc);
     if (!m_bindGroup) {
@@ -165,12 +170,12 @@ VoidResult WebGPUPipelineLayout::init(WebGPUDevice* device, const PipelineLayout
 }
 
 Result<Ref<BindGroup>> WebGPUPipelineLayout::createBindGroup(
-    uint32_t setIndex, const std::vector<BindGroupEntry>& entries) {
+    uint32_t setIndex, const BindGroupEntry* entries, size_t entryCount) {
     if (setIndex >= m_bindGroupLayouts.size()) {
         return LN_MAKE_ERROR("WebGPUPipelineLayout::createBindGroup: setIndex out of range.");
     }
     auto bg = Ref<WebGPUBindGroup>::adopt(new WebGPUBindGroup());
-    auto r  = bg->init(m_device, m_bindGroupLayouts[setIndex].get(), entries);
+    auto r  = bg->init(m_device, m_bindGroupLayouts[setIndex].get(), entries, entryCount);
     if (!r) return LN_FORWARD_ERROR(r);
     return Ref<BindGroup>(bg);
 }

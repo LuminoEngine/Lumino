@@ -28,8 +28,8 @@ wasm32 では 32bit アドレス空間かつメモリ上限が環境依存で小
 | A-2 | A | `DebugPrint::render()` のローカル vector | 3 回 x フレーム (デスクトップのみ) | 中 | 低 | 30分 | 済 |
 | D-1 | D | Vulkan の `vkMapMemory`/`vkUnmapMemory` が毎フレーム | バッファ数 x フレーム | 中 | 低 | 1h | 済 |
 | D-2 | D | `WebGPUBuffer::m_shadow` が未使用のまま常駐リスクを持つ | 常駐 | 中 | 低 | 1h | 済 |
-| D-3 | D | `Material::findPass()` がドローコールごとに文字列ハッシュ | ドローコール数 x フレーム | 低 | 低 | 1-2h | B |
-| D-4 | D | `ForwardRenderer::renderFrame()` が `std::vector` を要求する API 形状 | 呼び出し側で 1 回 x フレーム | 低 | 低 | 30分 | C |
+| D-3 | D | `Material::findPass()` がドローコールごとに文字列ハッシュ | ドローコール数 x フレーム | 低 | 低 | 1-2h | 済 |
+| D-4 | D | `ForwardRenderer::renderFrame()` が `std::vector` を要求する API 形状 | 呼び出し側で 1 回 x フレーム | 低 | 低 | 30分 | 済 |
 
 ---
 
@@ -37,7 +37,7 @@ wasm32 では 32bit アドレス空間かつメモリ上限が環境依存で小
 
 ### A-1. RenderPassDesc 系の `std::vector` を SmallVector へ置き換える
 
-**実装済み**。`RenderPassDesc::colorAttachments` と `RenderPassLayoutDesc::colorFormats`、`WebGPURenderPassLayoutKey::colorFormats` を `SmallVector<..., kMaxMultiRenderTargets>` へ変更し、`WebGPUCommandBuffer::beginRenderPass()` の `std::vector<WGPURenderPassColorAttachment>` をスタック配列 + カウンタに置き換えた。`LNRenderer_BeginRenderPass` に `colorAttachmentCount > LN_MAX_COLOR_ATTACHMENTS` の検証を追加し、`Test_Graphics.ColorAttachmentCountOverLimitIsRejected` で確認している。B-1 の積み残しである `BindGroupEntry` の `SmallVector` 化は未着手 (優先度 C のまま)。
+**実装済み**。`RenderPassDesc::colorAttachments` と `RenderPassLayoutDesc::colorFormats`、`WebGPURenderPassLayoutKey::colorFormats` を `SmallVector<..., kMaxMultiRenderTargets>` へ変更し、`WebGPUCommandBuffer::beginRenderPass()` の `std::vector<WGPURenderPassColorAttachment>` をスタック配列 + カウンタに置き換えた。`LNRenderer_BeginRenderPass` に `colorAttachmentCount > LN_MAX_COLOR_ATTACHMENTS` の検証を追加し、`Test_Graphics.ColorAttachmentCountOverLimitIsRejected` で確認している。B-1 の積み残しであった `BindGroupEntry` の配列化も対応済み (B-1 の節を参照)。
 
 - 解決する課題: レンダーパス 1 本を開くたびに、アタッチメント配列のためのヒープ確保と解放が最大 4 回発生する。パス 4 本のフレームで毎フレーム 16 回の malloc/free になる。内訳は次の通り。
 
@@ -85,7 +85,12 @@ wasm32 では 32bit アドレス空間かつメモリ上限が環境依存で小
 
 **実装済み (6dabd6a01)**。`Material` のバージョンを `paramVersion` (UBO の内容) と `bindingVersion` (テクスチャ/サンプラーの構成) に分離し、`CachedMaterialBind` はスロットごとに「UBO へ書き込み済みの `paramVersion`」を持つようにした。パラメータを毎フレーム更新するマテリアルのコストは `writeBuffer` 1 回だけになる。検証は `Test_Graphics` の `MaterialColorChangeAcrossFrames` ほか 2 件と `Test_Material.ParamAndBindingVersionAreIndependent`。
 
-- 積み残し: `Renderer.cpp` の `std::vector<rhi::BindGroupEntry> entries` は BindGroup 生成時のみの確保になったため優先度は下がったが、`SmallVector<rhi::BindGroupEntry, kMaxBindGroupEntries>` 化と `PipelineLayout::createBindGroup()` のシグネチャ変更 (両バックエンドと `DynamicUniformAllocator::createPage()` の追随が必要) は未着手。優先度: C
+- 積み残しも解消済み。`SmallVector` 化ではなく `PipelineLayout::createBindGroup(setIndex, const BindGroupEntry*, size_t)` という span 相当の形にした。`BindGroupEntry` は 48 バイトあり、`SmallVector<BindGroupEntry, 16>` にすると 768 バイトの実体を持ち回ることになるうえ、渡す側は結局その場で組み立てるだけだからである。結果として次がまとめて消えた。
+  - `Renderer.cpp` の `std::vector<rhi::BindGroupEntry> entries` (スタック配列 + カウンタへ)
+  - `DynamicUniformAllocator::createPage()` の 1 要素 vector (スタック上の単一 `BindGroupEntry` へ)
+  - `VulkanPipelineLayout::createBindGroup()` が `BindGroupDesc` へ entries をコピーしていた確保 (`BindGroupDesc` 自体を削除)
+  - `WebGPUBindGroup::init()` の `std::vector<WGPUBindGroupEntry>` (スタック配列へ)
+- あわせて、`VulkanBindGroup::init()` の `assert(entries.size() <= kMaxBindGroupEntries)` を実行時チェックに変更した。`bufInfos`/`imgInfos` は固定長スタック配列なので、リリースビルドでは 17 個目以降が範囲外書き込みになっていた。WebGPU 側の新しいスタック配列にも同じチェックを入れ、`Renderer` 側でも上限超過をエラーにしている
 
 ### B-2. Renderer のマテリアルキャッシュにエビクションを入れる
 
@@ -146,6 +151,8 @@ wasm32 では 32bit アドレス空間かつメモリ上限が環境依存で小
 
 ### D-3. ShaderPass の名前引きをドローコールの外へ出す
 
+**実装済み**。`Material::m_shaderPasses` を `std::unordered_map<std::string, Ref<ShaderPass>>` から `std::vector<Ref<ShaderPass>>` に変更し、`findPass()` は `ShaderPass::passName()` を比較する線形走査にした。名前をキーに持つ必要が無いのは `ShaderPass` 自身が名前を持っているためで、`Shader::findPass()` がすでに同じ形になっている。`hasPass()` は `findPass()` に委譲。`shaderPasses()` アクセサは戻り型が変わるが、リポジトリ内に利用箇所は無かった。パス名の整数 ID へのインターンは、効果を測るまで見送る。検証は `Test_Material.FindPassByName` (組み込み Unlit マテリアルは 2 パス持つので、複数エントリの走査を通る)。
+
 - 解決する課題: `Renderer::drawSubmesh()` はドローコールごとに `mat->findPass(m_currentShaderPassName)` を呼び、`unordered_map<std::string, Ref<ShaderPass>>` に対する文字列ハッシュと比較を行う (`Renderer.cpp:451`)。ヒープ確保は無いが、1 マテリアルが持つパスは通常 1-3 個なのでハッシュマップは割に合っていない
 - 期待効果: ドローコールあたりの固定費が下がる。マテリアル数が多い 2D 描画で効く
 - 作るもの:
@@ -156,6 +163,8 @@ wasm32 では 32bit アドレス空間かつメモリ上限が環境依存で小
 - 優先度: B
 
 ### D-4. ForwardRenderer::renderFrame の引数を span 相当にする
+
+**実装済み**。`const std::vector<RenderObject>&` を `(const RenderObject* objects, size_t objectCount)` に変更した。`std::span` を使わないのは、`createBindGroup()` の変更 (B-1 の節) と形を揃えるため。呼び出し側の examples 3 本は毎フレーム `std::vector<RenderObject>` を組み立てていたが、いずれも 1 要素だったので `&obj, 1` を渡すだけになり、毎フレームの vector 確保が消えた。
 
 - 解決する課題: `ForwardRenderer::renderFrame()` が `const std::vector<RenderObject>&` を受け取るため、呼び出し側は毎フレーム vector を組み立てることになる
 - 期待効果: 呼び出し側の毎フレームアロケーションを設計上不要にできる
@@ -173,7 +182,7 @@ wasm32 では 32bit アドレス空間かつメモリ上限が環境依存で小
 3. ~~**D-1, D-2**~~: 実装済み
 4. ~~**A-2**~~: 実装済み
 5. ~~**B-2**~~: 実装済み
-6. **D-3, D-4**: 効果測定の結果を見てから
+6. ~~**D-3, D-4**~~: 実装済み
 
 ## 6. 検証方法
 

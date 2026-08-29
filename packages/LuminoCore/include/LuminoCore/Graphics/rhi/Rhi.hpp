@@ -318,11 +318,6 @@ struct BindGroupEntry {
     Sampler* sampler = nullptr;         // for sampler
 };
 
-struct BindGroupDesc {
-    BindGroupLayout* layout = nullptr;
-    std::vector<BindGroupEntry> entries;
-};
-
 struct PipelineLayoutDesc {
     std::vector<BindGroupLayoutDesc> setLayouts;
 };
@@ -454,8 +449,13 @@ public:
     virtual ~PipelineLayout() = default;
 
     /** Create a BindGroup for the specified descriptor set index. */
+    /**
+     * BindGroup を生成する。
+     * entries は呼び出し中しか参照しないため、呼び出し側はスタック配列を渡してよい。
+     * entryCount は kMaxBindGroupEntries 以下であること (超過時はエラーを返す)。
+     */
     virtual Result<Ref<BindGroup>> createBindGroup(
-        uint32_t setIndex, const std::vector<BindGroupEntry>& entries) = 0;
+        uint32_t setIndex, const BindGroupEntry* entries, size_t entryCount) = 0;
 };
 
 class RenderPipeline : public RHIObject {

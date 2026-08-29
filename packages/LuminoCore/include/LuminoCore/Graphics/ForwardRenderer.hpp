@@ -84,11 +84,14 @@ public:
      *   renderer()->endFrame();
      * @endcode
      */
+    /// @param objects  描画対象の配列。呼び出し側が毎フレーム vector を組み立てずに済むよう
+    ///                 ポインタと個数で受け取る。
     Result<void> renderFrame(
         rhi::TextureView* colorTarget,
         rhi::TextureView* depthTarget,
         const Camera& camera,
-        const std::vector<RenderObject>& objects,
+        const RenderObject* objects,
+        size_t objectCount,
         const Color& clearColor = Color{0.1f, 0.1f, 0.1f, 1.0f});
 
 

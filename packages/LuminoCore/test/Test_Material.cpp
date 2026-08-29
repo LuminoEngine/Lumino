@@ -185,3 +185,26 @@ TEST_F(Test_Material, DestroyCallback) {
     EXPECT_EQ(1, calls) << "破棄時のコールバックが 1 回だけ呼ばれていません";
     EXPECT_EQ(expected, notified) << "コールバックに渡された Material が違います";
 }
+
+// findPass() が線形走査になっても名前引きが壊れないことを確認するテスト。
+TEST_F(Test_Material, FindPassByName) {
+    auto* module = ln::CoreInstance::instance()->graphicsModule();
+    auto matResult = ln::MaterialFactory::createUnlit(module);
+    ASSERT_TRUE(matResult);
+    auto material = *matResult;
+
+    ASSERT_NE(material->shaderPass(), nullptr);
+    const std::string& name = material->shaderPass()->passName();
+
+    EXPECT_EQ(material->findPass(name), material->shaderPass());
+    EXPECT_TRUE(material->hasPass(name));
+
+    EXPECT_EQ(material->findPass("NoSuchPass"), nullptr);
+    EXPECT_FALSE(material->hasPass("NoSuchPass"));
+
+    // 複数パスを持つマテリアルでも、各パスが自身の名前で引けること。
+    ASSERT_FALSE(material->shaderPasses().empty());
+    for (const auto& pass : material->shaderPasses()) {
+        EXPECT_EQ(material->findPass(pass->passName()), pass.get());
+    }
+}

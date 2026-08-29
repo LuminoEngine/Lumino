@@ -34,7 +34,8 @@ Result<void> ForwardRenderer::renderFrame(
     rhi::TextureView* colorTarget,
     rhi::TextureView* depthTarget,
     const Camera& camera,
-    const std::vector<RenderObject>& objects,
+    const RenderObject* objects,
+    size_t objectCount,
     const Color& clearColor) {
 
     // ---- Render via the core Renderer ----
@@ -70,7 +71,8 @@ Result<void> ForwardRenderer::renderFrame(
     m_renderer->setPassBindGroup(
         static_cast<uint32_t>(m_sceneSetIndex), sceneAlloc.bindGroup, sceneAlloc.dynamicOffset, 1);
 
-    for (const auto& obj : objects) {
+    for (size_t i = 0; i < objectCount; ++i) {
+        const RenderObject& obj = objects[i];
         auto result = m_renderer->drawMeshImmediate(obj.mesh.get(), obj.transform);
         if (!result) return result;
     }

@@ -91,14 +91,14 @@ int main() {
             obj.mesh = mesh;
             obj.transform.position.x = 0.5;
             obj.transform.rotation = Quaternion::fromAxisAngle(Vector3::unitY(), (float)frameCount * 0.1f);
-            std::vector<RenderObject> objects = {obj};
+
 
             const FramebufferInfo* fb = *ctx->beginFrame(ctx->width(), ctx->height());
 
             auto _ = renderer->renderFrame(
                 fb->colorTexture->rhiTextureView(),
                 fb->depthTexture->rhiTextureView(),
-                camera, objects, Color{0.1f, 0.1f, 0.15f, 1.0f});
+                camera, &obj, 1, Color{0.1f, 0.1f, 0.15f, 1.0f});
 
             ctx->endFrame();
             frameCount++;

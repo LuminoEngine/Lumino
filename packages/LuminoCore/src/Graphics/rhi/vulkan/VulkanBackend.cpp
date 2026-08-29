@@ -158,8 +158,15 @@ void VulkanBindGroupLayout::finalize() {
 VulkanBindGroup::VulkanBindGroup() = default;
 
 VoidResult VulkanBindGroup::init(VulkanDevice* device, DescriptorPoolManager& poolManager,
-                                  VulkanBindGroupLayout* layout, const BindGroupDesc& desc) {
+                                  VulkanBindGroupLayout* layout,
+                                  const BindGroupEntry* entries, size_t entryCount) {
     m_device = device;
+
+    // 下の bufInfos/imgInfos は固定長のスタック配列なので、ここで弾かないと
+    // リリースビルドで範囲外書き込みになる。
+    if (entryCount > kMaxBindGroupEntries) {
+        return LN_MAKE_ERROR("BindGroup entry count exceeds kMaxBindGroupEntries.");
+    }
 
     auto [pool, set] = poolManager.allocate(layout->handle());
     m_pool = pool;
@@ -170,10 +177,9 @@ VoidResult VulkanBindGroup::init(VulkanDevice* device, DescriptorPoolManager& po
     SmallVector<VkWriteDescriptorSet, kMaxBindGroupEntries> writes;
     VkDescriptorBufferInfo bufInfos[kMaxBindGroupEntries] = {};
     VkDescriptorImageInfo imgInfos[kMaxBindGroupEntries] = {};
-    assert(desc.entries.size() <= kMaxBindGroupEntries);
 
-    for (size_t i = 0; i < desc.entries.size(); ++i) {
-        auto& e = desc.entries[i];
+    for (size_t i = 0; i < entryCount; ++i) {
+        const auto& e = entries[i];
         VkWriteDescriptorSet w{};
         w.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
         w.dstSet = m_set;
@@ -258,20 +264,15 @@ VoidResult VulkanPipelineLayout::init(VulkanDevice* vulkanDevice, const Pipeline
 }
 
 Result<Ref<BindGroup>> VulkanPipelineLayout::createBindGroup(
-    uint32_t setIndex, const std::vector<BindGroupEntry>& entries) {
+    uint32_t setIndex, const BindGroupEntry* entries, size_t entryCount) {
     if (setIndex >= m_bindGroupLayouts.size()) {
         return LN_MAKE_ERROR("setIndex out of range.");
     }
 
-    BindGroupDesc bgDesc;
-    bgDesc.layout = m_bindGroupLayouts[setIndex].get();
-    bgDesc.entries = entries;
-
     auto bg = Ref<VulkanBindGroup>::adopt(new VulkanBindGroup());
-    if (!bg->init(m_device, m_device->descriptorPoolManager(),
-                  m_bindGroupLayouts[setIndex].get(), bgDesc)) {
-        return LN_MAKE_ERROR("Failed to create bind group.");
-    }
+    auto r = bg->init(m_device, m_device->descriptorPoolManager(),
+                      m_bindGroupLayouts[setIndex].get(), entries, entryCount);
+    if (!r) return LN_FORWARD_ERROR(r);
     return Ref<BindGroup>(bg);
 }
 

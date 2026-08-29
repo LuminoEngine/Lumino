@@ -28,7 +28,7 @@ class WebGPUBindGroup final : public BindGroup {
 public:
     WebGPUBindGroup();
     VoidResult init(WebGPUDevice* device, WebGPUBindGroupLayout* layout,
-                    const std::vector<BindGroupEntry>& entries);
+                    const BindGroupEntry* entries, size_t entryCount);
     WGPUBindGroup handle() const { return m_bindGroup; }
 
 protected:
@@ -48,7 +48,7 @@ public:
     WGPUPipelineLayout handle() const { return m_layout; }
 
     Result<Ref<BindGroup>> createBindGroup(
-        uint32_t setIndex, const std::vector<BindGroupEntry>& entries) override;
+        uint32_t setIndex, const BindGroupEntry* entries, size_t entryCount) override;
 
 protected:
     void finalize() override;

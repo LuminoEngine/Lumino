@@ -40,7 +40,7 @@ build/lumino-x64-windows/packages/luminosc/Release/luminosc.exe -I packages/Lumi
 
 ## コーディングルール
 
-[coding-rules.md](coding-rules.md) を参照してください。
+[coding-rules.md](docs/coding-rules.md) を参照してください。
 
 ## アーキテクチャコンセプト
 

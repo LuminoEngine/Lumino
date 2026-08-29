@@ -143,17 +143,17 @@ public:
 
     /** Look up a ShaderPass by name (e.g. "Forward", "GBuffer"). Returns nullptr if absent. */
     ShaderPass* findPass(const std::string& name) const {
-        auto it = m_shaderPasses.find(name);
-        return (it != m_shaderPasses.end()) ? it->second.get() : nullptr;
+        for (const auto& pass : m_shaderPasses) {
+            if (pass->passName() == name) return pass.get();
+        }
+        return nullptr;
     }
 
     /** Whether this material has a ShaderPass with the given name. */
-    bool hasPass(const std::string& name) const {
-        return m_shaderPasses.find(name) != m_shaderPasses.end();
-    }
+    bool hasPass(const std::string& name) const { return findPass(name) != nullptr; }
 
-    /** All ShaderPasses registered on this material, keyed by pass name. */
-    const std::unordered_map<std::string, Ref<ShaderPass>>& shaderPasses() const { return m_shaderPasses; }
+    /** このマテリアルが持つ全パス (登録順)。 */
+    const std::vector<Ref<ShaderPass>>& shaderPasses() const { return m_shaderPasses; }
 
     // Shader / render state accessors (used by PipelineCache key construction)
     rhi::ShaderModule* vertexShader() const { return m_defaultShaderPass->vertexShader(); }
@@ -223,10 +223,13 @@ private:
 
     std::vector<DestroyCallback> m_destroyCallbacks;
 
-    // ShaderPasses keyed by pass name (e.g. "Forward", "GBuffer").
-    // Same material can be rendered in different render passes by looking up by name.
+    // 登録順に並べた ShaderPass 群 (名前は ShaderPass::passName() が持つ)。
+    // 同じマテリアルを別のレンダーパスで描くときは findPass() で名前引きする。
+    // findPass() はドローコールごとに呼ばれるが、1 マテリアルのパス数は通常 1-3 なので
+    // ハッシュマップより線形走査の方が速い (Shader::findPass() も同じ形)。
+    // パスが 10 個を超えるシェーダが出てきた場合はこの前提を見直すこと。
     // 前提: 同一マテリアル内の全パスは $Material の layout (params/テクスチャ slot) を共有する。
-    std::unordered_map<std::string, Ref<ShaderPass>> m_shaderPasses;
+    std::vector<Ref<ShaderPass>> m_shaderPasses;
 
     // Default (primary) pass — typically the first registered, used for material param layout.
     // Held as a separate Ref to keep hot-path accessors (shaderPass()/materialParamBufferSize)

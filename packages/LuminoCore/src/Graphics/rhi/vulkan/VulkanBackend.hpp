@@ -72,7 +72,8 @@ class VulkanBindGroup final : public BindGroup {
 public:
     VulkanBindGroup();
     VoidResult init(VulkanDevice* device, DescriptorPoolManager& poolManager,
-                    VulkanBindGroupLayout* layout, const BindGroupDesc& desc);
+                    VulkanBindGroupLayout* layout,
+                    const BindGroupEntry* entries, size_t entryCount);
     VkDescriptorSet handle() const { return m_set; }
 
 protected:
@@ -93,7 +94,7 @@ public:
     VkPipelineLayout handle() const { return m_layout; }
 
     Result<Ref<BindGroup>> createBindGroup(
-        uint32_t setIndex, const std::vector<BindGroupEntry>& entries) override;
+        uint32_t setIndex, const BindGroupEntry* entries, size_t entryCount) override;
 
 protected:
     void finalize() override;

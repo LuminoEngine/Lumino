@@ -104,10 +104,8 @@ Result<DynamicUniformAllocator::Page> DynamicUniformAllocator::createPage() {
 
     // Create a BindGroup for this page via PipelineLayout.
     // The descriptor range is m_alignedElementSize (one element); actual offset is dynamic.
-    std::vector<rhi::BindGroupEntry> entries = {
-        {m_binding, page.buffer.get(), 0, m_alignedElementSize, nullptr, nullptr},
-    };
-    auto bgResult = m_pipelineLayout->createBindGroup(m_setIndex, entries);
+    const rhi::BindGroupEntry entry{m_binding, page.buffer.get(), 0, m_alignedElementSize, nullptr, nullptr};
+    auto bgResult = m_pipelineLayout->createBindGroup(m_setIndex, &entry, 1);
     if (!bgResult) return LN_FORWARD_ERROR(bgResult);
     page.bindGroup = std::move(*bgResult);
 

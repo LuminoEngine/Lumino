@@ -103,14 +103,13 @@ int main() {
             RenderObject obj;
             obj.mesh = mesh;
 
-            std::vector<RenderObject> objects = {obj};
 
             const FramebufferInfo* fb = *ctx->beginFrame(ctx->width(), ctx->height());
 
             auto _ = renderer->renderFrame(
                 fb->colorTexture->rhiTextureView(),
                 fb->depthTexture->rhiTextureView(),
-                camera, objects, Color{0, 0, 0, 1.0f});
+                camera, &obj, 1, Color{0, 0, 0, 1.0f});
 
             ctx->endFrame();
         }
