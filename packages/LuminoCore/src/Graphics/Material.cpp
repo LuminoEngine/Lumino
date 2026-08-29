@@ -115,6 +115,20 @@ void Material::setNamedSamplerState(const std::string& name, const SamplerState&
     markBindingDirty();
 }
 
+void Material::addDestroyCallback(DestroyCallback callback) {
+    m_destroyCallbacks.push_back(std::move(callback));
+}
+
+void Material::finalize() {
+    // デストラクタではなく finalize で通知する。ここではまだメンバ (m_shaderPasses 等)
+    // が生きているため、コールバック側が Material の情報を読んでも安全。
+    for (auto& cb : m_destroyCallbacks) {
+        cb(this);
+    }
+    m_destroyCallbacks.clear();
+    Object::finalize();
+}
+
 void Material::setBlendMode(BlendMode mode) { m_blendMode = mode; }
 void Material::setCullMode(rhi::CullMode mode) { m_cullMode = mode; }
 void Material::setDepthTestEnabled(bool enabled) { m_depthTestEnabled = enabled; }

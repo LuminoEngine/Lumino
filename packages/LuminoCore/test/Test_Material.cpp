@@ -160,3 +160,28 @@ TEST_F(Test_Material, SamplerBindingResolvesToTextureName) {
     }
     EXPECT_TRUE(foundSampler) << "Unlit の $Material セットに Sampler バインディングが見つかりません";
 }
+
+// Material の破棄コールバックが発火することを確認するテスト。
+// Renderer は (Material*, ShaderPass*) を生ポインタでキャッシュするため、この通知が
+// 無いとキャッシュが単調増加し、さらに同じアドレスに再確保された別の Material が
+// 前の Material の BindGroup を掴んでしまう (計画書 B-2)。
+TEST_F(Test_Material, DestroyCallback) {
+    auto* module = ln::CoreInstance::instance()->graphicsModule();
+
+    int calls = 0;
+    ln::Material* notified = nullptr;
+    ln::Material* expected = nullptr;
+    {
+        auto matResult = ln::MaterialFactory::createUnlit(module);
+        ASSERT_TRUE(matResult);
+        auto material = *matResult;
+        expected = material.get();
+
+        material->addDestroyCallback([&](ln::Material* m) { ++calls; notified = m; });
+
+        EXPECT_EQ(0, calls) << "破棄前にコールバックが呼ばれています";
+    }
+
+    EXPECT_EQ(1, calls) << "破棄時のコールバックが 1 回だけ呼ばれていません";
+    EXPECT_EQ(expected, notified) << "コールバックに渡された Material が違います";
+}

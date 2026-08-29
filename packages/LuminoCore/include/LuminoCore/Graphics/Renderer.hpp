@@ -2,6 +2,7 @@
 #include <memory>
 #include <array>
 #include <unordered_map>
+#include <unordered_set>
 #include <LuminoBase/Result.hpp>
 #include <LuminoCore/Object.hpp>
 #include <LuminoCore/Graphics/rhi/Rhi.hpp>
@@ -78,6 +79,9 @@ public:
 
     /** Current in-flight frame slot. Valid after beginFrame(). */
     uint32_t currentFrameSlot() const { return m_currentFrameSlot; }
+
+    /** マテリアル BindGroup キャッシュのエントリ数。リークの検出に使います。 */
+    size_t materialCacheSize() const { return m_materialCache.size(); }
 
     // ---- Pass lifecycle ----
 
@@ -237,6 +241,7 @@ private:
     static Result<Ref<Renderer>> create(GraphicsContext* ctx);
 
     Renderer() = default;
+    ~Renderer() override;
 
     rhi::TextureFormat m_colorFormat = {};
     rhi::TextureFormat m_depthFormat = {};
@@ -360,8 +365,26 @@ private:
     };
     std::unordered_map<MaterialBindKey, CachedMaterialBind, MaterialBindKeyHash> m_materialCache;
 
+    /**
+     * 破棄コールバックを登録済みの Material の集合 (二重登録を避けるため)。
+     *
+     * ShaderPass 側を追跡しないのは、キーの pass が必ず mat->findPass() 由来であり、
+     * Material が m_shaderPasses で Ref を握っているためです。つまり ShaderPass は
+     * それを参照する Material より先に死にません。
+     */
+    std::unordered_set<Material*> m_trackedMaterials;
+
+    /**
+     * Renderer の生存フラグ。Renderer が先に破棄されたときに、Material 側に
+     * 残ったコールバックがダングリングポインタを触らないようにするために使います。
+     */
+    std::shared_ptr<bool> m_alive = std::make_shared<bool>(true);
+
     /** Get or create the BindGroup for (material, pass) and current frame slot. */
     Result<rhi::BindGroup*> getOrCreateMaterialBindGroup(Material* mat, ShaderPass* pass);
+
+    /** mat を参照する m_materialCache のエントリをすべて削除します。 */
+    void evictMaterialCache(Material* mat);
 
     // ---- Sampler pool (Renderer-owned) ----
     //

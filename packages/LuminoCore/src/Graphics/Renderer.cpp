@@ -699,6 +699,22 @@ Result<rhi::Sampler*> Renderer::getOrCreateSampler(const SamplerState& state) {
     return sampler;
 }
 
+Renderer::~Renderer() {
+    *m_alive = false;
+}
+
+void Renderer::evictMaterialCache(Material* mat) {
+    // フレームの途中で捨てても GPU 使用中の破棄にはならない (後述の bg.reset() と同じ理由)。
+    for (auto it = m_materialCache.begin(); it != m_materialCache.end(); ) {
+        if (it->first.mat == mat) {
+            it = m_materialCache.erase(it);
+        } else {
+            ++it;
+        }
+    }
+    m_trackedMaterials.erase(mat);
+}
+
 Result<rhi::BindGroup*> Renderer::getOrCreateMaterialBindGroup(Material* mat, ShaderPass* pass) {
     auto* device = m_ctx->device();
     uint32_t frameSlot = m_currentFrameSlot;
@@ -710,6 +726,14 @@ Result<rhi::BindGroup*> Renderer::getOrCreateMaterialBindGroup(Material* mat, Sh
         cache.paramBuffers.resize(m_framesInFlight);
         cache.bindGroups.resize(m_framesInFlight);
         cache.writtenParamVersion.assign(m_framesInFlight, 0);
+
+        // Material が破棄されたらこのエントリを捨てられるようにしておく。
+        if (m_trackedMaterials.insert(mat).second) {
+            auto alive = m_alive;
+            mat->addDestroyCallback([this, alive](Material* m) {
+                if (*alive) evictMaterialCache(m);
+            });
+        }
     }
 
     const auto& layoutDesc = pass->materialLayoutDesc();

@@ -5,6 +5,7 @@
 #include <LuminoCore/Graphics/rhi/Rhi.hpp>
 #include <LuminoCore/Graphics/Vertex.hpp>
 #include <LuminoCore/Graphics/ShaderPass.hpp>
+#include <functional>
 #include <string>
 #include <string_view>
 #include <vector>
@@ -205,9 +206,22 @@ public:
     /** Write material UBO data into the given mapped pointer. */
     void writeMaterialUBO(void* dst) const;
 
+    // ---- 破棄通知 ----
+
+    /** Material が破棄される直前に呼び出されるコールバック。 */
+    using DestroyCallback = std::function<void(Material*)>;
+
+    /** この Material の破棄を通知するコールバックを登録します (解除はできません)。 */
+    void addDestroyCallback(DestroyCallback callback);
+
+protected:
+    void finalize() override;
+
 private:
     Material();
     friend class MaterialFactory;
+
+    std::vector<DestroyCallback> m_destroyCallbacks;
 
     // ShaderPasses keyed by pass name (e.g. "Forward", "GBuffer").
     // Same material can be rendered in different render passes by looking up by name.

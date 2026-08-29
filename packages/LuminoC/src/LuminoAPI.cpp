@@ -642,6 +642,8 @@ LNResult LNDebug_GetGraphicsProfiler(LNHandle graphicsContext, LNGraphicsProfile
     outProfiler->lastFrameTimeMs = ctx->lastFrameTimeMs();
     // シェーダパス数はプロセス全体の生存数で、GraphicsContext には依存しない。
     outProfiler->shaderPassCount = ln::ShaderPass::liveCount();
+    outProfiler->materialCacheCount =
+        renderer ? static_cast<int32_t>(renderer->materialCacheSize()) : 0;
     return LN_OK;
 }
 
@@ -675,7 +677,7 @@ static_assert(sizeof(LNTransform) == 40,
     "LNTransform のレイアウトが変わりました。types.ts の SIZEOF_TRANSFORM を更新してください");
 static_assert(sizeof(LNMatrix) == 64,
     "LNMatrix のレイアウトが変わりました。types.ts の SIZEOF_MATRIX を更新してください");
-static_assert(sizeof(LNGraphicsProfiler) == 16,
+static_assert(sizeof(LNGraphicsProfiler) == 20,
     "LNGraphicsProfiler のレイアウトが変わりました。バインディング側の読み取り処理を更新してください");
 #endif // __EMSCRIPTEN__
 

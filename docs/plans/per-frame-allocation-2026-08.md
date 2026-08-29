@@ -24,7 +24,7 @@ wasm32 では 32bit アドレス空間かつメモリ上限が環境依存で小
 |---|---|---|---|---|---|---|---|
 | B-1 | B | マテリアルパラメータ変更で BindGroup を毎フレーム再生成 | 変更のあるマテリアル数 x フレーム | 最高 | 中 | 半日 | 済 (6dabd6a01) |
 | A-1 | A | `RenderPassDesc::colorAttachments` 等が `std::vector` | 4 回 x パス数 x フレーム | 高 | 低 | 2-3h | 済 |
-| B-2 | B | `Renderer::m_materialCache` にエビクションが無い | Material 生成数に比例して単調増加 | 高 | 中 | 半日 | A |
+| B-2 | B | `Renderer::m_materialCache` にエビクションが無い | Material 生成数に比例して単調増加 | 高 | 中 | 半日 | 済 |
 | A-2 | A | `DebugPrint::render()` のローカル vector | 3 回 x フレーム (デスクトップのみ) | 中 | 低 | 30分 | A |
 | D-1 | D | Vulkan の `vkMapMemory`/`vkUnmapMemory` が毎フレーム | バッファ数 x フレーム | 中 | 低 | 1h | A |
 | D-2 | D | `WebGPUBuffer::m_shadow` が未使用のまま常駐リスクを持つ | 常駐 | 中 | 低 | 1h | A |
@@ -86,6 +86,10 @@ wasm32 では 32bit アドレス空間かつメモリ上限が環境依存で小
 - 積み残し: `Renderer.cpp` の `std::vector<rhi::BindGroupEntry> entries` は BindGroup 生成時のみの確保になったため優先度は下がったが、`SmallVector<rhi::BindGroupEntry, kMaxBindGroupEntries>` 化と `PipelineLayout::createBindGroup()` のシグネチャ変更 (両バックエンドと `DynamicUniformAllocator::createPage()` の追随が必要) は未着手。優先度: C
 
 ### B-2. Renderer のマテリアルキャッシュにエビクションを入れる
+
+**実装済み**。`Material` に破棄コールバック (`addDestroyCallback`) を追加し、`Renderer` は `m_materialCache` にエントリを作るときに登録する。Material の `finalize()` で `Renderer::evictMaterialCache()` が走り、その Material を参照する全エントリ (保持していた UBO / BindGroup / TextureView ごと) が消える。Renderer が先に死ぬ場合は `PipelineCache` と同じ `m_alive` フラグでコールバックを無効化する。詳細は `Renderer.hpp` の `m_trackedMaterials` と `Test_Graphics.MaterialCacheIsEvictedOnMaterialDestroy` / `Test_Material.DestroyCallback`。
+
+- 積み残し: エントリ挿入時の `unordered_map` のノード確保自体は残る (課題 1)。Material を本当に毎フレーム新規作成する場合は毎フレーム 1 回の malloc になるが、これはキャッシュの構造上避けられないため現状維持
 
 - 解決する課題:
   `Renderer::m_materialCache` (`Renderer.hpp:358`) は `MaterialBindKey{Material*, ShaderPass*}` を生ポインタのままキーにしており、Renderer が破棄されるまで 1 件もエビクトされない。`Material.hpp:271-279` は「同一 Shader から Material を何個作っても GPU リソースは増えません。フレーム内で異なるパラメータを使いたい場合は Material を量産してください」と明示的に勧めているため、実際に踏まれる構成である。結果として次の 3 つが起きる。
@@ -160,7 +164,7 @@ wasm32 では 32bit アドレス空間かつメモリ上限が環境依存で小
 2. ~~**A-1**~~: 実装済み
 3. **D-1, D-2**: どちらも局所的で独立している。A-1 の途中に挟んでもよい
 4. **A-2**: 独立。いつでも入れられる
-5. **B-2**: エビクションの仕組みが必要なため最後。着手前に「Material を毎フレーム作る使い方を実際にするのか」を確認し、しないなら優先度を落とす判断もありえる
+5. ~~**B-2**~~: 実装済み
 6. **D-3, D-4**: 効果測定の結果を見てから
 
 ## 6. 検証方法

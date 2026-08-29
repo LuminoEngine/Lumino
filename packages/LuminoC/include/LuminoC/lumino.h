@@ -1167,6 +1167,13 @@ typedef struct LNGraphicsProfiler {
      * 「Material を増やしたときの増分」で確認してください。
      */
     int32_t shaderPassCount;
+
+    /**
+     * マテリアル BindGroup キャッシュのエントリ数 (フレームでリセットされません)。
+     * Material の破棄でエビクトされるため、増え続ける場合は Material が
+     * どこかで保持されたままになっています。
+     */
+    int32_t materialCacheCount;
 } LNGraphicsProfiler;
 
 /**

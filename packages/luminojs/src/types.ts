@@ -290,9 +290,9 @@ export const SIZEOF_TRANSFORM = 40;
 export const SIZEOF_MATRIX = 64;
 
 /** Byte size of `LNGraphicsProfiler` in wasm memory. */
-export const SIZEOF_GRAPHICS_PROFILER = 16;
+export const SIZEOF_GRAPHICS_PROFILER = 20;
 // Layout: drawCallCount(i32,0) fps(f32,4) lastFrameTimeMs(f32,8)
-//         shaderPassCount(i32,12)
+//         shaderPassCount(i32,12) materialCacheCount(i32,16)
 
 /**
  * Vertex data matching C `LNVertex` (64 bytes).
@@ -317,7 +317,7 @@ export interface SubMesh {
 }
 
 /**
- * Graphics profiling counters matching C `LNGraphicsProfiler` (16 bytes).
+ * Graphics profiling counters matching C `LNGraphicsProfiler` (20 bytes).
  * グラフィックスのプロファイリング情報。`GraphicsContext.getProfiler()` で取得します。
  */
 export interface GraphicsProfiler {
@@ -346,6 +346,12 @@ export interface GraphicsProfiler {
      * 「Material を増やしたときの増分」で確認してください。
      */
     shaderPassCount: number;
+    /**
+     * マテリアル BindGroup キャッシュのエントリ数 (フレームでリセットされません)。
+     * Material の破棄でエビクトされるため、増え続ける場合は Material が
+     * どこかで保持されたままになっています。
+     */
+    materialCacheCount: number;
 }
 
 /**

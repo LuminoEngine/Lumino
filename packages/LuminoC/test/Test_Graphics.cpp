@@ -1393,6 +1393,41 @@ TEST_F(Test_Graphics, GraphicsProfiler) {
 // 伝播することを見る。
 //------------------------------------------------------------------------------
 
+// Material を毎フレーム作っては捨ててもマテリアルキャッシュが増え続けないことを確認する
+// (計画書 B-2)。スプライトのメッシュプールがスロットに Ref<Material> を持つため、
+// エビクトは LNObject_Release の 1 フレーム後になる。ここでは定常状態だけを見る。
+TEST_F(Test_Graphics, MaterialCacheIsEvictedOnMaterialDestroy) {
+    LNHandle camera = LN_NULL_HANDLE;
+    createOrthoCamera(&camera);
+
+    // 使い捨ての Material を 1 枚描いては解放する、を繰り返す。
+    int32_t counts[4] = {};
+    for (int i = 0; i < 4; i++) {
+        LNHandle material = LN_NULL_HANDLE;
+        ASSERT_EQ(LN_OK, LNMaterial_CreateFromBuiltinShader(
+            graphicsContext, LN_BUILTIN_SHADER_UNLIT, &material));
+
+        uint8_t rgb[3] = {};
+        drawFullscreenSpriteAndSample(material, camera, TEST_W / 2, TEST_H / 2, rgb);
+
+        LNGraphicsProfiler profiler = {};
+        ASSERT_EQ(LN_OK, LNDebug_GetGraphicsProfiler(graphicsContext, &profiler));
+        counts[i] = profiler.materialCacheCount;
+
+        ASSERT_EQ(LN_OK, LNObject_Release(material));
+    }
+
+    // 1 巡目は初期化に伴う常駐分が加わり得るため、2 巡目以降で比較する。
+    for (int i = 2; i < 4; i++) {
+        EXPECT_EQ(counts[1], counts[i])
+            << "frame " << i << ": マテリアルキャッシュが増え続けています ("
+            << counts[1] << " -> " << counts[i] << ")。"
+            << " 破棄された Material のエントリがエビクトされていません。";
+    }
+
+    LNObject_Release(camera);
+}
+
 // 毎フレーム色を変えたときに、各フレームで正しい色が出ることを確認する。
 // UBO はフレームスロットごとに別のバッファなので、スロットごとに書き直していないと
 // 2 フレーム前の色が出る。
