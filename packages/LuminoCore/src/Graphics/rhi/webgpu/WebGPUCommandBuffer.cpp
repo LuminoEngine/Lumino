@@ -109,7 +109,7 @@ VoidResult WebGPUCommandBuffer::begin() {
 }
 
 RenderPass* WebGPUCommandBuffer::beginRenderPass(const RenderPassDesc& desc) {
-    // Build WGPURenderPassColorAttachment array
+    // WGPURenderPassColorAttachment の配列を構築する。
     // 毎フレーム呼ばれるためヒープ確保を避け、上限固定のスタック配列で組み立てる。
     WGPURenderPassColorAttachment colorAttachments[kMaxMultiRenderTargets];
     const size_t colorAttachmentCount = desc.colorAttachments.size();
@@ -130,11 +130,11 @@ RenderPass* WebGPUCommandBuffer::beginRenderPass(const RenderPassDesc& desc) {
             static_cast<double>(src.clearColor.a)
         };
 
-        // Track color format for pipeline compatibility lookup.
+        // パイプライン互換性の検索用にカラーフォーマットを記録する。
         layoutDesc.colorFormats.push_back(fromWGPUTextureFormat(view->format()));
     }
 
-    // Build depth/stencil attachment if present
+    // デプスステンシルアタッチメントがあれば構築する。
     WGPURenderPassDepthStencilAttachment depthStencilAttachment = WGPU_RENDER_PASS_DEPTH_STENCIL_ATTACHMENT_INIT;
     bool hasDepthStencil = false;
     if (desc.depthStencilAttachment && desc.depthStencilAttachment->view) {
@@ -163,10 +163,10 @@ RenderPass* WebGPUCommandBuffer::beginRenderPass(const RenderPassDesc& desc) {
         return nullptr;
     }
 
-    // Look up (or allocate) a WebGPURenderPass wrapper for this attachment
-    // layout. Reusing the same wrapper instance across frames keeps the
-    // rhi::RenderPass* pointer - swhich is part of PipelineCacheKey - stable,
-    // so the upstream PipelineCache hits instead of recompiling every draw.
+    // このアタッチメントレイアウトに対応する WebGPURenderPass ラッパーを検索する (なければ確保する)。
+    // フレームをまたいで同じラッパーインスタンスを再利用することで、PipelineCacheKey の一部である
+    // rhi::RenderPass* ポインタが安定し、上位の PipelineCache がドローごとに再コンパイルせず
+    // キャッシュにヒットする。
     WebGPURenderPassLayoutKey key;
     key.colorFormats = layoutDesc.colorFormats;
     key.depthStencilFormat = layoutDesc.depthStencilFormat;
@@ -177,7 +177,7 @@ RenderPass* WebGPUCommandBuffer::beginRenderPass(const RenderPassDesc& desc) {
         auto rp = Ref<WebGPURenderPass>::adopt(new WebGPURenderPass());
         it = m_renderPassCache.emplace(std::move(key), std::move(rp)).first;
     }
-    // Re-bind the ephemeral encoder to the cached wrapper each frame.
+    // 毎フレーム、一時的なエンコーダをキャッシュ済みのラッパーへ結び直す。
     it->second->init(rpEncoder, layoutDesc);
     m_currentRenderPass = it->second;
     return m_currentRenderPass.get();

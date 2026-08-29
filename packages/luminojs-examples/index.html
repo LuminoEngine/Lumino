@@ -28,7 +28,7 @@
       overflow: hidden;
     }
 
-    /* --- Header --- */
+    /* --- ヘッダー --- */
     #header {
       height: 40px;
       display: flex;
@@ -45,13 +45,13 @@
       text-decoration: none;
     }
 
-    /* --- 3 Column Layout --- */
+    /* --- 3 カラムレイアウト --- */
     #main {
       display: flex;
       height: calc(100% - 40px);
     }
 
-    /* --- Sidebar --- */
+    /* --- サイドバー --- */
     #sidebar {
       width: var(--sidebar-width);
       min-width: var(--sidebar-width);
@@ -85,7 +85,7 @@
       color: var(--accent);
     }
 
-    /* --- Code Panel --- */
+    /* --- コードパネル --- */
     #code-panel {
       flex: 1;
       min-width: 0;
@@ -119,7 +119,7 @@
       font-family: Consolas, "Courier New", monospace;
     }
 
-    /* --- Preview Panel --- */
+    /* --- プレビューパネル --- */
     #preview-panel {
       flex: 1;
       min-width: 0;
@@ -146,7 +146,7 @@
       border: none;
     }
 
-    /* --- Placeholder --- */
+    /* --- プレースホルダ --- */
     .placeholder {
       display: flex;
       align-items: center;
@@ -187,7 +187,7 @@
     let examples = [];
     let currentId = null;
 
-    // --- Load manifest ---
+    // --- マニフェストの読み込み ---
     async function loadManifest() {
       const res = await fetch("./examples.json");
       const data = await res.json();
@@ -209,14 +209,14 @@
       }
     }
 
-    // --- Select an example ---
+    // --- サンプルの選択 ---
     async function selectExample(id) {
       if (!id || currentId === id) return;
       const item = examples.find((e) => e.id === id);
       if (!item) return;
       currentId = id;
 
-      // Update sidebar highlight
+      // サイドバーのハイライトを更新する
       for (const a of sidebar.querySelectorAll("a")) {
         a.classList.toggle("active", a.dataset.id === id);
         if (a.dataset.id === id) {
@@ -224,7 +224,7 @@
         }
       }
 
-      // Load source code
+      // ソースコードを読み込む
       codeHeader.textContent = `src/${id}/main.ts`;
       try {
         const res = await fetch(`./src/${id}/main.ts?raw-source`);
@@ -235,12 +235,12 @@
         codeBody.innerHTML = `<div class="placeholder">Failed to load source</div>`;
       }
 
-      // Load preview iframe
+      // プレビュー用 iframe を読み込む
       previewHeader.textContent = item.title;
       previewBody.innerHTML = `<iframe src="./src/${id}/index.html"></iframe>`;
     }
 
-    // --- Hash routing ---
+    // --- ハッシュルーティング ---
     function onHashChange() {
       const hash = window.location.hash.slice(1);
       if (hash) selectExample(hash);
@@ -248,7 +248,7 @@
 
     window.addEventListener("hashchange", onHashChange);
 
-    // --- Init ---
+    // --- 初期化 ---
     await loadManifest();
     onHashChange();
   </script>

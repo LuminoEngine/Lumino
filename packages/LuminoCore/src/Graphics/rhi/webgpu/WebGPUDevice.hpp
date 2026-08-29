@@ -27,7 +27,7 @@ public:
 
     bool isValid() const { return m_device != nullptr; }
 
-    // RHI interface
+    // RHI インターフェース
     DeviceLimits deviceLimits() const override;
     Result<Ref<SwapChain>> createSwapChain(const SwapChainDesc& desc) override;
     Result<Ref<Buffer>> createBuffer(const BufferDesc& desc) override;
@@ -43,7 +43,7 @@ public:
     Backend backend() const override { return Backend::WebGPU; }
     void debugSimulateDeviceLost(bool deep) override;
 
-    // Internal accessors
+    // 内部用アクセサ
     WGPUInstance wgpuInstance() const { return m_instance; }
     WGPUAdapter wgpuAdapter() const { return m_adapter; }
     WGPUDevice wgpuDevice() const { return m_device; }

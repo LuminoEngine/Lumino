@@ -1,8 +1,8 @@
 /**
- * Sprite2D example
+ * Sprite2D サンプル
  *
  * LNCamera_SetOrthographic2D (TS: Camera.setOrthographic2D) による
- * 左上原点・Y軸下向きの 2D カメラと、その下での Renderer.drawSprite の動作確認サンプル。
+ * 左上原点、Y軸下向きの 2D カメラと、その下での Renderer.drawSprite の動作確認サンプル。
  *
  * 確認項目:
  *   - 画面座標 (0, 0) が左上、(WINDOW_W, WINDOW_H) が右下に対応すること
@@ -37,31 +37,31 @@ async function main() {
     canvas.width = WINDOW_W;
     canvas.height = WINDOW_H;
 
-    // Load WASM module and initialize Lumino instance (creates WebGPU device)
+    // WASM モジュールをロードし、Lumino インスタンスを初期化する (WebGPU デバイスが作成される)
     await Runtime.initialize({
         wasmPath: new URL("../../../luminojs/lib/LuminoC.wasm", import.meta.url).href,
     });
 
-    // Create GraphicsContext from canvas
+    // canvas から GraphicsContext を作成する
     const context = await GraphicsContext.createFromCanvas("#my_canvas");
 
-    // Texture (any RGBA image; up/down asymmetric content makes flip easier to spot)
+    // テクスチャ (任意の RGBA 画像。上下非対称の絵柄だと反転に気づきやすい)
     const texture = await Texture.loadFromURL(
         new URL("../../public/picture1.png", import.meta.url).href);
 
-    // Material - default CullMode::Back. No tweaks needed for 2D camera path.
+    // マテリアル - 既定の CullMode::Back のまま。2D カメラ経路では調整不要。
     const material = Material.createUnlit();
     material.setMainTexture(texture);
 
-    // 2D camera: top-left origin, Y+ down.
-    // (0, 0) -> screen top-left, (WINDOW_W, WINDOW_H) -> screen bottom-right.
+    // 2D カメラ: 左上原点、Y軸下向き。
+    // (0, 0) -> 画面左上、(WINDOW_W, WINDOW_H) -> 画面右下。
     const camera = Camera.create();
     camera.setOrthographic2D(WINDOW_W, WINDOW_H, -1000.0, 1000.0);
 
     const SPR = 64.0;
     const MARGIN = 8.0;
-    // Position is the sprite CENTER in screen-space pixels.
-    // Half-size offsets place corner sprites flush against the corners.
+    // 位置はスクリーン空間 (ピクセル) でのスプライトの中心。
+    // 半サイズ分ずらすことで、角のスプライトが画面の角にぴったり接する。
     const half = SPR * 0.5;
 
     let frame = 0;
@@ -95,7 +95,7 @@ async function main() {
             camera,
         );
 
-        // Top-Left (red tint)
+        // 左上 (赤系)
         renderer.drawSprite(
             material, 0,
             Matrix4x4.makeTranslation(MARGIN + half, MARGIN + half, 0.0),
@@ -105,7 +105,7 @@ async function main() {
             0.0, 0.0, 1.0, 1.0,
             1.0, 0.4, 0.4, 1.0);
 
-        // Top-Right (green tint)
+        // 右上 (緑系)
         renderer.drawSprite(
             material, 0,
             Matrix4x4.makeTranslation(WINDOW_W - MARGIN - half, MARGIN + half, 0.0),
@@ -115,7 +115,7 @@ async function main() {
             0.0, 0.0, 1.0, 1.0,
             0.4, 1.0, 0.4, 1.0);
 
-        // Bottom-Left (blue tint)
+        // 左下 (青系)
         renderer.drawSprite(
             material, 0,
             Matrix4x4.makeTranslation(MARGIN + half, WINDOW_H - MARGIN - half, 0.0),
@@ -125,7 +125,7 @@ async function main() {
             0.0, 0.0, 1.0, 1.0,
             0.4, 0.4, 1.0, 1.0);
 
-        // Bottom-Right (yellow tint)
+        // 右下 (黄系)
         renderer.drawSprite(
             material, 0,
             Matrix4x4.makeTranslation(WINDOW_W - MARGIN - half, WINDOW_H - MARGIN - half, 0.0),
@@ -135,7 +135,7 @@ async function main() {
             0.0, 0.0, 1.0, 1.0,
             1.0, 1.0, 0.4, 1.0);
 
-        // Center sprite, rotating - visually verifies orientation & winding.
+        // 中央の回転スプライト - 向きとワインディングを目視で確認する。
         // world = T(center) * Rz(t): pivot 中心まわりに回転して中央へ配置。
         const centerXf = Matrix4x4.makeTranslation(WINDOW_W * 0.5, WINDOW_H * 0.5, 0.0)
             .multiply(Matrix4x4.makeRotationZ(t));

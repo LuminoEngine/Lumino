@@ -10,10 +10,10 @@ class WebGPUTexture final : public Texture {
 public:
     WebGPUTexture();
 
-    /** Create a texture owned by this object. */
+    /** このオブジェクトが所有するテクスチャを作成する。 */
     VoidResult init(WebGPUDevice* device, const TextureDesc& desc);
 
-    /** Wrap an externally-owned WGPUTexture (e.g. swap chain back-buffer). */
+    /** 外部が所有する WGPUTexture (スワップチェーンのバックバッファなど) をラップする。 */
     void initFromExternal(WGPUTexture texture, TextureFormat format, uint32_t width, uint32_t height);
 
     uint32_t width() const override { return m_width; }

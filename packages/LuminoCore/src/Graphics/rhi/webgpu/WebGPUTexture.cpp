@@ -14,7 +14,7 @@ VoidResult WebGPUTexture::init(WebGPUDevice* device, const TextureDesc& desc) {
 
     WGPUTextureDescriptor texDesc = WGPU_TEXTURE_DESCRIPTOR_INIT;
     texDesc.usage = toWGPUTextureUsage(desc.usage);
-    // Always allow CopyDst so we can upload via wgpuQueueWriteTexture.
+    // wgpuQueueWriteTexture でアップロードできるよう、常に CopyDst を許可する。
     texDesc.usage |= WGPUTextureUsage_CopyDst;
     texDesc.dimension = WGPUTextureDimension_2D;
     texDesc.size = {desc.width, desc.height, desc.depthOrArrayLayers};
@@ -27,9 +27,9 @@ VoidResult WebGPUTexture::init(WebGPUDevice* device, const TextureDesc& desc) {
         return LN_MAKE_ERROR("wgpuDeviceCreateTexture failed.");
     }
 
-    // Upload initial pixel data via the queue if provided.
+    // 初期ピクセルデータがあればキュー経由でアップロードする。
     if (desc.initialData) {
-        uint32_t bpp = 4; // Assume 4 bytes per pixel for common formats.
+        uint32_t bpp = 4; // 一般的なフォーマットは 1 ピクセル 4 バイトとみなす。
         if (desc.format == TextureFormat::R8Unorm)          bpp = 1;
         else if (desc.format == TextureFormat::RG8Unorm)    bpp = 2;
         else if (desc.format == TextureFormat::RGBA16Float) bpp = 8;

@@ -48,13 +48,13 @@ public:
     explicit PipelineCache(rhi::Device* device);
     ~PipelineCache();
 
-    /** Find or create a RenderPipeline matching the given key. */
+    /** 指定したキーに一致する RenderPipeline を検索します (無ければ作成します)。 */
     Result<rhi::RenderPipeline*> getOrCreate(const PipelineCacheKey& key);
 
-    /** Destroy all cached pipelines. */
+    /** キャッシュ済みのパイプラインをすべて破棄します。 */
     void clear();
 
-    /** Number of cached pipelines. */
+    /** キャッシュ済みのパイプライン数。 */
     size_t size() const { return m_cache.size(); }
 
 private:

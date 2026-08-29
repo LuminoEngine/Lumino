@@ -1,13 +1,13 @@
-「データの種類別」vs「更新頻度別」
+﻿「データの種類別」vs「更新頻度別」
 データの種類別 (legacy Lumino 方式)
 
 Set 0: すべての UBO (ViewParams, MaterialParams, ObjectParams)
 Set 1: すべてのリソース (Texture, Sampler)
 更新頻度別 (現在の BasicLit.slang 方式)
 
-Set 0: per-view   (カメラ、ライト — フレームに1回更新)
-Set 1: per-material (色、テクスチャ — マテリアル切り替え時)
-Set 2: per-object  (ワールド行列 — オブジェクトごと)
+Set 0: per-view   (カメラ、ライト - フレームに1回更新)
+Set 1: per-material (色、テクスチャ - マテリアル切り替え時)
+Set 2: per-object  (ワールド行列 - オブジェクトごと)
 更新頻度別が優れている理由
 1. BindGroup の再バインド効率
 

@@ -37,11 +37,11 @@ private:
     uint32_t m_maxFrames = 2;
     uint32_t m_currentFrame = 0;
 
-    // Per-frame resources
+    // フレームごとのリソース
     std::vector<Ref<WebGPUCommandBuffer>> m_commandBuffers;
     Ref<WebGPUTextureView> m_currentBackbufferView;
 
-    // Current frame's texture (from wgpuSurfaceGetCurrentTexture)
+    // 現在フレームのテクスチャ (wgpuSurfaceGetCurrentTexture で取得したもの)
     WGPUTexture m_currentTexture = nullptr;
     WGPUTextureView m_currentTextureView = nullptr;
 

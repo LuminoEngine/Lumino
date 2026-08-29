@@ -65,7 +65,7 @@ static const char* getExt(ShaderTarget target) {
     }
 }
 
-// Case-insensitive prefix compare
+// 大文字小文字を区別しないプレフィックス比較
 static bool iequalsN(const char* s, const char* prefix, size_t n) {
     for (size_t i = 0; i < n; ++i) {
         if (tolower(static_cast<unsigned char>(s[i])) != tolower(static_cast<unsigned char>(prefix[i])))
@@ -143,7 +143,7 @@ VoidResult ShaderCompiler2::build(const fs::path& inputFilePath) {
         fs::create_directories(m_dumpDirPath);
     }
 
-    // Read all text.
+    // テキスト全体を読み込む。
     std::string code;
     {
         try {
@@ -160,7 +160,7 @@ VoidResult ShaderCompiler2::build(const fs::path& inputFilePath) {
         }
     }
 
-    // Parse metadata.
+    // メタデータを解析する。
     {
         ShaderMetadata parser;
         auto result = parser.parse(code);
@@ -200,13 +200,13 @@ VoidResult ShaderCompiler2::buildModule() {
     sessionDesc.targetCount = targetDescs.size();
     sessionDesc.compilerOptionEntries = options.data();
     sessionDesc.compilerOptionEntryCount = options.size();
-    // CPU Matrix4x4 is column-major; tell Slang to use column-major layout in
-    // constant buffers so that the uploaded bytes are interpreted correctly by
-    // the GPU.  Without this, Slang defaults to row-major for SPIR-V and the
-    // GPU would see the transpose of the intended matrix.
+    // CPU 側の Matrix4x4 は列優先なので、アップロードしたバイト列を GPU が正しく
+    // 解釈できるよう、Slang にも定数バッファ内で列優先レイアウトを使わせる。
+    // これを指定しないと Slang は SPIR-V で行優先を既定とするため、
+    // GPU からは意図した行列の転置に見えてしまう。
     sessionDesc.defaultMatrixLayoutMode = SLANG_MATRIX_LAYOUT_COLUMN_MAJOR;
 
-    // Include/Module paths
+    // インクルード/モジュールの検索パス
     std::vector<std::string> searchPathStrings;
     for (const auto& p : m_searchPaths) {
         searchPathStrings.push_back(p.string());
@@ -224,7 +224,7 @@ VoidResult ShaderCompiler2::buildModule() {
         return LNSHADER_MAKE_ERROR("createSession failed. (" + std::to_string(result) + ")");
     }
 
-    // Load shader file
+    // シェーダファイルをロードする
     std::string inputFilePath = m_inputFilePath.string();
     Slang::ComPtr<slang::IBlob> diagnostics;
     m_module = session->loadModule(inputFilePath.c_str(), diagnostics.writeRef());
@@ -236,7 +236,7 @@ VoidResult ShaderCompiler2::buildModule() {
         return LNSHADER_MAKE_ERROR("ISession::loadModule failed." + (diag.empty() ? "" : " " + diag));
     }
 
-    // Compose all entry points
+    // すべてのエントリポイントを合成する
     std::vector<Slang::ComPtr<slang::IEntryPoint>> componentsRefs;
     std::vector<slang::IComponentType*> components = { m_module };
     for (int i = 0; i < m_module->getDefinedEntryPointCount(); i++) {
@@ -251,7 +251,7 @@ VoidResult ShaderCompiler2::buildModule() {
         return LNSHADER_MAKE_ERROR("createCompositeComponentType failed. (" + std::to_string(result) + ")");
     }
 
-    // Link
+    // リンク
     Slang::ComPtr<slang::IBlob> linkDiag;
     result = composed->link(m_program.writeRef(), linkDiag.writeRef());
     if (SLANG_FAILED(result)) {
@@ -279,8 +279,8 @@ VoidResult ShaderCompiler2::buildModule() {
 }
 
 VoidResult ShaderCompiler2::buildParameterBlocks(int targetIndex) {
-    // Only build parameter block layouts once (they are target-independent).
-    // We use the first target's reflection to extract the layout.
+    // パラメータブロックのレイアウトはターゲット非依存なので、一度だけ構築する。
+    // レイアウトの抽出には最初のターゲットのリフレクションを使う。
     if (m_parameterBlocksBuilt) {
         return LNSHADER_OK();
     }
@@ -288,7 +288,7 @@ VoidResult ShaderCompiler2::buildParameterBlocks(int targetIndex) {
     slang::ProgramLayout* programLayout = m_program->getLayout(targetIndex);
     int parameterCount = programLayout->getParameterCount();
 
-    // --- Pass 1: Collect ParameterBlock parameters ---
+    // --- パス 1: ParameterBlock パラメータを収集する ---
     for (int i = 0; i < parameterCount; i++) {
         slang::VariableLayoutReflection* parameter = programLayout->getParameterByIndex(i);
         slang::TypeReflection* type = parameter->getType();
@@ -303,8 +303,8 @@ VoidResult ShaderCompiler2::buildParameterBlocks(int targetIndex) {
         layout.name = parameter->getName();
         layout.hasImplicitConstantBuffer = false;
 
-        // Try various methods to get the set index.
-        // ParameterBlock occupies a RegisterSpace, so use getOffset with SubElementRegisterSpace.
+        // セットインデックスの取得を複数の方法で試みる。
+        // ParameterBlock は RegisterSpace を占有するため、SubElementRegisterSpace を指定した getOffset を使う。
         {
             int categoryCount = parameter->getCategoryCount();
             int16_t setIdx = -1;
@@ -317,14 +317,14 @@ VoidResult ShaderCompiler2::buildParameterBlocks(int targetIndex) {
                 }
             }
             if (setIdx < 0) {
-                // Fallback: use the binding space
+                // フォールバック: バインディングスペースを使う
                 setIdx = static_cast<int16_t>(
                     parameter->getBindingSpace(slang::ParameterCategory::RegisterSpace));
             }
             layout.setIndex = setIdx;
         }
 
-        // Get the element type layout (the struct inside ParameterBlock<T>)
+        // 要素型のレイアウト (ParameterBlock<T> 内の構造体) を取得する
         slang::TypeLayoutReflection* elementTypeLayout = typeLayout->getElementTypeLayout();
         slang::TypeReflection* elementType = elementTypeLayout->getType();
         slang::TypeReflection::Kind elementKind = elementType->getKind();
@@ -345,7 +345,7 @@ VoidResult ShaderCompiler2::buildParameterBlocks(int targetIndex) {
                         ParameterBlockElement2 elem;
                         elem.name = field->getName();
                         elem.kind = ParameterBlockElementKind_ConstantBuffer;
-                        // Get the size of the constant buffer contents
+                        // 定数バッファの内容のサイズを取得する
                         slang::TypeLayoutReflection* fieldTypeLayout = field->getTypeLayout();
                         slang::TypeLayoutReflection* cbElementLayout =
                             fieldTypeLayout->getElementTypeLayout();
@@ -371,33 +371,33 @@ VoidResult ShaderCompiler2::buildParameterBlocks(int targetIndex) {
                         break;
                     }
                     default:
-                        // Scalar, Vector, Matrix, Struct fields -> plain data (implicit CB)
+                        // スカラー、ベクトル、行列、構造体のフィールド -> 単純なデータ (暗黙の CB)
                         hasPlainData = true;
                         break;
                 }
             }
         }
         else {
-            // Non-struct element type (e.g., scalar, vector, matrix directly in ParameterBlock)
+            // 構造体でない要素型 (ParameterBlock に直接スカラー、ベクトル、行列を置いた場合など)
             hasPlainData = true;
         }
 
         if (hasPlainData && !hasExplicitCB) {
-            // Entire struct is an implicit constant buffer
+            // 構造体全体が暗黙の定数バッファになる
             layout.hasImplicitConstantBuffer = true;
             ParameterBlockElement2 elem;
             elem.name = "";
             elem.kind = ParameterBlockElementKind_ConstantBuffer;
             elem.constantBufferSize = static_cast<int16_t>(
                 elementTypeLayout->getSize(SLANG_PARAMETER_CATEGORY_UNIFORM));
-            // Insert at the beginning (implicit CB is typically binding 0)
+            // 先頭に挿入する (暗黙の CB は通常 binding 0)
             layout.elements.insert(layout.elements.begin(), elem);
         }
 
         m_shader->addParameterBlock(std::move(layout));
     }
 
-    // --- Pass 2: Collect $Global (bare uniform) parameters into a synthetic "$Material" block ---
+    // --- パス 2: $Global (裸の uniform) パラメータを合成ブロック "$Material" に収集する ---
     {
         ParameterBlockLayout2 globalLayout;
         globalLayout.name = "$Material";
@@ -413,12 +413,12 @@ VoidResult ShaderCompiler2::buildParameterBlocks(int targetIndex) {
             slang::TypeReflection::Kind kind = type->getKind();
             slang::ParameterCategory category = parameter->getCategory();
 
-            // Skip ParameterBlock (handled in Pass 1) and varying I/O
+            // ParameterBlock (パス 1 で処理済み) と varying の入出力はスキップする
             if (kind == slang::TypeReflection::Kind::ParameterBlock) continue;
             if (category == slang::ParameterCategory::VaryingInput ||
                 category == slang::ParameterCategory::VaryingOutput) continue;
 
-            // Bare Uniform (scalar/vector/matrix) → $Global CB member
+            // 裸の uniform (スカラー/ベクトル/行列) -> $Global CB のメンバ
             if (category == slang::ParameterCategory::Uniform) {
                 slang::TypeLayoutReflection* typeLayout = parameter->getTypeLayout();
                 GlobalMemberInfo memberInfo;
@@ -432,7 +432,7 @@ VoidResult ShaderCompiler2::buildParameterBlocks(int targetIndex) {
                 continue;
             }
 
-            // Explicit ConstantBuffer
+            // 明示的な ConstantBuffer
             if (kind == slang::TypeReflection::Kind::ConstantBuffer) {
                 ParameterBlockElement2 elem;
                 elem.name = parameter->getName();
@@ -444,7 +444,7 @@ VoidResult ShaderCompiler2::buildParameterBlocks(int targetIndex) {
                     cbElementLayout->getSize(SLANG_PARAMETER_CATEGORY_UNIFORM));
                 globalLayout.elements.push_back(std::move(elem));
 
-                // Determine set index from binding space (should be 0 for $Global space)
+                // バインディングスペースからセットインデックスを決める ($Global スペースなら 0 のはず)
                 if (globalLayout.setIndex < 0) {
                     globalLayout.setIndex = static_cast<int16_t>(
                         parameter->getBindingSpace(slang::ParameterCategory::DescriptorTableSlot));
@@ -452,7 +452,7 @@ VoidResult ShaderCompiler2::buildParameterBlocks(int targetIndex) {
                 continue;
             }
 
-            // Texture resource
+            // テクスチャリソース
             if (kind == slang::TypeReflection::Kind::Resource) {
                 ParameterBlockElement2 elem;
                 elem.name = parameter->getName();
@@ -483,7 +483,7 @@ VoidResult ShaderCompiler2::buildParameterBlocks(int targetIndex) {
             }
         }
 
-        // If there are $Global uniform members, add an implicit CB element
+        // $Global の uniform メンバがあれば、暗黙の CB 要素を追加する
         if (hasGlobalCB) {
             globalCBSize = static_cast<int>(
                 programLayout->getGlobalConstantBufferSize());
@@ -496,12 +496,12 @@ VoidResult ShaderCompiler2::buildParameterBlocks(int targetIndex) {
                 globalLayout.elements.insert(globalLayout.elements.begin(), elem);
 
                 if (globalLayout.setIndex < 0) {
-                    globalLayout.setIndex = 0; // $Global defaults to space 0
+                    globalLayout.setIndex = 0; // $Global の既定は space 0
                 }
             }
         }
 
-        // Only add if we found any bare resources
+        // 裸のリソースが 1 つでも見つかった場合のみ追加する
         if (!globalLayout.elements.empty()) {
             if (globalLayout.setIndex < 0) {
                 globalLayout.setIndex = 0;
@@ -517,7 +517,7 @@ VoidResult ShaderCompiler2::buildParameterBlocks(int targetIndex) {
 VoidResult ShaderCompiler2::buildTarget(ShaderTarget target, int targetIndex) {
     slang::ProgramLayout* layout = m_program->getLayout(targetIndex);
 
-    // Dump target reflection
+    // ターゲットのリフレクションをダンプする
     if (m_dump) {
         fs::path filePath = m_dumpDirPath / (std::string(getTargetName(target)) + ".target-reflection.json");
         Slang::ComPtr<slang::IBlob> text;
@@ -530,14 +530,14 @@ VoidResult ShaderCompiler2::buildTarget(ShaderTarget target, int targetIndex) {
         }
     }
 
-    // Build entry points
+    // エントリポイントを構築する
     int entryPointCount = m_module->getDefinedEntryPointCount();
     for (int iEntryPoint = 0; iEntryPoint < entryPointCount; iEntryPoint++) {
         auto r = buildEntryPoint(target, targetIndex, iEntryPoint);
         if (!r) return r;
     }
 
-    // Link shader passes.
+    // シェーダパスをリンクする。
     for (auto& globalShaderPass : m_shader->globalShaderPasses()) {
         auto result = buildTargetShaderPass(target, targetIndex, globalShaderPass.get());
         if (!result) return result;
@@ -554,7 +554,7 @@ VoidResult ShaderCompiler2::buildEntryPoint(
     slang::EntryPointReflection* entryPointReflection = programLayout->getEntryPointByIndex(entryPointIndex);
     SlangStage stage = entryPointReflection->getStage();
 
-    // Get EntryPointMetadata.
+    // EntryPointMetadata を取得する。
     Slang::ComPtr<slang::IMetadata> entryPointMetadata;
     Slang::ComPtr<slang::IBlob> diag;
     SlangResult result = m_program->getEntryPointMetadata(
@@ -567,7 +567,7 @@ VoidResult ShaderCompiler2::buildEntryPoint(
         return LNSHADER_MAKE_ERROR("getEntryPointMetadata failed. (" + std::to_string(result) + "): " + message);
     }
 
-    // Analyze Varyings (vertex attributes).
+    // varying (頂点属性) を解析する。
     std::vector<VaryingDumpInfo> varyingDumpInfos;
     std::vector<VertexInputAttribute> inputAttributes;
     {
@@ -596,7 +596,7 @@ VoidResult ShaderCompiler2::buildEntryPoint(
         }
     }
 
-    // Generate code.
+    // コードを生成する。
     Blob* codeBlob = nullptr;
     {
         Slang::ComPtr<slang::IBlob> kernelBlob;
@@ -613,7 +613,7 @@ VoidResult ShaderCompiler2::buildEntryPoint(
                                        (message.empty() ? "" : " " + message));
         }
 
-        // Dump code.
+        // コードをダンプする。
         if (m_dump) {
             const char* name = entryPointReflection->getName();
             fs::path filePath = m_dumpDirPath / (std::string(getTargetName(target)) + "." + name + getExt(target));
@@ -624,7 +624,7 @@ VoidResult ShaderCompiler2::buildEntryPoint(
             }
         }
 
-        // Validate WGSL.
+        // WGSL を検証する。
         // Slang は WGSL 固有の制約を検査しないため、ここで実際の WebGPU 実装に通しておく。
         // これを省くと、不正なシェーダはブラウザで実行するまで気づけない。
         if (target == ShaderTarget_WGSL) {
@@ -660,7 +660,7 @@ VoidResult ShaderCompiler2::buildEntryPoint(
         return LNSHADER_MAKE_ERROR("Invalid stage. (" + std::to_string(stage) + ")");
     }
 
-    // Extract per-ParameterBlock binding info for this target.
+    // このターゲットの ParameterBlock ごとのバインディング情報を抽出する。
     int programParameterCount = programLayout->getParameterCount();
     for (int i = 0; i < programParameterCount; i++) {
         slang::VariableLayoutReflection* parameter = programLayout->getParameterByIndex(i);
@@ -756,12 +756,12 @@ VoidResult ShaderCompiler2::buildEntryPoint(
         }
 
         if (hasPlainData && !hasExplicitCB) {
-            // Implicit constant buffer for the entire struct
+            // 構造体全体に対する暗黙の定数バッファ
             TargetBinding2 binding;
             binding.name = "";
             binding.kind = ParameterBlockElementKind_ConstantBuffer;
             binding.setIndex = setIndex;
-            binding.bindingIndex = 0; // Implicit CB is at binding 0
+            binding.bindingIndex = 0; // 暗黙の CB は binding 0
             binding.size = static_cast<int16_t>(
                 elementTypeLayout->getSize(SLANG_PARAMETER_CATEGORY_UNIFORM));
             binding.used = stageFlags;
@@ -769,11 +769,11 @@ VoidResult ShaderCompiler2::buildEntryPoint(
         }
     }
 
-    // --- Collect $Global (bare uniform) bindings ---
+    // --- $Global (裸の uniform) のバインディングを収集する ---
     {
-        int16_t globalSetIndex = 0; // $Global is always in space 0
+        int16_t globalSetIndex = 0; // $Global は常に space 0
 
-        // $Global constant buffer (if bare uniform members exist)
+        // $Global 定数バッファ (裸の uniform メンバがある場合)
         int globalCBSize = static_cast<int>(programLayout->getGlobalConstantBufferSize());
         if (globalCBSize > 0) {
             TargetBinding2 binding;
@@ -787,7 +787,7 @@ VoidResult ShaderCompiler2::buildEntryPoint(
             entryPoint->bindingLayout.bindings.push_back(binding);
         }
 
-        // Explicit ConstantBuffer / Texture / Sampler declared as bare params
+        // 裸のパラメータとして宣言された明示的な ConstantBuffer / Texture / Sampler
         for (int i = 0; i < programParameterCount; i++) {
             slang::VariableLayoutReflection* parameter = programLayout->getParameterByIndex(i);
             slang::TypeReflection* type = parameter->getType();
@@ -795,7 +795,7 @@ VoidResult ShaderCompiler2::buildEntryPoint(
             slang::TypeReflection::Kind kind = type->getKind();
             slang::ParameterCategory category = parameter->getCategory();
 
-            // Skip ParameterBlock and varying I/O, and Uniform ($Global CB members)
+            // ParameterBlock、varying の入出力、Uniform ($Global CB のメンバ) はスキップする
             if (kind == slang::TypeReflection::Kind::ParameterBlock) continue;
             if (category == slang::ParameterCategory::VaryingInput ||
                 category == slang::ParameterCategory::VaryingOutput) continue;

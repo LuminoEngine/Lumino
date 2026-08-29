@@ -69,8 +69,8 @@ export class Renderer extends LuminoObject {
     }
 
     /**
-     * メッシュの描画コマンドを内部バッファに蘊積する。
-     * 蘊積されたコマンドは `endRenderPass()` 時に自動的にソート・バッチ化・描画されます。
+     * メッシュの描画コマンドを内部バッファに蓄積する。
+     * 蓄積されたコマンドは `endRenderPass()` 時に自動的にソート、バッチ化、描画されます。
      * メッシュに設定されたマテリアルが使用されます。
      *
      * @param mesh      描画する Mesh。
@@ -122,13 +122,13 @@ export class Renderer extends LuminoObject {
     }
 
     /**
-     * スプライトの描画コマンドを内部バッファに蘊積する (バッチ処理)。
-     * 蘊積されたコマンドは `endRenderPass()` 時に自動的にソート・バッチ化・描画されます。
+     * スプライトの描画コマンドを内部バッファに蓄積する (バッチ処理)。
+     * 蓄積されたコマンドは `endRenderPass()` 時に自動的にソート、バッチ化、描画されます。
      *
      * スプライトは size と pivot で定義されるローカル矩形を `offset` だけずらし、
      * `transform` でワールド空間へ配置して描画します
      * (world = transform * (localCorner + offset))。
-     * 位置・回転・スケールは `transform` に畳み込んでください
+     * 位置、回転、スケールは `transform` に畳み込んでください
      * (クライアント側のシーングラフから求めたワールド行列をそのまま渡せます)。
      *
      * `offset` は、Tilemap / Tiling Sprite / 9-Sliced Sprite のように 1 ノード内で多数の
@@ -145,8 +145,8 @@ export class Renderer extends LuminoObject {
      * @param offsetY   ノードローカル空間でのスプライト位置 Y (transform 適用前に加算)。矩形上の pivot 位置がここに来る。
      * @param sizeW     スプライト幅 (ローカル)。
      * @param sizeH     スプライト高さ (ローカル)。
-     * @param pivotX    矩形上の基準点 X (0.0〜1.0)。0=左, 0.5=中央, 1=右。offset 位置に一致し、回転軸にもなる。
-     * @param pivotY    矩形上の基準点 Y (0.0〜1.0)。0=上, 0.5=中央, 1=下。offset 位置に一致し、回転軸にもなる。
+     * @param pivotX    矩形上の基準点 X (0.0-1.0)。0=左, 0.5=中央, 1=右。offset 位置に一致し、回転軸にもなる。
+     * @param pivotY    矩形上の基準点 Y (0.0-1.0)。0=上, 0.5=中央, 1=下。offset 位置に一致し、回転軸にもなる。
      * @param uvX       UV 矩形の X。
      * @param uvY       UV 矩形の Y。
      * @param uvW       UV 矩形の幅。

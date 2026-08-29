@@ -1,5 +1,5 @@
 ﻿/**
- * HelloSprite example
+ * HelloSprite サンプル
  *
  * LNCamera_SetOrthographic で正射影カメラを作成し、
  * LNRenderer_DrawSprite で画面中央に1枚のスプライトを描画する最小サンプル。
@@ -15,24 +15,24 @@ int main() {
     LNHandle graphicsContext = LN_NULL_HANDLE;
     LNWindow_GetGraphicsContext(window, &graphicsContext);
 
-    // Texture
+    // テクスチャ
     LNHandle texture = LN_NULL_HANDLE;
     LNTexture2D_LoadFromFile(graphicsContext, ASSETS_DIR "/Redactor1.png", &texture);
 
-    // Unlit Material
+    // Unlit マテリアル
     LNHandle material = LN_NULL_HANDLE;
     LNMaterial_CreateFromBuiltinShader(graphicsContext, LN_BUILTIN_SHADER_UNLIT, &material);
     LNMaterial_SetMainTexture(material, texture);
     LNMaterial_SetBlendMode(material, LN_BLEND_MODE_ALPHA);
 
-    // Orthographic camera (origin at screen center)
+    // 正射影カメラ (原点は画面中央)
     LNHandle camera = LN_NULL_HANDLE;
     LNCamera_Create(&camera);
     LNCamera_SetOrthographic(camera, (float)WINDOW_W, (float)WINDOW_H, -1000.0f, 1000.0f);
     LNCamera_SetLookAt(camera,
-        0.0f, 0.0f, 1.0f,   // eye
-        0.0f, 0.0f, 0.0f,   // target
-        0.0f, 1.0f, 0.0f);  // up
+        0.0f, 0.0f, 1.0f,   // 視点
+        0.0f, 0.0f, 0.0f,   // 注視点
+        0.0f, 1.0f, 0.0f);  // 上方向
 
     printf("Lumino HelloSprite: drawing one sprite at the screen center.\n");
 
@@ -52,24 +52,24 @@ int main() {
         rpDesc.colorAttachments[0].clearColor[3] = 1.0f;
         LNRenderer_BeginRenderPass(renderer, graphicsContext, &rpDesc, camera);
 
-        // Draw one sprite, centered on screen (origin is at the center for this camera).
+        // スプライトを 1 枚、画面中央に描画する (このカメラでは原点が画面中央)。
         LNRenderer_DrawSprite(
             renderer, material, 0,
             &identity,
-            0.0f, 0.0f,         // offset (sprite position)
-            128.0f, 128.0f,     // size
-            0.5f, 0.5f,         // pivot (center)
+            0.0f, 0.0f,         // offset (スプライトの位置)
+            128.0f, 128.0f,     // サイズ
+            0.5f, 0.5f,         // pivot (中央)
             0.0f, 0.0f, 1.0f, 1.0f, // uv
-            1.0f, 1.0f, 1.0f, 1.0f); // color
+            1.0f, 1.0f, 1.0f, 1.0f); // 色
 
          LNRenderer_DrawSprite(
             renderer, material, 0,
             &identity,
-            50.0f, 0.0f,         // offset (sprite position)
-            128.0f, 128.0f,     // size
-            0.5f, 0.5f,         // pivot (center)
+            50.0f, 0.0f,         // offset (スプライトの位置)
+            128.0f, 128.0f,     // サイズ
+            0.5f, 0.5f,         // pivot (中央)
             0.0f, 0.0f, 1.0f, 1.0f, // uv
-            1.0f, 1.0f, 1.0f, 1.0f); // color
+            1.0f, 1.0f, 1.0f, 1.0f); // 色
 
         LNRenderer_EndRenderPass(renderer);
 

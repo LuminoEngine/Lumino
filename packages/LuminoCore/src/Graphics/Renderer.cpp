@@ -73,9 +73,9 @@ Result<Ref<Renderer>> Renderer::create(GraphicsContext* ctx) {
     uint32_t framesInFlight = ctx->maxFramesInFlight();
     renderer->m_framesInFlight = framesInFlight;
 
-    // Use the BasicLit ShaderPass's PipelineLayout as reference for dynamic UBO allocators.
-    // Web builds may not have GraphicsModule / builtin shaders available yet.
-    // In that case, skip UBO allocator creation - only basic pass begin/end will work.
+    // 動的 UBO アロケータの参照用として BasicLit ShaderPass の PipelineLayout を使う。
+    // Web ビルドでは GraphicsModule / 組み込みシェーダがまだ利用できない場合がある。
+    // その場合は UBO アロケータの作成をスキップする - 基本的なパスの begin/end だけが動作する。
     if (module) {
         const auto& refShaderPass = module->builtinShader(BuiltinShader::BasicLit);
         renderer->m_referencePipelineLayout = refShaderPass->pipelineLayout();
@@ -84,7 +84,7 @@ Result<Ref<Renderer>> Renderer::create(GraphicsContext* ctx) {
         renderer->m_objectSetIndex = refShaderPass->objectSetIndex();
         renderer->m_objectUBOSize = refShaderPass->objectUBOSize();
 
-        // ---- Dynamic UBO allocator for per-frame view data (camera) ----
+        // ---- フレームごとのビューデータ (カメラ) 用の動的 UBO アロケータ ----
         {
             auto r = DynamicUniformAllocator::create(
                 device, renderer->m_referencePipelineLayout,
@@ -95,7 +95,7 @@ Result<Ref<Renderer>> Renderer::create(GraphicsContext* ctx) {
             renderer->m_viewAllocator = std::move(*r);
         }
 
-        // ---- Dynamic UBO allocator for per-scene data (lighting etc.) ----
+        // ---- シーン単位のデータ (ライティング等) 用の動的 UBO アロケータ ----
         {
             auto r = DynamicUniformAllocator::create(
                 device, renderer->m_referencePipelineLayout,
@@ -106,7 +106,7 @@ Result<Ref<Renderer>> Renderer::create(GraphicsContext* ctx) {
             renderer->m_sceneAllocator = std::move(*r);
         }
 
-        // ---- Dynamic UBO allocator for per-object data ----
+        // ---- オブジェクト単位のデータ用の動的 UBO アロケータ ----
         {
             auto r = DynamicUniformAllocator::create(
                 device, renderer->m_referencePipelineLayout,
@@ -122,7 +122,7 @@ Result<Ref<Renderer>> Renderer::create(GraphicsContext* ctx) {
     return renderer;
 }
 
-// ------ Frame lifecycle -------------------------------------------------------------------------------------------
+// ------ フレームのライフサイクル -------------------------------------------------------------------------------------------
 
 void Renderer::beginFrame() {
     uint32_t frame = m_frameCounter++;
@@ -133,7 +133,7 @@ void Renderer::beginFrame() {
     m_currentCmd = m_ctx->currentCommandBuffer();
     m_drawCallCount = 0;
 
-    // Lazy-initialize the batch processor on first use.
+    // バッチプロセッサは初回使用時に遅延初期化する。
     if (!m_batchProcessor) {
         auto result = BatchProcessor::create(m_ctx);
         if (result) {
@@ -141,14 +141,14 @@ void Renderer::beginFrame() {
         }
     }
 
-    // Rewind the sprite mesh pool so this frame's per-flush buffers are recycled.
+    // このフレームのフラッシュごとのバッファを再利用できるよう、スプライトメッシュプールを巻き戻す。
     if (m_batchProcessor) {
         m_batchProcessor->resetFrame();
     }
 }
 
 void Renderer::endFrame() {
-    // Flush dynamic uniform buffers to GPU before submission.
+    // 送信前に動的ユニフォームバッファを GPU へフラッシュする。
     if (m_viewAllocator)   (void)m_viewAllocator->flushFrame();
     if (m_sceneAllocator)  (void)m_sceneAllocator->flushFrame();
     if (m_objectAllocator) (void)m_objectAllocator->flushFrame();
@@ -157,7 +157,7 @@ void Renderer::endFrame() {
     m_currentCmd = nullptr;
 }
 
-// ------ Pass lifecycle --------------------------------------------------------------------------------------------
+// ------ パスのライフサイクル --------------------------------------------------------------------------------------------
 
 void Renderer::beginRenderPass(
     rhi::TextureView* colorTarget,
@@ -166,7 +166,7 @@ void Renderer::beginRenderPass(
     const Color& clearColor,
     SortMode sortMode) {
 
-    // Allocate view UBO from the per-frame allocator and upload camera data.
+    // フレームごとのアロケータからビュー UBO を確保し、カメラデータをアップロードする。
     auto viewAlloc = m_viewAllocator->allocate();
     {
         ViewParamsUBO viewParams{};
@@ -225,10 +225,10 @@ void Renderer::beginRenderPass(
 
     m_currentPass = m_currentCmd->beginRenderPass(rpDesc);
 
-    // Track the current color target for endRenderPassWithTransition.
+    // endRenderPassWithTransition のために現在のカラーターゲットを記録する。
     m_currentColorTarget = colorTarget;
 
-    // Clear any pass-scoped bind group state from the previous pass.
+    // 前のパスのパススコープの BindGroup 状態をクリアする。
     for (uint32_t i = 0; i < kMaxBindGroupSets; ++i) {
         m_passBindGroups[i]                  = nullptr;
         m_passBindGroupDynamicOffsets[i]     = 0;
@@ -236,14 +236,14 @@ void Renderer::beginRenderPass(
         m_passBindGroupDirty[i]              = false;
     }
 
-    // Clear the internal command buffer for this render pass.
+    // このレンダーパス用に内部コマンドバッファをクリアする。
     m_commandBuffer.clear();
 }
 
 void Renderer::beginRenderPass(const rhi::RenderPassDesc& rpDesc, const Camera& camera,
                                 const std::string& shaderPassName, SortMode sortMode) {
     m_currentShaderPassName = shaderPassName.empty() ? std::string("Forward") : shaderPassName;
-    // Allocate view UBO from the per-frame allocator and upload camera data.
+    // フレームごとのアロケータからビュー UBO を確保し、カメラデータをアップロードする。
     auto viewAlloc = m_viewAllocator->allocate();
     {
         ViewParamsUBO viewParams{};
@@ -286,10 +286,10 @@ void Renderer::beginRenderPass(const rhi::RenderPassDesc& rpDesc,
     m_currentCamera2D = false;
     m_currentPass = m_currentCmd->beginRenderPass(rpDesc);
 
-    // Track the current color target for endRenderPassWithTransition.
+    // endRenderPassWithTransition のために現在のカラーターゲットを記録する。
     m_currentColorTarget = rpDesc.colorAttachments.empty() ? nullptr : rpDesc.colorAttachments[0].view;
 
-    // Clear any pass-scoped bind group state from the previous pass.
+    // 前のパスのパススコープの BindGroup 状態をクリアする。
     for (uint32_t i = 0; i < kMaxBindGroupSets; ++i) {
         m_passBindGroups[i]                  = nullptr;
         m_passBindGroupDynamicOffsets[i]     = 0;
@@ -297,12 +297,12 @@ void Renderer::beginRenderPass(const rhi::RenderPassDesc& rpDesc,
         m_passBindGroupDirty[i]              = false;
     }
 
-    // Clear the internal command buffer for this render pass.
+    // このレンダーパス用に内部コマンドバッファをクリアする。
     m_commandBuffer.clear();
 }
 
 void Renderer::endRenderPass() {
-    // Flush batched draw commands before ending the render pass.
+    // レンダーパスを終了する前に、蓄積した描画コマンドをフラッシュする。
     (void)flushBatch();
 
     m_currentPass->end();
@@ -335,10 +335,10 @@ void Renderer::beginOverlayRenderPass(rhi::TextureView* colorTarget) {
         m_passBindGroupDirty[i]               = false;
     }
 
-    // Vertices are already in NDC, so upload an identity view-projection matrix.
+    // 頂点はすでに NDC なので、単位行列のビュー射影行列をアップロードする。
     auto viewAlloc = m_viewAllocator->allocate();
     ViewParamsUBO viewParams{};
-    // Column-major identity matrix for viewProj, view, proj, invViewProj.
+    // viewProj, view, proj, invViewProj に列優先の単位行列を設定する。
     viewParams.viewProj[0]  = 1.0f;
     viewParams.viewProj[5]  = 1.0f;
     viewParams.viewProj[10] = 1.0f;
@@ -386,7 +386,7 @@ void Renderer::flushPassBindGroups() {
     }
 }
 
-// ------ Drawing (batched) -----------------------------------------------------------------------------------------
+// ------ 描画 (バッチ) -----------------------------------------------------------------------------------------
 
 void Renderer::drawMesh(Mesh* mesh, const Transform& transform, int32_t zIndex) {
     m_commandBuffer.drawMesh(mesh, transform, zIndex);
@@ -410,7 +410,7 @@ Result<void> Renderer::flushBatch() {
     return {};
 }
 
-// ------ Drawing (immediate) ---------------------------------------------------------------------------------------
+// ------ 描画 (即時) ---------------------------------------------------------------------------------------
 
 Result<void> Renderer::drawMeshImmediate(Mesh* mesh, const Transform& transform) {
     m_currentPass->setVertexBuffer(0, mesh->vertexBuffer());
@@ -446,8 +446,8 @@ Result<void> Renderer::drawMeshImmediate(Mesh* mesh, const Transform& transform,
 Result<void> Renderer::drawSubmesh(
     Mesh* mesh, Material* mat, const Transform& transform, const SubMesh& sub) {
 
-    // Resolve which ShaderPass to use based on the currently active render pass name.
-    // If the material has no matching pass, skip this draw (Unity URP ShaderTagId behavior).
+    // 現在アクティブなレンダーパス名に基づいて、使用する ShaderPass を解決する。
+    // マテリアルに一致するパスが無ければこの描画をスキップする (Unity URP の ShaderTagId と同じ挙動)。
     ShaderPass* activePass = mat->findPass(m_currentShaderPassName);
     if (!activePass) {
         return {};
@@ -455,7 +455,7 @@ Result<void> Renderer::drawSubmesh(
 
     auto* pipelineCache = m_ctx->pipelineCache();
 
-    // Allocate per-object UBO slot and write transforms.
+    // オブジェクト単位の UBO スロットを確保し、トランスフォームを書き込む。
     auto alloc = m_objectAllocator->allocate();
     {
         Matrix4x4 worldMatrix  = transform.matrix();
@@ -466,7 +466,7 @@ Result<void> Renderer::drawSubmesh(
         std::memcpy(alloc.cpuPtr, &objParams, sizeof(objParams));
     }
 
-    // Resolve pipeline.
+    // パイプラインを解決する。
     PipelineCacheKey key;
     key.shaderPass          = activePass;
     key.cullMode            = mat->cullMode();
@@ -481,7 +481,7 @@ Result<void> Renderer::drawSubmesh(
     if (mat->blendMode() != BlendMode::Normal) {
         key.depthWriteEnabled = false;
     }
-    // When a stencil mask is active, enable stencil test to restrict drawing to masked area.
+    // ステンシルマスクが有効なときは、描画をマスク領域内に制限するためステンシルテストを有効にする。
     if (m_stencilRef > 0) {
         key.stencilTestEnabled = true;
         key.stencilFront.compare   = rhi::CompareFunction::Equal;
@@ -500,18 +500,18 @@ Result<void> Renderer::drawSubmesh(
 
     m_currentPass->setPipeline(*pipelineResult);
 
-    // Set dynamic stencil reference when stencil mask is active.
+    // ステンシルマスクが有効なときは、動的なステンシル参照値を設定する。
     if (m_stencilRef > 0) {
         m_currentPass->setStencilReference(m_stencilRef);
     }
 
-    // After setPipeline, flush any pending pass-scoped bind groups.
+    // setPipeline の後、保留中のパススコープの BindGroup をフラッシュする。
     flushPassBindGroups();
 
-    // WebGPU requires every slot declared in the pipeline layout to have a bind group bound
-    // before drawIndexed. When a shader declares sceneData as a ParameterBlock but the user
-    // has not set a scene bind group via setPassBindGroup, we allocate a zero-initialized
-    // SceneParamsUBO and bind it so validation passes.
+    // WebGPU では、drawIndexed の前にパイプラインレイアウトで宣言された全スロットに
+    // BindGroup がバインドされている必要がある。シェーダが sceneData を ParameterBlock として
+    // 宣言しているのにユーザーが setPassBindGroup でシーンの BindGroup を設定していない場合、
+    // ゼロ初期化した SceneParamsUBO を確保してバインドし、バリデーションを通す。
     if (m_sceneSetIndex >= 0 && !m_passBindGroups[m_sceneSetIndex]) {
         auto sceneAlloc = m_sceneAllocator->allocate();
         SceneParamsUBO defaultScene{};
@@ -521,7 +521,7 @@ Result<void> Renderer::drawSubmesh(
         flushPassBindGroups();
     }
 
-    // Get or create the material's BindGroup from the Renderer-side cache.
+    // Renderer 側のキャッシュからマテリアルの BindGroup を取得 (無ければ作成) する。
     auto matBGResult = getOrCreateMaterialBindGroup(mat, activePass);
     if (!matBGResult) return LN_FORWARD_ERROR(matBGResult);
 
@@ -553,7 +553,7 @@ Result<void> Renderer::drawScreenRect(Material* material) {
     return drawMeshImmediate(*meshResult, identity, material);
 }
 
-// ------ Stencil Mask --------------------------------------------------------------------------------------------
+// ------ ステンシルマスク --------------------------------------------------------------------------------------------
 
 Result<void> Renderer::drawStencilMaskMesh(
     Mesh* mesh, const Transform& transform, Material* material,
@@ -574,13 +574,13 @@ Result<void> Renderer::drawStencilMaskMesh(
         }
         if (!mat) continue;
 
-        // Stencil mask draw uses a dedicated stencil shader pass — try the active
-        // render-pass name first, fall back to the material's default pass.
+        // ステンシルマスクの描画は専用のステンシルシェーダパスを使う - まずアクティブな
+        // レンダーパス名を試し、無ければマテリアルの既定パスにフォールバックする。
         ShaderPass* activePass = mat->findPass(m_currentShaderPassName);
         if (!activePass) activePass = mat->shaderPass();
         if (!activePass) continue;
 
-        // Allocate per-object UBO
+        // オブジェクト単位の UBO を確保する
         auto alloc = m_objectAllocator->allocate();
         {
             Matrix4x4 worldMatrix  = transform.matrix();
@@ -591,7 +591,7 @@ Result<void> Renderer::drawStencilMaskMesh(
             std::memcpy(alloc.cpuPtr, &objParams, sizeof(objParams));
         }
 
-        // Build pipeline key for stencil write
+        // ステンシル書き込み用のパイプラインキーを構築する
         PipelineCacheKey key;
         key.shaderPass         = activePass;
         key.cullMode           = rhi::CullMode::None;
@@ -617,7 +617,7 @@ Result<void> Renderer::drawStencilMaskMesh(
         m_currentPass->setStencilReference(stencilRef);
         flushPassBindGroups();
 
-        // Same as drawSubmesh: auto-bind a default scene bind group if not set.
+        // drawSubmesh と同様: シーンの BindGroup が未設定なら既定のものを自動でバインドする。
         if (m_sceneSetIndex >= 0 && !m_passBindGroups[m_sceneSetIndex]) {
             auto sceneAlloc = m_sceneAllocator->allocate();
             SceneParamsUBO defaultScene{};
@@ -640,19 +640,19 @@ Result<void> Renderer::drawStencilMaskMesh(
 }
 
 Result<void> Renderer::pushStencilMask(Mesh* mesh, const Transform& transform, Material* material) {
-    // Flush any pending batched commands before changing stencil state.
+    // ステンシル状態を変更する前に、保留中のバッチコマンドをフラッシュする。
     auto flushResult = flushBatch();
     if (!flushResult) return flushResult;
 
-    // Save mask info for later pop.
+    // 後の pop のためにマスク情報を保存する。
     m_stencilMaskStack.push_back({mesh, transform, material});
 
-    // Draw mask mesh into stencil buffer: increment stencil where stencil == m_stencilRef.
-    // After this, the mask area will have stencil == m_stencilRef + 1.
+    // マスクメッシュをステンシルバッファへ描画する: stencil == m_stencilRef の場所をインクリメントする。
+    // この後、マスク領域は stencil == m_stencilRef + 1 になる。
     auto result = drawStencilMaskMesh(
         mesh, transform, material,
-        rhi::CompareFunction::Equal,  // compare: pass where stencil == current ref
-        m_stencilRef,                 // dynamic reference value
+        rhi::CompareFunction::Equal,  // compare: stencil == 現在の参照値 の場所で合格
+        m_stencilRef,                 // 動的な参照値
         rhi::StencilOp::IncrementClamp);
     if (!result) return result;
 
@@ -661,7 +661,7 @@ Result<void> Renderer::pushStencilMask(Mesh* mesh, const Transform& transform, M
 }
 
 Result<void> Renderer::popStencilMask() {
-    // Flush any pending batched commands before changing stencil state.
+    // ステンシル状態を変更する前に、保留中のバッチコマンドをフラッシュする。
     auto flushResult = flushBatch();
     if (!flushResult) return flushResult;
 
@@ -672,11 +672,11 @@ Result<void> Renderer::popStencilMask() {
     auto entry = m_stencilMaskStack.back();
     m_stencilMaskStack.pop_back();
 
-    // Redraw the mask mesh to decrement stencil back.
+    // マスクメッシュを再描画してステンシル値をデクリメントして戻す。
     auto result = drawStencilMaskMesh(
         entry.mesh, entry.transform, entry.material,
         rhi::CompareFunction::Equal,
-        m_stencilRef,                 // match the incremented value
+        m_stencilRef,                 // インクリメント済みの値に一致させる
         rhi::StencilOp::DecrementClamp);
     if (!result) return result;
 
@@ -721,7 +721,7 @@ Result<rhi::BindGroup*> Renderer::getOrCreateMaterialBindGroup(Material* mat, Sh
 
     auto& cache = m_materialCache[MaterialBindKey{mat, pass}];
 
-    // Initialize vectors on first access.
+    // 初回アクセス時に vector を初期化する。
     if (cache.writtenParamVersion.empty()) {
         cache.paramBuffers.resize(m_framesInFlight);
         cache.bindGroups.resize(m_framesInFlight);
@@ -747,13 +747,13 @@ Result<rhi::BindGroup*> Renderer::getOrCreateMaterialBindGroup(Material* mat, Sh
         // WebGPU は参照カウントで保持されるため、GPU 使用中の破棄にはならない。
         for (auto&& bg : cache.bindGroups) bg.reset();
 
-        // For each SampledTexture binding, resolve the texture and create/update views
+        // SampledTexture バインディングごとにテクスチャを解決し、ビューを作成/更新する
         for (size_t i = 0; i < layoutDesc.entries.size(); ++i) {
             const auto& layoutEntry = layoutDesc.entries[i];
             if (layoutEntry.type != rhi::BindingType::SampledTexture) continue;
 
-            // Look up named texture, fall back to baseTexture
-            rhi::Texture* tex = mat->baseTexture(); // default
+            // 名前付きテクスチャを検索し、無ければ baseTexture にフォールバックする
+            rhi::Texture* tex = mat->baseTexture(); // 既定値
             if (i < bindingNames.size()) {
                 auto it = mat->namedTextures().find(bindingNames[i]);
                 if (it != mat->namedTextures().end()) {
@@ -793,10 +793,10 @@ Result<rhi::BindGroup*> Renderer::getOrCreateMaterialBindGroup(Material* mat, Sh
         return cache.bindGroups[frameSlot].get();
     }
 
-    // Create per-frame buffer if missing.
+    // フレームごとのバッファが無ければ作成する。
     // マテリアル定数バッファを持たないシェーダ (例: フルスクリーン blit) では
     // materialParamBufferSize() == 0 になる。0 バイトの UBO 作成はバックエンドの
-    // バリデーションエラーになり得るため、CB がある場合のみ作成・書き込みする。
+    // バリデーションエラーになり得るため、CB がある場合のみ作成して書き込む。
     // この場合 materialLayoutDesc に UniformBuffer エントリは存在しないため、
     // 後段の BindGroup 構築で paramBuffer が参照されることもない。
     if (mat->materialParamBufferSize() > 0 && !cache.paramBuffers[frameSlot]) {
@@ -808,7 +808,7 @@ Result<rhi::BindGroup*> Renderer::getOrCreateMaterialBindGroup(Material* mat, Sh
         cache.paramBuffers[frameSlot] = std::move(*bufResult);
     }
 
-    // Write UBO data via writeBuffer (compatible with all backends).
+    // writeBuffer で UBO データを書き込む (全バックエンドで使える)。
     if (mat->materialParamBufferSize() > 0 && cache.writtenParamVersion[frameSlot] != mat->paramVersion()) {
         auto uboSize = mat->materialParamBufferSize();
         uint8_t uboStaging[512];
@@ -824,8 +824,8 @@ Result<rhi::BindGroup*> Renderer::getOrCreateMaterialBindGroup(Material* mat, Sh
         (void)device->writeBuffer(cache.paramBuffers[frameSlot].get(), 0, stagingPtr, uboSize);
     }
 
-    // Create BindGroup via the pass's PipelineLayout at the material set index.
-    // Use reflection to build entries dynamically.
+    // パスの PipelineLayout を使い、マテリアルセットのインデックスで BindGroup を作成する。
+    // エントリはリフレクションを使って動的に構築する。
     if (!cache.bindGroups[frameSlot]) {
         int16_t matSet = pass->materialSetIndex();
         if (layoutDesc.entries.size() > rhi::kMaxBindGroupEntries) {
@@ -869,8 +869,8 @@ Result<rhi::BindGroup*> Renderer::getOrCreateMaterialBindGroup(Material* mat, Sh
 Result<Mesh*> Renderer::getScreenRectMesh() {
     if (m_screenRectMesh) return m_screenRectMesh.get();
 
-    // Fullscreen quad in NDC: covers [-1,1]x[-1,1].
-    // UV: (0,0) = top-left, (1,1) = bottom-right.
+    // NDC での全画面クアッド: [-1,1]x[-1,1] を覆う。
+    // UV: (0,0) = 左上, (1,1) = 右下。
     std::vector<Vertex> vertices = {
         {{-1.0f, -1.0f, 0.0f}, {0, 0, 1}, {0, 1}, Color::white(), {1, 0, 0, 1}},
         {{ 1.0f, -1.0f, 0.0f}, {0, 0, 1}, {1, 1}, Color::white(), {1, 0, 0, 1}},

@@ -15,39 +15,39 @@
 int main() {
     InitializeInstance();
 
-    // 2. Window + GraphicsContext
+    // 2. Window と GraphicsContext
     LNHandle window = LN_NULL_HANDLE;
     LNWindow_Create("LuminoC-CustomShader", WINDOW_W, WINDOW_H, &window);
     LNHandle graphicsContext = LN_NULL_HANDLE;
     LNWindow_GetGraphicsContext(window, &graphicsContext);
 
-    // 3. Load compiled shader from file
+    // 3. コンパイル済みシェーダをファイルから読み込む
     auto shaderData = loadFile(ASSETS_DIR "/Shader1.lcsh");
     if (shaderData.empty()) {
         fprintf(stderr, "Failed to load shader file.\n");
         return 1;
     }
 
-    // 4. Create shader (GPU シェーダモジュール + パイプラインレイアウト)
+    // 4. Shader を作成 (GPU シェーダモジュール + パイプラインレイアウト)
     LNHandle shader = LN_NULL_HANDLE;
     LNShader_CreateFromCompiledShader(graphicsContext,
         shaderData.data(), (uint32_t)shaderData.size(), &shader);
 
-    // 5. Create material from the shader
+    // 5. Shader からマテリアルを作成
     //    同じ Shader からいくつ Material を作っても GPU リソースは増えない。
     LNHandle material = LN_NULL_HANDLE;
     LNMaterial_CreateFromShader(shader, &material);
     //LNMaterial_SetColor(material, 1.0f, 0.0f, 0.0f, 1.0f); // Red
 
-    const float myColor[4] = {0.0f, 1.0f, 0.0f, 1.0f}; // Green
+    const float myColor[4] = {0.0f, 1.0f, 0.0f, 1.0f}; // 緑
     LNMaterial_SetFloat4(material, "u_myColor", myColor);
 
-    // 6. Triangle mesh (3 vertices, 3 indices, CCW winding)
+    // 6. 三角形メッシュ (頂点 3 つ、インデックス 3 つ、CCW ワインディング)
     LNVertex vertices[3] = {
         // posX   posY   posZ   normX normY normZ  u    v    r    g    b    a    tanX tanY tanZ tanW
-        {  0.0f,  0.5f,  0.0f,  0,0,1,  0.5f, 0.0f,  1,1,1,1,  0,0,0,0 }, // top
-        { -0.5f, -0.5f,  0.0f,  0,0,1,  0.0f, 1.0f,  1,1,1,1,  0,0,0,0 }, // bottom-left
-        {  0.5f, -0.5f,  0.0f,  0,0,1,  1.0f, 1.0f,  1,1,1,1,  0,0,0,0 }, // bottom-right
+        {  0.0f,  0.5f,  0.0f,  0,0,1,  0.5f, 0.0f,  1,1,1,1,  0,0,0,0 }, // 上
+        { -0.5f, -0.5f,  0.0f,  0,0,1,  0.0f, 1.0f,  1,1,1,1,  0,0,0,0 }, // 左下
+        {  0.5f, -0.5f,  0.0f,  0,0,1,  1.0f, 1.0f,  1,1,1,1,  0,0,0,0 }, // 右下
     };
     uint32_t indices[3] = { 0, 1, 2 };
     LNSubMesh sub = { 0, 3, 0 };
@@ -56,7 +56,7 @@ int main() {
     LNMesh_Create(graphicsContext, vertices, 3, indices, 3, &sub, 1, &mesh);
     LNMesh_SetMaterial(mesh, 0, material);
 
-    // 7. Perspective camera
+    // 7. 透視投影カメラ
     LNHandle camera = LN_NULL_HANDLE;
     LNCamera_Create(&camera);
     LNCamera_SetPerspective(camera,
@@ -64,11 +64,11 @@ int main() {
         (float)WINDOW_W / (float)WINDOW_H,
         0.1f, 100.0f);
     LNCamera_SetLookAt(camera,
-        0.0f, 0.0f, 3.0f,   // eye
-        0.0f, 0.0f, 0.0f,   // target
-        0.0f, 1.0f, 0.0f);  // up
+        0.0f, 0.0f, 3.0f,   // 視点
+        0.0f, 0.0f, 0.0f,   // 注視点
+        0.0f, 1.0f, 0.0f);  // 上方向
 
-    // 8. Main loop
+    // 8. メインループ
     LNGraphicsProfiler profilering = {};
     LNTransform identity = { 0,0,0,  0,0,0,1,  1,1,1 };
     LNBool quit = LN_FALSE;
@@ -92,7 +92,7 @@ int main() {
         LNGraphicsContext_EndFrame(graphicsContext);
     }
 
-    // 9. Cleanup
+    // 9. 解放
     LNObject_Release(mesh);
     LNObject_Release(material);
     LNObject_Release(shader);

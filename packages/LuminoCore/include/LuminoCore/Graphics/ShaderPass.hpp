@@ -181,7 +181,7 @@ private:
     rhi::BindGroupLayoutDesc m_objectLayoutDesc;
     uint64_t m_objectUBOSize = 0;
 
-    /** 生存インスタンス数。ShaderPass は生成・破棄がまれなので単純なカウンタで足りる。 */
+    /** 生存インスタンス数。ShaderPass は生成と破棄がまれなので単純なカウンタで足りる。 */
     static int32_t s_liveCount;
 };
 

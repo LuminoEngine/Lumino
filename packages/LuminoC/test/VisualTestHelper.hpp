@@ -6,16 +6,16 @@
 
 namespace VisualTest {
 
-/** Save RGBA8 pixel data to a PNG file. */
+/** RGBA8 ピクセルデータを PNG ファイルに保存する。 */
 bool savePng(const char* path, const uint8_t* data, uint32_t width, uint32_t height);
 
-/** Load a PNG file as RGBA8 pixel data. */
+/** PNG ファイルを RGBA8 ピクセルデータとして読み込む。 */
 bool loadPng(const char* path, std::vector<uint8_t>& outData, uint32_t& outWidth, uint32_t& outHeight);
 
 /**
- * Compare two RGBA8 images with tolerance.
- * @param passRate  0-100, percentage of pixels that must match within tolerance.
- * @return true if the images match within the given tolerance.
+ * 2 枚の RGBA8 画像を許容誤差付きで比較する。
+ * @param passRate  0-100。許容誤差内で一致しなければならないピクセルの割合 (%)。
+ * @return 許容誤差内で画像が一致すれば true。
  */
 bool compareImages(
     const uint8_t* actual, uint32_t actualW, uint32_t actualH,
@@ -23,15 +23,15 @@ bool compareImages(
     int passRate = 95);
 
 /**
- * Compare captured pixels against a reference image.
- * If the environment variable LN_UPDATE_REFERENCES is set, saves the captured
- * image as the new reference instead of comparing.
- * @param name        Test name (used as filename, e.g. "ClearScreen")
- * @param data        RGBA8 pixel data
- * @param width       Image width
- * @param height      Image height
- * @param dataDir     Base directory for expected/ subfolder
- * @return true if comparison passes or reference was updated.
+ * キャプチャしたピクセルを参照画像と比較する。
+ * 環境変数 LN_UPDATE_REFERENCES が設定されている場合は、比較せずにキャプチャした
+ * 画像を新しい参照画像として保存する。
+ * @param name        テスト名 (ファイル名として使用。例: "ClearScreen")
+ * @param data        RGBA8 ピクセルデータ
+ * @param width       画像の幅
+ * @param height      画像の高さ
+ * @param dataDir     expected/ サブフォルダの基準ディレクトリ
+ * @return 比較に合格したか、参照画像を更新した場合は true。
  */
 bool captureAndCompare(
     const char* name,

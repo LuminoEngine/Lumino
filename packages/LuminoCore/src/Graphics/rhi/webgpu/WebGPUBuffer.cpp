@@ -16,7 +16,7 @@ VoidResult WebGPUBuffer::init(WebGPUDevice* device, const BufferDesc& desc) {
     if (desc.usage & BufferUsage::Storage) usage |= WGPUBufferUsage_Storage;
     if (desc.usage & BufferUsage::CopySrc) usage |= WGPUBufferUsage_CopySrc;
     if (desc.usage & BufferUsage::CopyDst) usage |= WGPUBufferUsage_CopyDst;
-    // Always allow CopyDst so we can upload via wgpuQueueWriteBuffer.
+    // wgpuQueueWriteBuffer でアップロードできるよう、常に CopyDst を許可する。
     usage |= WGPUBufferUsage_CopyDst;
 
     WGPUBufferDescriptor bufferDesc = WGPU_BUFFER_DESCRIPTOR_INIT;

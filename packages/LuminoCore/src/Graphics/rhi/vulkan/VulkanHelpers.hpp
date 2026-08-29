@@ -179,7 +179,7 @@ public:
         s.compareOp = toVkCompareOp(face.compare);
         s.compareMask = readMask;
         s.writeMask = writeMask;
-        s.reference = 0; // set dynamically via vkCmdSetStencilReference
+        s.reference = 0; // vkCmdSetStencilReference で動的に設定する
         return s;
     }
 

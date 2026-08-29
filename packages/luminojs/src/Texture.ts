@@ -25,7 +25,6 @@ export class Texture extends LuminoObject implements ResidentResource {
     get height(): number { return this._height; }
 
     /**
-     * Create a render target texture with a specific format.
      * 指定フォーマットのレンダーターゲットテクスチャを作成します。
      * Sampled かつ RenderTarget として使用できます。(Residency 対象外、ctx 必須)
      * @param ctx    GraphicsContext
@@ -49,7 +48,6 @@ export class Texture extends LuminoObject implements ResidentResource {
     }
 
     /**
-     * Create a depth-stencil texture.
      * 深度ステンシルテクスチャを作成します。
      * 作成されたテクスチャは `DepthStencilAttachmentDesc.depthBuffer` に指定して使用します。(Residency 対象外、ctx 必須)
      * @param ctx    GraphicsContext
@@ -73,7 +71,7 @@ export class Texture extends LuminoObject implements ResidentResource {
 
     /**
      * 画像ファイルのバイト列 (PNG, JPG, BMP, TGA 等) からテクスチャを定義する。
-     * 呼び出し時点で画像をデコードし、幅・高さが即座に参照可能になる。
+     * 呼び出し時点で画像をデコードし、幅と高さが即座に参照可能になる。
      * GPU アップロードは最初の描画時に遅延実行される。
      * @param data 画像ファイルのバイト列
      */
@@ -112,8 +110,7 @@ export class Texture extends LuminoObject implements ResidentResource {
     }
 
     /**
-     * Define a texture from decoded pixel data (e.g., from createImageBitmap).
-     * デコード済みの生ピクセルデータからテクスチャを定義します。
+     * デコード済みの生ピクセルデータ (createImageBitmap の結果など) からテクスチャを定義します。
      * @param data   生ピクセルデータ (format で指定されたフォーマットに従う)
      * @param width  幅 (ピクセル)
      * @param height 高さ (ピクセル)
@@ -134,7 +131,7 @@ export class Texture extends LuminoObject implements ResidentResource {
         return tex;
     }
 
-    /** Fetch an image from a URL and define a texture. */
+    /** URL から画像を取得してテクスチャを定義します。 */
     static async loadFromURL(url: string): Promise<Texture> {
         const resp = await fetch(url);
         if (!resp.ok) throw new Error(`Failed to fetch texture: ${resp.status} ${url}`);
@@ -143,8 +140,8 @@ export class Texture extends LuminoObject implements ResidentResource {
     }
 
     /**
-     * @internal Called by Renderer / Material during draw time to guarantee the
-     * GPU resource exists. Safe to call repeatedly; only uploads when needed.
+     * @internal 描画時に Renderer / Material から呼ばれ、GPU リソースの存在を保証する。
+     * 繰り返し呼んでも安全で、必要なときだけアップロードする。
      */
     ensure(ctx: GraphicsContext): void {
         if (!this._isResidencyTarget) return;
@@ -154,7 +151,7 @@ export class Texture extends LuminoObject implements ResidentResource {
         }
 
         if (this._handle !== 0) {
-            // Dirty re-upload: release the old handle first.
+            // dirty による再アップロード: 先に古いハンドルを解放する。
             (API.LNObject_Release as (h: number) => number)(this._handle);
             this._handle = 0;
         }
@@ -183,8 +180,8 @@ export class Texture extends LuminoObject implements ResidentResource {
     }
 
     /**
-     * @internal Release the GPU resource while keeping source data.
-     * Called by ResidencyManager on GC, and by dispose().
+     * @internal ソースデータは保持したまま GPU リソースを解放する。
+     * ResidencyManager の GC と dispose() から呼ばれる。
      */
     evict(): void {
         if (this._handle === 0) return;

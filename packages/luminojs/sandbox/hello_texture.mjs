@@ -1,7 +1,7 @@
-// HelloTexture sandbox
+// HelloTexture サンドボックス
 //
-// Loads a PNG texture and renders it on a quad mesh using an Unlit material.
-// Equivalent to packages/LuminoC/examples/HelloTexture/Main.cpp.
+// PNG テクスチャをロードし、Unlit マテリアルで四角形メッシュに描画する。
+// packages/LuminoC/examples/HelloTexture/Main.cpp と同等。
 
 import {
     Runtime,
@@ -23,7 +23,7 @@ function appendLog(line) {
 }
 
 try {
-    // 1. Load WASM module
+    // 1. WASM モジュールをロードする
     await Runtime.initialize({
         wasmPath: "../lib/LuminoC.wasm",
         print:    (t) => appendLog("[stdout] " + t),
@@ -32,25 +32,25 @@ try {
     appendLog("Runtime initialized.");
     appendLog("Build timestamp: " + Runtime.getBuildTimestamp());
 
-    // 2. Initialize Lumino instance (creates WebGPU device)
+    // 2. Lumino インスタンスを初期化する (WebGPU デバイスが作成される)
     await Instance.initialize({ preferredBackend: GraphicsBackend.WebGPU });
     appendLog("Instance initialized.");
 
-    // 3. Create Window from canvas
+    // 3. canvas から Window を作成する
     const win = await Window.createFromCanvas("#my_canvas", 1280, 720);
     const ctx = win.getGraphicsContext();
     appendLog("Window + GraphicsContext created.");
 
-    // 4. Load texture
+    // 4. テクスチャをロードする
     const texture = await Texture.loadFromURL(ctx, "./assets/picture1.png");
     appendLog("Texture loaded.");
 
-    // 5. Create Unlit material with texture
+    // 5. テクスチャ付きの Unlit マテリアルを作成する
     const material = Material.createUnlit(ctx);
     material.setMainTexture(texture);
     appendLog("Material created.");
 
-    // 6. Create quad mesh (4 vertices, 6 indices, CCW winding)
+    // 6. 四角形メッシュを作成する (頂点 4 つ、インデックス 6 つ、CCW ワインディング)
     //   v0(-0.5, 0.5) --- v1(0.5, 0.5)
     //      |           /      |
     //   v2(-0.5,-0.5) --- v3(0.5,-0.5)
@@ -64,13 +64,13 @@ try {
     mesh.setMaterial(0, material);
     appendLog("Mesh created.");
 
-    // 7. Create perspective camera
+    // 7. 透視投影カメラを作成する
     const camera = Camera.create();
     camera.setPerspective(60 * Math.PI / 180, 1280 / 720, 0.1, 100);
     camera.setLookAt(0, 0, 3, 0, 0, 0, 0, 1, 0);
     appendLog("Camera created.");
 
-    // 8. Render loop
+    // 8. 描画ループ
     const identity = { position: [0, 0, 0], rotation: [0, 0, 0, 1], scale: [1, 1, 1] };
 
     function frame() {

@@ -47,18 +47,18 @@ void Material::setFloat(const std::string& name, float value) {
 
 void Material::setColor(const Color& color) {
     m_baseColor = color;
-    // Write to "color" field within any CB member named in $Global scope.
-    // For builtin shaders, the CB is u_params with layout { float4 color; ... }
-    // The color field is at offset 0 within the CB, and the CB itself is at the
-    // offset of the "u_params" member + 0 (color field).
-    // Since $Global CB packs bare uniforms AND explicit CBs, u_params offset
-    // represents where the CB data starts in the $Global buffer.
-    // However, with ConstantBuffer<MaterialParams>, the CB is a separate binding.
-    // In our current layout, there is an implicit $Global CB (binding 0) and an
-    // explicit u_params CB (binding 1). The materialParamBufferSize comes from
-    // the *first* ConstantBuffer in the $Material block.
-    // For simplicity: write the entire color as the first 16 bytes of the buffer.
-    // This works because BasicLit's MaterialParams starts with float4 color.
+    // $Global スコープで名前付けされた CB メンバ内の "color" フィールドに書き込む。
+    // 組み込みシェーダでは CB は u_params で、レイアウトは { float4 color; ... }。
+    // color フィールドは CB 内のオフセット 0 にあり、CB 自体は "u_params" メンバの
+    // オフセット + 0 (color フィールド) の位置にある。
+    // $Global CB はベアな uniform と明示的な CB の両方をパックするため、u_params の
+    // オフセットは $Global バッファ内で CB データが始まる位置を表す。
+    // ただし ConstantBuffer<MaterialParams> の場合、CB は別のバインディングになる。
+    // 現在のレイアウトでは、暗黙の $Global CB (binding 0) と明示的な u_params CB
+    // (binding 1) がある。materialParamBufferSize は $Material ブロック内の
+    // *最初の* ConstantBuffer から得られる。
+    // 単純化のため、色をバッファの先頭 16 バイトとしてそのまま書き込む。
+    // BasicLit の MaterialParams が float4 color から始まるので、これで動作する。
     if (m_paramBuffer.size() >= sizeof(float) * 4) {
         float rgba[4] = { color.r, color.g, color.b, color.a };
         std::memcpy(m_paramBuffer.data(), rgba, sizeof(rgba));
@@ -67,7 +67,7 @@ void Material::setColor(const Color& color) {
 }
 
 void Material::setSpecular(const Color& color, float shininess) {
-    // Write to "specular" field at offset 16 (after float4 color)
+    // オフセット 16 (float4 color の後) の "specular" フィールドに書き込む
     if (m_paramBuffer.size() >= sizeof(float) * 8) {
         float spec[4] = { color.r, color.g, color.b, shininess };
         std::memcpy(m_paramBuffer.data() + sizeof(float) * 4, spec, sizeof(spec));
@@ -136,8 +136,8 @@ void Material::setDepthWriteEnabled(bool enabled) { m_depthWriteEnabled = enable
 
 // ------ MaterialFactory -----------------------------------------------------------------------------------------------------------------
 
-// Register a ShaderPass on a Material, using the pass's own name as key.
-// The first pass registered becomes the "default" pass.
+// パス自身の名前をキーとして、Material に ShaderPass を登録する。
+// 最初に登録されたパスが「既定」のパスになる。
 void MaterialFactory::registerPass(Material* mat, Ref<ShaderPass> pass) {
     const std::string& name = pass->passName();
     if (!mat->m_defaultShaderPass) {
@@ -153,8 +153,8 @@ void MaterialFactory::registerPass(Material* mat, Ref<ShaderPass> pass) {
     mat->m_shaderPasses.push_back(std::move(pass));
 }
 
-// Initialize Material's $Material param buffer from the default pass's reflection.
-// Writes a default white color into the first float4 if present.
+// 既定パスのリフレクション情報から Material の $Material パラメータバッファを初期化する。
+// 先頭の float4 があれば、既定値として白を書き込む。
 void MaterialFactory::initParamBufferFromDefaultPass(Material* mat) {
     auto bufSize = mat->m_defaultShaderPass->materialParamBufferSize();
     if (bufSize > 0) {
@@ -190,7 +190,7 @@ Result<Ref<Material>> MaterialFactory::createUnlit(GraphicsModule* module) {
 Result<Ref<Material>> MaterialFactory::createBasicLit(GraphicsModule* module) {
     auto result = createMaterialFromBuiltin(module, BuiltinShader::BasicLit);
     if (!result) return result;
-    // Set default specular for BasicLit
+    // BasicLit の既定のスペキュラを設定する
     auto& mat = *result;
     mat->setSpecular(Color::white(), 32.0f);
     return result;

@@ -1,16 +1,16 @@
-// BasicLit.slang — Blinn-Phong ライティング (1 Directional Light)
+// BasicLit.slang - Blinn-Phong ライティング (1 Directional Light)
 //
-// Descriptor set layout (assigned by Slang):
-//   Set 0 (per-material): $Global uniforms (u_params, u_baseTexture, u_baseSampler)
-//   Set 1 (per-view):     viewData     — ViewParams (camera)
-//   Set 2 (per-scene):    sceneData    — SceneParams (lighting)
-//   Set 3 (per-object):   objectData   — ObjectParams (implicit CB)
+// ディスクリプタセットのレイアウト (Slang が割り当てる):
+//   Set 0 (マテリアル単位):   $Global uniforms (u_params, u_baseTexture, u_baseSampler)
+//   Set 1 (ビュー単位):       viewData     - ViewParams (カメラ)
+//   Set 2 (シーン単位):       sceneData    - SceneParams (ライティング)
+//   Set 3 (オブジェクト単位): objectData   - ObjectParams (暗黙の CB)
 
 import lumino;
 
 struct MaterialParams {
-    float4 color;      // base color (rgba)
-    float4 specular;   // xyz = specular color, w = shininess
+    float4 color;      // ベースカラー (rgba)
+    float4 specular;   // xyz = スペキュラ色, w = 光沢度
 };
 
 uniform ConstantBuffer<MaterialParams> u_params;

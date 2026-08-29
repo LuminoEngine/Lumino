@@ -38,7 +38,7 @@ float depth = u_gbufferB.SampleLevel(u_gbufferBSampler, uv, 0).w;
 
 `SampleLevel()` は implicit derivatives を使わないため、non-uniform control flow 内でも呼び出せる。SSR のレイマーチなど post-process での参照では LOD=0 固定で問題ない場合がほとんど。
 
-フラグメントシェーダーのトップレベル (ループ・分岐の外) での `.Sample()` 呼び出しは uniform control flow であり変更不要。
+フラグメントシェーダーのトップレベル (ループや分岐の外) での `.Sample()` 呼び出しは uniform control flow であり変更不要。
 
 ### 発生事例
 

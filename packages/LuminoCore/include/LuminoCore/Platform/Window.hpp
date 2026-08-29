@@ -15,7 +15,7 @@ struct GraphicsContextDesc;
 
 namespace ln::platform {
 
-/** Window creation descriptor. */
+/** ウィンドウ作成の記述子。 */
 struct WindowDesc {
     std::string title = "Lumino";
     uint32_t width = 1280;
@@ -28,7 +28,7 @@ struct WindowDesc {
     std::string canvasSelector;
 };
 
-/** Platform-specific window handle. */
+/** プラットフォーム固有のウィンドウハンドル。 */
 struct NativeWindowHandle {
     void* glfwWindow = nullptr;
     /**
@@ -38,7 +38,7 @@ struct NativeWindowHandle {
     const char* canvasSelector = nullptr;
 };
 
-/** Platform window abstraction. */
+/** プラットフォームのウィンドウの抽象化。 */
 class PlatformWindow : public ln::Object {
 public:
     ~PlatformWindow() override;
@@ -46,19 +46,19 @@ public:
     PlatformWindow(const PlatformWindow&) = delete;
     PlatformWindow& operator=(const PlatformWindow&) = delete;
 
-    /** Create a platform window with an attached graphics context. */
+    /** グラフィックスコンテキストを紐づけたプラットフォームウィンドウを作成する。 */
     static Result<Ref<PlatformWindow>> create(GraphicsModule* module, const WindowDesc& desc, const GraphicsContextDesc& gfxDesc);
 
-    /** Poll events and return false if the window should close. */
+    /** イベントをポーリングし、ウィンドウを閉じるべきなら false を返す。 */
     bool processEvents();
 
-    /** Get the native window handle. */
+    /** ネイティブウィンドウハンドルを取得する。 */
     NativeWindowHandle nativeHandle() const;
 
-    /** Get framebuffer size in pixels. */
+    /** フレームバッファのサイズをピクセル単位で取得する。 */
     void framebufferSize(uint32_t& width, uint32_t& height) const;
 
-    /** Get the graphics context attached to this window. May be nullptr. */
+    /** このウィンドウに紐づいたグラフィックスコンテキストを取得する。nullptr の場合もある。 */
     GraphicsContext* graphicsContext() const;
 
 private:

@@ -7,17 +7,17 @@
 
 namespace ln {
 
-/** A sub-range of a mesh's index buffer, associated with a material. */
+/** マテリアルに対応付けられた、メッシュのインデックスバッファの部分範囲。 */
 struct SubMesh {
     uint32_t indexOffset = 0;
     uint32_t indexCount = 0;
     uint32_t materialIndex = 0;
 };
 
-/** A mesh containing vertex/index GPU buffers and submesh ranges. */
+/** 頂点/インデックスの GPU バッファとサブメッシュの範囲を持つメッシュ。 */
 class Mesh : public Object {
 public:
-    /** Create a mesh from CPU data and upload to GPU. */
+    /** CPU 側のデータからメッシュを作成し、GPU へアップロードします。 */
     static Result<Ref<Mesh>> create(
         rhi::Device* device,
         const std::vector<Vertex>& vertices,
@@ -25,20 +25,20 @@ public:
         const std::vector<SubMesh>& submeshes,
         rhi::PrimitiveTopology topology = rhi::PrimitiveTopology::TriangleList);
 
-    /** Create a dynamic mesh with host-visible buffers for per-frame CPU updates. */
+    /** フレームごとの CPU 更新用に、ホストから見えるバッファを持つ動的メッシュを作成します。 */
     static Result<Ref<Mesh>> createDynamic(
         rhi::Device* device,
         uint32_t maxVertexCount,
         uint32_t maxIndexCount,
         rhi::PrimitiveTopology topology = rhi::PrimitiveTopology::TriangleList);
 
-    /** Update vertex data (only valid for dynamic meshes). */
+    /** 頂点データを更新します (動的メッシュでのみ有効)。 */
     Result<void> updateVertices(uint32_t firstVertex, const Vertex* vertices, uint32_t count);
 
-    /** Update index data (only valid for dynamic meshes). */
+    /** インデックスデータを更新します (動的メッシュでのみ有効)。 */
     Result<void> updateIndices(uint32_t firstIndex, const uint32_t* indices, uint32_t count);
 
-    /** Replace the submesh array and resize material slots accordingly. */
+    /** サブメッシュ配列を置き換え、それに合わせてマテリアルスロットをリサイズします。 */
     void setSubmeshes(const SubMesh* submeshes, uint32_t count);
 
     rhi::Buffer* vertexBuffer() const { return m_vertexBuffer.get(); }
@@ -46,7 +46,7 @@ public:
     const std::vector<SubMesh>& submeshes() const { return m_submeshes; }
     rhi::PrimitiveTopology topology() const { return m_topology; }
 
-    /** Material slots for this mesh. One per unique materialIndex used in submeshes. */
+    /** このメッシュのマテリアルスロット。サブメッシュで使われる materialIndex ごとに 1 つ。 */
     std::vector<Ref<Material>>& materials() { return m_materials; }
     const std::vector<Ref<Material>>& materials() const { return m_materials; }
 

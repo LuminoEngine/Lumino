@@ -19,7 +19,7 @@ struct RenderObject {
     Transform transform;
 };
 
-/** Lighting parameters for the forward renderer. */
+/** フォワードレンダラーのライティングパラメータ。 */
 struct DirectionalLight {
     Vector3 direction = Vector3{0.0f, -1.0f, 0.5f};
     Color color       = Color::white();
@@ -41,12 +41,12 @@ class ForwardRenderer : public RefObject {
 public:
     static Result<Ref<ForwardRenderer>> create(GraphicsContext* ctx);
 
-    // ---- Access the underlying Renderer ----
+    // ---- 下層の Renderer へのアクセス ----
 
-    /** The core Renderer. Use this to implement custom multi-pass rendering. */
+    /** コアの Renderer。カスタムのマルチパスレンダリングを実装するときに使用します。 */
     Renderer* renderer() const { return m_renderer; }
 
-    // ---- Forwarded Renderer API (convenience) ----
+    // ---- Renderer API の転送 (簡易版) ----
 
     rhi::TextureFormat      colorFormat()           const { return m_renderer->colorFormat(); }
     rhi::TextureFormat      depthFormat()           const { return m_renderer->depthFormat(); }
@@ -63,17 +63,17 @@ public:
     Result<void> drawMesh(Mesh* mesh, const Transform& t)                                              { return m_renderer->drawMeshImmediate(mesh, t); }
     Result<void> drawScreenRect(Material* mat)                                                         { return m_renderer->drawScreenRect(mat); }
 
-    // ---- ForwardRenderer-specific API ----
+    // ---- ForwardRenderer 固有の API ----
 
-    /** Set the directional light used by renderFrame(). */
+    /** renderFrame() が使用する平行光源を設定します。 */
     void setLight(const DirectionalLight& light) { m_light = light; }
 
     /**
-     * Render a single-pass frame (convenience wrapper).
-     * Uploads camera and lighting data to the View UBO, then calls
-     * beginFrame / beginRenderPass / drawMesh x N / endRenderPass / endFrame.
+     * シングルパスのフレームを描画します (簡易ラッパー)。
+     * カメラとライティングのデータを View UBO にアップロードし、
+     * beginFrame / beginRenderPass / drawMesh x N / endRenderPass / endFrame を呼び出します。
      *
-     * Equivalent to:
+     * 次のコードと等価です:
      * @code
      *   updateViewUBO(camera);
      *   renderer()->beginFrame();
@@ -98,12 +98,12 @@ public:
 private:
     ForwardRenderer() = default;
 
-    Renderer* m_renderer = nullptr;  // non-owning; owned by GraphicsContext
+    Renderer* m_renderer = nullptr;  // 非所有。GraphicsContext が所有する
 
-    // Per-frame scene data allocator (lighting) - double-buffered via DynamicUniformAllocator
+    // フレームごとのシーンデータ (ライティング) アロケータ - DynamicUniformAllocator でダブルバッファリング
     std::unique_ptr<DynamicUniformAllocator> m_sceneAllocator;
 
-    // Reflection-based scene set index
+    // リフレクションから得たシーンセットのインデックス
     int16_t m_sceneSetIndex = -1;
 
     DirectionalLight m_light;

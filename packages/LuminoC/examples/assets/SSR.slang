@@ -1,14 +1,14 @@
-// SSR.slang — Screen Space Reflection (ray marching + PBR composite)
+// SSR.slang - スクリーンスペースリフレクション (レイマーチング + PBR 合成)
 //
-// Full-screen post-process pass.
-// Inputs (new GBuffer spec, see GBuffer.slang):
-//   u_gbufferA — [Albedo.rgb, _]            (RGBA8_UNORM)
-//   u_gbufferB — [WorldNormal.xyz, Depth]   (RGBA32_FLOAT)
-//                Depth = -viewPos.z (linear view-space distance, +Z behind camera)
-//   u_gbufferC — [Metallic, Roughness, AO, _] (RGBA8_UNORM, glTF Metal-Roughness)
-// Output:
-//   Composited scene color with screen-space reflections
-// スクリーンスペース・リフレクション (SSR)
+// フルスクリーンのポストプロセスパス。
+// 入力 (新しい GBuffer 仕様。GBuffer.slang を参照):
+//   u_gbufferA - [Albedo.rgb, _]            (RGBA8_UNORM)
+//   u_gbufferB - [WorldNormal.xyz, Depth]   (RGBA32_FLOAT)
+//                Depth = -viewPos.z (ビュー空間の線形距離。+Z はカメラの後方)
+//   u_gbufferC - [Metallic, Roughness, AO, _] (RGBA8_UNORM, glTF Metal-Roughness)
+// 出力:
+//   スクリーンスペース反射を合成したシーンカラー
+// スクリーンスペースリフレクション (SSR)
 // https://zenn.dev/mebiusbox/articles/43ecf1bb12831c
 import lumino;
 
@@ -49,7 +49,7 @@ float4 fsMain(VSOutput input) : SV_TARGET {
     float  depth       = gbB.w; // 遠い方が値が大きい。max は far plane.
     //return float4(depth/10.0f, 0, 0, 1);
 
-    // Skip pixels with no geometry (cleared depth = 0)
+    // ジオメトリのないピクセルはスキップ (クリア後の深度 = 0)
     if (depth <= 0.0) {
         return sceneColor;
     }
@@ -59,12 +59,12 @@ float4 fsMain(VSOutput input) : SV_TARGET {
     float metallic  = 0.0;//gbC.r;
     float roughness = 0.0;//gbC.g;
 
-    // Fully rough surfaces have no usable specular reflection — skip ray march.
+    // 完全にラフな表面には使えるスペキュラ反射がない - レイマーチをスキップする。
     if (roughness >= 1.0) {
         return sceneColor;
     }
 
-    // [-1..1] NDC space.
+    // [-1..1] の NDC 空間。
     // 左上が (-1,-1), 右下が (1,1), 中央が (0,0).
     float2 ndc = input.uv * 2.0 - 1.0;
     //return float4(ndc, 0, 1);
@@ -88,7 +88,7 @@ float4 fsMain(VSOutput input) : SV_TARGET {
     // マイナスが付いてるのに注意。(Lumino は godot などと同様カメラの前方を -Z としている)
     //return float4(viewDir.xy, viewDir.z, 1);
 
-    // depth = -viewPos.z, viewDir.z < 0 (camera looks along -Z)
+    // depth = -viewPos.z, viewDir.z < 0 (カメラは -Z 方向を向く)
     // viewPos は、現在のピクセルに映っているジオメトリのビュー空間での位置。
     // カメラから見たレイがジオメトリ表面と当たった点のビュー空間座標と考えてもOK。
     // 上が Y+, 奥が -Z になるのに注意。
@@ -103,7 +103,7 @@ float4 fsMain(VSOutput input) : SV_TARGET {
     const float3 reflected = reflect(-V, N);
     //return float4(reflected, 1);
 
-    // SSR ray-march parameters
+    // SSR レイマーチのパラメータ
     // const float stepSize  = u_params.ssrSettings.y;
     // const float thickness = u_params.ssrSettings.z;
     // const float maxSteps  = u_params.ssrSettings.w;
@@ -113,13 +113,13 @@ float4 fsMain(VSOutput input) : SV_TARGET {
     const float thickness =  0.3f;
     const float maxSteps  = 128.0f; // _Iterations
 
-    // PBR: F0 (Metal-Roughness workflow, glTF 2.0)
+    // PBR: F0 (Metal-Roughness ワークフロー, glTF 2.0)
     float3 F0 = lerp(float3(0.04, 0.04, 0.04), sceneColor.rgb, metallic);
     float NdotV = saturate(dot(N, V));
     float3 fresnel = F0 + (1.0 - F0) * pow(1.0 - NdotV, 5.0);
     float roughnessFade = 1.0 - roughness;
 
-    // Ray march in view space, project to screen each step.
+    // ビュー空間でレイマーチし、各ステップでスクリーンへ投影する。
     float3 rayPos = viewPos;
     float3 reflectionRGB = float3(0.0, 0.0, 0.0);
     float  reflectionStrength = 0.0;

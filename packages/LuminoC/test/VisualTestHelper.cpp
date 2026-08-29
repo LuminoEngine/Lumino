@@ -23,7 +23,7 @@ bool savePng(const char* path, const uint8_t* data, uint32_t width, uint32_t hei
 
 bool loadPng(const char* path, std::vector<uint8_t>& outData, uint32_t& outWidth, uint32_t& outHeight) {
     int w, h, channels;
-    uint8_t* pixels = stbi_load(path, &w, &h, &channels, 4); // force RGBA
+    uint8_t* pixels = stbi_load(path, &w, &h, &channels, 4); // RGBA に強制
     if (!pixels) return false;
 
     outWidth = static_cast<uint32_t>(w);
@@ -34,7 +34,7 @@ bool loadPng(const char* path, std::vector<uint8_t>& outData, uint32_t& outWidth
     return true;
 }
 
-// Sample a pixel with clamped coordinates.
+// 座標をクランプしてピクセルをサンプリングする。
 static void samplePixel(const uint8_t* data, uint32_t w, uint32_t h,
                          int x, int y, float out[4]) {
     x = std::max(0, std::min(x, static_cast<int>(w) - 1));
@@ -45,7 +45,7 @@ static void samplePixel(const uint8_t* data, uint32_t w, uint32_t h,
     }
 }
 
-// 3x3 neighborhood average (reduces anti-aliasing noise).
+// 3x3 近傍の平均 (アンチエイリアスによるノイズを減らす)。
 static void mixPixel(const uint8_t* data, uint32_t w, uint32_t h,
                      int cx, int cy, float out[4]) {
     out[0] = out[1] = out[2] = out[3] = 0.0f;
@@ -76,7 +76,7 @@ bool compareImages(
             mixPixel(Expected, expectedW, expectedH, static_cast<int>(x), static_cast<int>(y), e);
 
             bool pixelPass = true;
-            for (int c = 0; c < 3; c++) { // ignore alpha
+            for (int c = 0; c < 3; c++) { // アルファは無視
                 if (std::abs(a[c] - e[c]) > colorRange) {
                     pixelPass = false;
                     break;
@@ -98,7 +98,7 @@ bool captureAndCompare(
     std::string expectedDir = dataDir + "/Expected";
     std::string expectedPath = expectedDir + "/" + name + ".png";
 
-    // If LN_UPDATE_REFERENCES is set, save as new reference.
+    // LN_UPDATE_REFERENCES が設定されていれば、新しい参照画像として保存する。
     if (forceUpdate || LN_UPDATE_REFERENCES) {
         if (savePng(expectedPath.c_str(), data, width, height)) {
             std::printf("[VisualTest] Updated reference: %s\n", expectedPath.c_str());
@@ -108,11 +108,11 @@ bool captureAndCompare(
         return false;
     }
 
-    // Load reference and compare.
+    // 参照画像を読み込んで比較する。
     std::vector<uint8_t> expectedData;
     uint32_t expectedW, expectedH;
     if (!loadPng(expectedPath.c_str(), expectedData, expectedW, expectedH)) {
-        // No reference image - save current capture and report.
+        // 参照画像がない - 現在のキャプチャを保存して報告する。
         std::string latestPath = dataDir + "/Expected/" + name + "-latest.png";
         savePng(latestPath.c_str(), data, width, height);
         std::printf("[VisualTest] Reference not found: %s\n", expectedPath.c_str());

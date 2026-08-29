@@ -1,10 +1,10 @@
 /**
- * BatchRendering example
+ * BatchRendering サンプル
  *
- * Demonstrates transparent batch rendering via Renderer.drawSprite
- * and Renderer.drawMesh. 1024 sprites with 2 alternating materials
- * are automatically batched and drawn with minimal draw calls.
- * A mesh is also drawn via the same Renderer.
+ * Renderer.drawSprite と Renderer.drawMesh による透過的なバッチ描画のデモ。
+ * 2 種類のマテリアルを交互に使う 1024 枚のスプライトが自動的にバッチ化され、
+ * 最小限のドローコールで描画される。
+ * 同じ Renderer でメッシュも描画する。
  */
 import {
     Runtime,
@@ -33,13 +33,13 @@ async function main() {
 
     const context = await GraphicsContext.createFromCanvas("#my_canvas");
 
-    // Textures
+    // テクスチャ
     const texture0 = await Texture.loadFromURL(
         new URL("../../public/picture1.png", import.meta.url).href);
     const texture1 = await Texture.loadFromURL(
         new URL("../../public/picture1.png", import.meta.url).href);
 
-    // Materials - two unlit materials
+    // マテリアル - Unlit マテリアルを 2 つ
     const material0 = Material.createUnlit();
     material0.setMainTexture(texture0);
     material0.setColor(1.0, 0.8, 0.8, 1.0);
@@ -48,7 +48,7 @@ async function main() {
     material1.setMainTexture(texture1);
     material1.setColor(0.8, 0.8, 1.0, 1.0);
 
-    // Camera (orthographic, origin at center)
+    // カメラ (正射影、原点は画面中央)
     const camera = Camera.create();
     const viewMatrix = Matrix4x4.makeLookAt(
         { x: 0, y: 0, z: 1 },
@@ -58,7 +58,7 @@ async function main() {
     const projMatrix = Matrix4x4.makeOrthographic(WINDOW_W, WINDOW_H, -1000, 1000);
     camera.setMatrices(viewMatrix, projMatrix);
 
-    // A simple quad mesh to demonstrate mixed sprite + mesh rendering
+    // スプライトとメッシュの混在描画を示すための簡単な四角形メッシュ
     const mesh = Mesh.create(
         [
             { position: [-50, 50, 0], normal: [0, 0, 1], uv: [0, 0], color: [1, 1, 1, 1], tangent: [1, 0, 0, 0] },
@@ -71,14 +71,14 @@ async function main() {
     );
     mesh.setMaterial(0, material0);
 
-    // Stats overlay
+    // 統計情報のオーバーレイ
     const statsEl = document.getElementById("stats")!;
     let lastTime = performance.now();
     let frameCount = 0;
     let fps = 0;
     let renderMs = 0;
 
-    // Render loop
+    // 描画ループ
     let frame = 0;
 
     function render() {
@@ -111,7 +111,7 @@ async function main() {
             camera,
         );
 
-        // Add sprites
+        // スプライトを追加する
         const cols = 32;
         const spacing = 18.0;
         const offsetX = -(cols * spacing) * 0.5;
@@ -139,7 +139,7 @@ async function main() {
             );
         }
 
-        // Add mesh
+        // メッシュを追加する
         const meshTransform: Transform = {
             position: [200, 200, 0],
             rotation: [0, 0, 0, 1],
@@ -150,7 +150,7 @@ async function main() {
         renderer.endRenderPass();
         context.endFrame();
 
-        // Measure render time and FPS
+        // 描画時間と FPS を計測する
         const t1 = performance.now();
         renderMs = t1 - t0;
         frameCount++;

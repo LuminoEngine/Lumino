@@ -2,14 +2,14 @@
 
 /**
  * @file rhi.hpp
- * WebGPU-style Rendering Hardware Interface for Lumino.
- * 
- * Design principles:
- *   - Resources are immutable after creation.
- *   - Pipeline state is pre-built.
- *   - Commands are encoded then submitted (two-phase).
- *   - Vulkan complexities (descriptor pools, pipeline caches, framebuffers)
- *     are hidden inside the backend.
+ * Lumino 向けの WebGPU スタイルの Rendering Hardware Interface。
+ *
+ * 設計方針:
+ *   - リソースは作成後に変更できない。
+ *   - パイプラインステートは事前に構築する。
+ *   - コマンドはエンコードしてから送信する (2 段階)。
+ *   - Vulkan の複雑な部分 (ディスクリプタプール、パイプラインキャッシュ、フレームバッファ)
+ *     はバックエンド内部に隠蔽する。
  */
 
 #include <LuminoBase/Types.hpp>
@@ -28,7 +28,7 @@ namespace ln::rhi {
 static const int kMaxMultiRenderTargets = 8;
 static const int kMaxBindGroupEntries = 16;
 
-// ------ Forward declarations ------
+// ------ 前方宣言 ------
 class Device;
 class SwapChain;
 class Buffer;
@@ -43,7 +43,7 @@ class RenderPipeline;
 class CommandBuffer;
 class RenderPass;
 
-// ------ Enums ------------------------------------------------------------------------------------------------------------------------------
+// ------ 列挙型 ------------------------------------------------------------------------------------------------------------------------------
 
 enum class Backend {
     Vulkan,
@@ -85,7 +85,7 @@ enum class TextureUsage : uint32_t {
     RenderTarget = 0x04,
     CopySrc      = 0x08,
     CopyDst      = 0x10,
-    DepthStencil = 0x20,  // depth/stencil attachment
+    DepthStencil = 0x20,  // デプス/ステンシルアタッチメント
 };
 inline TextureUsage operator|(TextureUsage a, TextureUsage b) {
     return static_cast<TextureUsage>(static_cast<uint32_t>(a) | static_cast<uint32_t>(b));
@@ -204,13 +204,13 @@ enum class AddressMode {
     ClampToEdge,
 };
 
-// ------ Descriptors ------------------------------------------------------------------------------------------------------------------
+// ------ 記述子 ------------------------------------------------------------------------------------------------------------------
 
 struct BufferDesc {
     uint64_t size = 0;
     BufferUsage usage = BufferUsage::Vertex;
     const void* initialData = nullptr;
-    bool mappable = false; ///< If true, buffer is host-visible even for Vertex/Index usage.
+    bool mappable = false; ///< true の場合、Vertex/Index 用途でもホストから見えるバッファになる。
 };
 
 struct TextureDesc {
@@ -220,7 +220,7 @@ struct TextureDesc {
     uint32_t mipLevels = 1;
     TextureFormat format = TextureFormat::RGBA8Unorm;
     TextureUsage usage = TextureUsage::Sampled;
-    const void* initialData = nullptr; ///< If non-null, pixel data uploaded via staging buffer.
+    const void* initialData = nullptr; ///< 非 null の場合、ピクセルデータをステージングバッファ経由でアップロードする。
 };
 
 // 既定値は ln::SamplerState (Material.hpp) と揃えてある。
@@ -302,7 +302,7 @@ struct BindGroupLayoutEntry {
     uint32_t binding = 0;
     ShaderStage visibility = ShaderStage::Vertex;
     BindingType type = BindingType::UniformBuffer;
-    bool hasDynamicOffset = false;  ///< Only valid for UniformBuffer/StorageBuffer.
+    bool hasDynamicOffset = false;  ///< UniformBuffer/StorageBuffer でのみ有効。
 };
 
 struct BindGroupLayoutDesc {
@@ -311,11 +311,11 @@ struct BindGroupLayoutDesc {
 
 struct BindGroupEntry {
     uint32_t binding = 0;
-    Buffer* buffer = nullptr;          // for uniform/storage
+    Buffer* buffer = nullptr;          // uniform/storage 用
     uint64_t offset = 0;
     uint64_t size = 0;
-    TextureView* textureView = nullptr; // for sampled texture
-    Sampler* sampler = nullptr;         // for sampler
+    TextureView* textureView = nullptr; // サンプルテクスチャ用
+    Sampler* sampler = nullptr;         // サンプラー用
 };
 
 struct PipelineLayoutDesc {
@@ -383,7 +383,7 @@ struct DeviceDesc {
     bool enableValidation = false;
 };
 
-// ------ Resource Interfaces --------------------------------------------------------------------------------------------------
+// ------ リソースのインターフェイス --------------------------------------------------------------------------------------------------
 
 class Buffer : public RHIObject {
 public:
@@ -448,9 +448,8 @@ class PipelineLayout : public RHIObject {
 public:
     virtual ~PipelineLayout() = default;
 
-    /** Create a BindGroup for the specified descriptor set index. */
     /**
-     * BindGroup を生成する。
+     * 指定したディスクリプタセットのインデックスに対応する BindGroup を生成する。
      * entries は呼び出し中しか参照しないため、呼び出し側はスタック配列を渡してよい。
      * entryCount は kMaxBindGroupEntries 以下であること (超過時はエラーを返す)。
      */
@@ -470,7 +469,7 @@ public:
     virtual ~RenderPass() = default;
     virtual const RenderPassLayoutDesc& layoutDesc() const = 0;
 
-    // Encoding methods
+    // エンコード用メソッド
     virtual void setPipeline(RenderPipeline* pipeline) = 0;
     virtual void setVertexBuffer(uint32_t slot, Buffer* buffer, uint64_t offset = 0) = 0;
     virtual void setIndexBuffer(Buffer* buffer, IndexFormat format, uint64_t offset = 0) = 0;
@@ -485,7 +484,7 @@ public:
     virtual void end() = 0;
 };
 
-// ------ Command Encoding --------------------------------------------------------------------------------------------------------
+// ------ コマンドのエンコード --------------------------------------------------------------------------------------------------------
 
 class CommandBuffer : public RHIObject {
 public:
@@ -499,9 +498,9 @@ public:
 class SwapChain : public RHIObject {
 public:
     virtual ~SwapChain() = default;
-    /** Acquire the next framebuffer texture view. Must be called once per frame. */
+    /** 次のフレームバッファのテクスチャビューを取得する。フレームごとに 1 回呼び出すこと。 */
     virtual TextureView* acquireNextTexture() = 0;
-    /** Present the current frame. */
+    /** 現在のフレームをプレゼントする。 */
     virtual void present() = 0;
     virtual uint32_t width() const = 0;
     virtual uint32_t height() const = 0;
@@ -518,14 +517,14 @@ public:
     virtual CommandBuffer* getCurrentCommandBuffer() = 0;
 };
 
-// ------ Device Limits -----------------------------------------------------------------------------------------------------------
+// ------ デバイスの制限値 -----------------------------------------------------------------------------------------------------------
 
 struct DeviceLimits {
     uint32_t minUniformBufferOffsetAlignment = 256;
     uint32_t maxUniformBufferRange = 65536;
 };
 
-// ------ Device (Factory) --------------------------------------------------------------------------------------------------------
+// ------ Device (ファクトリ) --------------------------------------------------------------------------------------------------------
 
 class Device : public RHIObject {
 public:
@@ -538,7 +537,7 @@ public:
 
     virtual ~Device() = default;
 
-    /** Create a device with the given backend. */
+    /** 指定したバックエンドでデバイスを作成する。 */
     static Result<Ref<Device>> create(const DeviceDesc& desc);
 
     /**
@@ -555,10 +554,10 @@ public:
         同期的に初期化されるバックエンドの既定実装は常に Ready を返す。 */
     virtual AsyncInitStatus pumpAsyncInit() { return AsyncInitStatus::Ready; }
 
-    /** Query device limits. */
+    /** デバイスの制限値を問い合わせる。 */
     virtual DeviceLimits deviceLimits() const = 0;
 
-    // Resource creation
+    // リソースの作成
     virtual Result<Ref<SwapChain>> createSwapChain(const SwapChainDesc& desc) = 0;
     virtual Result<Ref<Buffer>> createBuffer(const BufferDesc& desc) = 0;
     virtual Result<Ref<Texture>> createTexture(const TextureDesc& desc) = 0;
@@ -568,7 +567,7 @@ public:
     virtual Result<Ref<PipelineLayout>> createPipelineLayout(const PipelineLayoutDesc& desc) = 0;
     virtual Result<Ref<RenderPipeline>> createRenderPipeline(const RenderPipelineDesc& desc) = 0;
 
-    /** Write data to a buffer. Works on all backends including those without map/unmap support. */
+    /** バッファへデータを書き込む。map/unmap をサポートしないものを含む全バックエンドで動作する。 */
     virtual VoidResult writeBuffer(Buffer* dst, uint64_t dstOffset, const void* data, uint64_t size) = 0;
 
     /**
@@ -578,20 +577,20 @@ public:
      */
     virtual Result<std::vector<uint8_t>> readbackTexture(TextureView* view) = 0;
 
-    /** Wait for the device to become idle. */
+    /** デバイスがアイドルになるまで待機する。 */
     virtual void waitIdle() = 0;
 
-    /** Get the backend type of this device. */
+    /** このデバイスのバックエンド種別を取得する。 */
     virtual Backend backend() const = 0;
 
-    // ------ Device lost ------
+    // ------ デバイスロスト ------
 
     /** デバイスロスト状態か。バックエンドの検知イベントにより true になる。
         一度 true になったらこの Device インスタンスの寿命中は false に戻らない
         (復旧は新しい Device インスタンスで行う)。 */
     bool isDeviceLost() const { return m_deviceLost.load(std::memory_order_acquire); }
 
-    /** ロスト理由 (ログ・テレメトリ用)。未ロスト時は空文字列。 */
+    /** ロスト理由 (ログやテレメトリ用)。未ロスト時は空文字列。 */
     const std::string& deviceLostReason() const { return m_deviceLostReason; }
 
     /** バックエンド実装がロスト検知時に呼ぶ。

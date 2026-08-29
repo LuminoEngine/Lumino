@@ -24,15 +24,15 @@
 #include <LuminoCore/Graphics/Batch.hpp>
 
 //------------------------------------------------------------------------------
-// Internal helpers
+// 内部ヘルパ
 //------------------------------------------------------------------------------
 
 namespace {
 
 #ifdef __EMSCRIPTEN__
 //--------------------------------------
-// Wasm: route LuminoBase logger to stdout so Emscripten forwards it to
-// the browser console.log.
+// Wasm: LuminoBase のロガーを stdout に流し、Emscripten 経由でブラウザの
+// console.log へ転送させる。
 //
 // 出力書式 "[Lumino][X] file:line message" は luminojs 側がパースして
 // ログレベルを復元している (packages/luminojs/src/Logger.ts の
@@ -66,7 +66,7 @@ void ensureLoggerInstalled() {
 #endif // __EMSCRIPTEN__
 
 //--------------------------------------
-// Value-type wrappers for handle management
+// ハンドル管理のための値型ラッパー
 //--------------------------------------
 
 /** Camera は値型なので Object でラップしてハンドル管理に載せる。 */
@@ -75,7 +75,7 @@ public:
     ln::Camera camera;
 };
 
-/** Convert LNTransform pointer to ln::Transform (identity if null). */
+/** LNTransform ポインタを ln::Transform に変換する (null なら単位変換)。 */
 ln::Transform toLnTransform(const LNTransform* transform) {
     ln::Transform xform;
     if (transform) {
@@ -86,7 +86,7 @@ ln::Transform toLnTransform(const LNTransform* transform) {
     return xform;
 }
 
-/** Convert LNMatrix pointer to ln::Matrix4x4 (identity if null). */
+/** LNMatrix ポインタを ln::Matrix4x4 に変換する (null なら単位行列)。 */
 ln::Matrix4x4 toLnMatrix(const LNMatrix* matrix) {
     if (!matrix) return ln::Matrix4x4::identity();
     ln::Matrix4x4 m;
@@ -95,7 +95,7 @@ ln::Matrix4x4 toLnMatrix(const LNMatrix* matrix) {
 }
 
 //--------------------------------------
-// Shared: Object handle helpers
+// 共通: Object ハンドルのヘルパ
 //--------------------------------------
 
 /**
@@ -145,7 +145,7 @@ T* resolveObject(H handle) {
 }
 
 //--------------------------------------
-// Shared: Device lost helpers
+// 共通: デバイスロストのヘルパ
 //--------------------------------------
 
 /**
@@ -198,7 +198,7 @@ void warnStaleResourceSkipped(const char* what) {
 }
 
 //--------------------------------------
-// Shared: RHI helpers
+// 共通: RHI のヘルパ
 //--------------------------------------
 
 /** LNLoadOp → rhi::LoadOp 変換 */
@@ -222,10 +222,10 @@ ln::SortMode toLnSortMode(LNSortMode mode) {
 
 
 
-} // anonymous namespace
+} // 無名名前空間
 
 //------------------------------------------------------------------------------
-// Test
+// テスト
 //------------------------------------------------------------------------------
 
 int32_t LNHelloTest(int32_t value) {
@@ -521,7 +521,7 @@ void LNRenderPassDesc_Init(LNRenderPassDesc* desc) {
 }
 
 //------------------------------------------------------------------------------
-// LNGraphicsContext (continued)
+// LNGraphicsContext (続き)
 //------------------------------------------------------------------------------
 
 LNResult LNGraphicsContext_RequestCaptureBackbuffer(LNHandle graphicsContext) {
@@ -600,19 +600,19 @@ LNResult LNGraphicsContext_EndFrame(LNHandle graphicsContext) {
 
     if (!ctx->m_currentCmd) return LN_ERROR_INVALID_HANDLE;
 
-    // 1. Render DebugPrint overlay (records commands into the open command buffer).
+    // 1. DebugPrint オーバーレイを描画する (開いているコマンドバッファにコマンドを記録する)。
 #if !defined(__EMSCRIPTEN__)
     auto* dp = ctx->debugPrint();
     if (dp) {
-        (void)dp->render(ctx); // ignore error; best-effort overlay
+        (void)dp->render(ctx); // エラーは無視する (オーバーレイはベストエフォート)
     }
 #endif
 
-    // 2. Submit all recorded GPU commands.
+    // 2. 記録済みの GPU コマンドをすべて送信する。
     ctx->renderer()->endFrame();
     ctx->m_currentCmd = nullptr;
 
-    // 3. Present + update FPS stats.
+    // 3. Present と FPS 統計の更新。
     ctx->endFrame();
     return LN_OK;
 }
@@ -651,7 +651,7 @@ LNResult LNDebug_GetGraphicsProfiler(LNHandle graphicsContext, LNGraphicsProfile
 // ABI レイアウト同期の表明 (wasm32)
 //
 // 下記の構造体サイズは packages/luminojs/src/types.ts の SIZEOF_* 定数と一致して
-// いなければなりません。lumino.h の構造体を拡張・変更した場合は、必ず TS 側の
+// いなければなりません。lumino.h の構造体を拡張または変更した場合は、必ず TS 側の
 // SIZEOF_* 定数とシリアライズ処理 (Renderer.ts の _serializeDesc 等) も更新して
 // ください。同期崩れはヒープ外読み書き (未定義動作) を引き起こします。
 //
@@ -740,7 +740,7 @@ LNResult LNDebug_Print(LNHandle graphicsContext, const char* str) {
 }
 
 //------------------------------------------------------------------------------
-// LNTexture2D (file loading)
+// LNTexture2D (ファイル読み込み)
 //------------------------------------------------------------------------------
 
 LNResult LNTexture2D_LoadFromFile(
@@ -761,7 +761,7 @@ LNResult LNTexture2D_LoadFromFile(
     if (!texResult) return LN_ERROR_UNKNOWN;
 
     auto rhiTexture = std::move(*texResult);
-    // TODO: extract actual width/height from rhi::Texture if accessor is available
+    // TODO: rhi::Texture にアクセサがあれば実際の幅/高さを取り出す
     auto texture = ln::Ref<ln::Texture>::adopt(
         new ln::Texture(std::move(rhiTexture), 0, 0));
     *outHandle = wrapObjectFromCreate(texture.get());
@@ -1187,7 +1187,7 @@ LNResult LNMesh_Create(
     auto* ctx = resolveObject<ln::GraphicsContext>(graphicsContext);
     if (!ctx) return LN_ERROR_INVALID_HANDLE;
 
-    // Convert LNVertex[] → std::vector<ln::Vertex>
+    // LNVertex[] → std::vector<ln::Vertex> へ変換
     std::vector<ln::Vertex> verts(vertexCount);
     for (uint32_t i = 0; i < vertexCount; i++) {
         const auto& sv = vertices[i];
@@ -1199,10 +1199,10 @@ LNResult LNMesh_Create(
         dv.tangent  = {sv.tanX, sv.tanY, sv.tanZ, sv.tanW};
     }
 
-    // Convert indices
+    // インデックスを変換
     std::vector<uint32_t> idx(indices, indices + indexCount);
 
-    // Convert LNSubMesh[] → std::vector<ln::SubMesh>
+    // LNSubMesh[] → std::vector<ln::SubMesh> へ変換
     std::vector<ln::SubMesh> subs(submeshCount);
     for (uint32_t i = 0; i < submeshCount; i++) {
         subs[i].indexOffset   = submeshes[i].indexOffset;
@@ -1256,7 +1256,7 @@ LNResult LNMesh_UpdateVertices(
         return LN_OK;
     }
 
-    // Convert LNVertex[] → ln::Vertex[]
+    // LNVertex[] → ln::Vertex[] へ変換
     std::vector<ln::Vertex> verts(count);
     for (uint32_t i = 0; i < count; i++) {
         const auto& sv = vertices[i];
@@ -1343,7 +1343,7 @@ LNResult LNMesh_SetMaterial(LNHandle meshHandle, uint32_t materialIndex, LNHandl
     auto& materials = mesh->materials();
     if (materialIndex >= materials.size()) return LN_ERROR_INVALID_ARGUMENT;
 
-    // addRef because materials() stores Ref<Material>
+    // materials() は Ref<Material> を保持するため addRef する
     mat->addRef();
     materials[materialIndex] = ln::Ref<ln::Material>::adopt(mat);
 
@@ -1507,7 +1507,7 @@ LNResult LNRenderer_BeginRenderPass(
         }
     }
 
-    // デプス・ステンシルアタッチメント
+    // デプスステンシルアタッチメント
     ln::rhi::DepthStencilAttachment depthAttach;
     if (desc->depthStencil.depthBuffer != LN_NULL_HANDLE) {
         auto* tex = resolveObject<ln::Texture>(desc->depthStencil.depthBuffer);

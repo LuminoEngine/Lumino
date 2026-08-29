@@ -3,13 +3,13 @@
 
 namespace ln {
 
-/** TRS transform: position, rotation (quaternion), scale. */
+/** TRS トランスフォーム: 位置、回転 (クォータニオン)、スケール。 */
 struct Transform {
     Vector3    position = Vector3::zero();
     Quaternion rotation = Quaternion::identity();
     Vector3    scale    = Vector3::one();
 
-    /** Compose TRS into a model (world) matrix: T * R * S. */
+    /** TRS を合成してモデル (ワールド) 行列にする: T * R * S。 */
     Matrix4x4 matrix() const {
         return Matrix4x4::translate(position)
              * Matrix4x4::fromQuaternion(rotation)
@@ -17,9 +17,9 @@ struct Transform {
     }
 
     /**
-     * Inverse-transpose of the upper-left 3x3 for normal transformation.
-     * For uniform scale this equals the rotation matrix; for non-uniform
-     * scale the full inverse-transpose is needed.
+     * 法線変換用の、左上 3x3 の逆転置行列。
+     * 均一スケールでは回転行列と等しい。非均一スケールでは
+     * 完全な逆転置行列が必要になる。
      */
     Matrix4x4 normalMatrix() const {
         return matrix().inversed().transposed();

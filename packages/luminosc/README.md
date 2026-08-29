@@ -97,4 +97,4 @@ float4 fsMain(VSOutput input) : SV_Target { ... }
 
 ## .lcsh バイナリフォーマット
 
-チャンクベースのバイナリ形式です (シグネチャ `lcs2`)。`UnifiedShaderSerializer2::loadFromData()` でデシリアライズし、`UnifiedShader2` オブジェクトとして各ターゲットのコンパイル済みバイトコード・リフレクション情報にアクセスできます。詳細は [LuminoShader/README.md](../LuminoShader/README.md) を参照してください。
+チャンクベースのバイナリ形式です (シグネチャ `lcs2`)。`UnifiedShaderSerializer2::loadFromData()` でデシリアライズし、`UnifiedShader2` オブジェクトとして各ターゲットのコンパイル済みバイトコードとリフレクション情報にアクセスできます。詳細は [LuminoShader/README.md](../LuminoShader/README.md) を参照してください。

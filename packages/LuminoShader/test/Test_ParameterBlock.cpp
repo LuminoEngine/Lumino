@@ -23,7 +23,7 @@ TEST(Test_ParameterBlock2, ReflectParameterBlockLayout) {
     const auto& blocks = shader->parameterBlocks();
     ASSERT_EQ(blocks.size(), 3);
 
-    // Block 0: viewData (per-view) - implicit CB
+    // ブロック 0: viewData (ビュー単位) - 暗黙の CB
     {
         const auto& block = blocks[0];
         EXPECT_EQ(block.name, "viewData");
@@ -35,7 +35,7 @@ TEST(Test_ParameterBlock2, ReflectParameterBlockLayout) {
         EXPECT_GT(block.elements[0].constantBufferSize, 0);
     }
 
-    // Block 1: materialData (per-material) - explicit CB + Texture + Sampler
+    // ブロック 1: materialData (マテリアル単位) - 明示的な CB + Texture + Sampler
     {
         const auto& block = blocks[1];
         EXPECT_EQ(block.name, "materialData");
@@ -54,7 +54,7 @@ TEST(Test_ParameterBlock2, ReflectParameterBlockLayout) {
         EXPECT_EQ(block.elements[2].kind, ParameterBlockElementKind_SamplerState);
     }
 
-    // Block 2: objectData (per-object) - implicit CB
+    // ブロック 2: objectData (オブジェクト単位) - 暗黙の CB
     {
         const auto& block = blocks[2];
         EXPECT_EQ(block.name, "objectData");
@@ -70,14 +70,14 @@ TEST(Test_ParameterBlock2, ShaderPassLinking) {
     auto compiler = compileParameterBlock1();
     UnifiedShader2* shader = compiler->shader();
 
-    // Should have 1 global pass: "Forward"
+    // グローバルパスは "Forward" の 1 つだけのはず
     const auto& passes = shader->globalShaderPasses();
     ASSERT_EQ(passes.size(), 1);
     EXPECT_EQ(passes[0]->name, "Forward");
     EXPECT_EQ(passes[0]->vertexEntryPoint, "vsMain");
     EXPECT_EQ(passes[0]->fragmentEntryPoint, "fsMain");
 
-    // Each target should have a linked TargetShaderPass
+    // 各ターゲットにリンク済みの TargetShaderPass があるはず
     for (int t = ShaderTarget_SPIRV; t <= ShaderTarget_METAL; t++) {
         TargetShaderPassId2 tpId = passes[0]->getTargetShaderPassId(static_cast<ShaderTarget>(t));
         EXPECT_GE(tpId, 0);
@@ -86,7 +86,7 @@ TEST(Test_ParameterBlock2, ShaderPassLinking) {
         EXPECT_GE(tp->vertEntryPointId, 0);
         EXPECT_GE(tp->fragEntryPointId, 0);
 
-        // Merged binding layout should have bindings from both vertex and fragment
+        // マージ後のバインディングレイアウトには頂点とフラグメント両方のバインディングが含まれるはず
         EXPECT_FALSE(tp->bindingLayout.bindings.empty());
     }
 }
@@ -95,15 +95,15 @@ TEST(Test_ParameterBlock2, VertexAttributes) {
     auto compiler = compileParameterBlock1();
     UnifiedShader2* shader = compiler->shader();
 
-    // Get SPIRV vertex entry point
+    // SPIRV の頂点エントリポイントを取得する
     auto epResult = shader->getTargetEntryPoint(ShaderTarget_SPIRV, "vsMain");
     ASSERT_TRUE(epResult.has_value()) << epResult.error().message;
     TargetEntryPoint2* ep = epResult.value();
 
-    // Should have 5 vertex input attributes: POSITION, NORMAL, TEXCOORD, COLOR, TANGENT
+    // 頂点入力属性は POSITION, NORMAL, TEXCOORD, COLOR, TANGENT の 5 つのはず
     ASSERT_EQ(ep->inputAttributes.size(), 5);
 
-    // Check that expected usages are present
+    // 期待する usage がすべて含まれることを確認する
     bool hasPosition = false, hasNormal = false, hasTexCoord = false, hasColor = false, hasTangent = false;
     for (const auto& attr : ep->inputAttributes) {
         if (attr.usage == AttributeUsage_Position) hasPosition = true;
@@ -123,12 +123,12 @@ TEST(Test_ParameterBlock2, SerializeRoundTrip) {
     auto compiler = compileParameterBlock1();
     UnifiedShader2* shader = compiler->shader();
 
-    // Save
+    // 保存
     auto tempPath = std::filesystem::temp_directory_path() / "test_paramblock2.lcsh";
     auto saveResult = UnifiedShaderSerializer2::saveToFile(shader, tempPath);
     ASSERT_TRUE(saveResult.has_value()) << saveResult.error().message;
 
-    // Load
+    // 読み込み
     std::vector<uint8_t> fileData;
     {
         std::ifstream ifs(tempPath, std::ios::binary | std::ios::ate);
@@ -142,7 +142,7 @@ TEST(Test_ParameterBlock2, SerializeRoundTrip) {
     ASSERT_TRUE(loadResult.has_value()) << loadResult.error().message;
     UnifiedShader2* loaded = loadResult.value().get();
 
-    // Verify parameter blocks
+    // パラメータブロックを検証する
     const auto& origBlocks = shader->parameterBlocks();
     const auto& loadBlocks = loaded->parameterBlocks();
     ASSERT_EQ(origBlocks.size(), loadBlocks.size());
@@ -158,7 +158,7 @@ TEST(Test_ParameterBlock2, SerializeRoundTrip) {
         }
     }
 
-    // Verify global shader passes
+    // グローバルシェーダパスを検証する
     const auto& origPasses = shader->globalShaderPasses();
     const auto& loadPasses = loaded->globalShaderPasses();
     ASSERT_EQ(origPasses.size(), loadPasses.size());
@@ -169,12 +169,12 @@ TEST(Test_ParameterBlock2, SerializeRoundTrip) {
         EXPECT_EQ(origPasses[i]->computeEntryPoint, loadPasses[i]->computeEntryPoint);
     }
 
-    // Verify target entry points count
+    // ターゲットエントリポイントの数を検証する
     EXPECT_EQ(shader->targetEntryPoints().size(), loaded->targetEntryPoints().size());
 
-    // Verify target shader passes count
+    // ターゲットシェーダパスの数を検証する
     EXPECT_EQ(shader->targetShaderPasses().size(), loaded->targetShaderPasses().size());
 
-    // Clean up
+    // 後始末
     std::filesystem::remove(tempPath);
 }

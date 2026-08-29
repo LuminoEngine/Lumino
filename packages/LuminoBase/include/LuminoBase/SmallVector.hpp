@@ -11,7 +11,7 @@ namespace ln {
  * Capacity 個までの要素をヒープアロケーションなしで保持できます。
  * Capacity を超える要素を追加しようとした場合は assert で停止します。。
  *
- * 要素は trivially copyable な型に限定しているため、コピー・ムーブ・破棄は
+ * 要素は trivially copyable な型に限定しているため、コピー、ムーブ、破棄は
  * コンパイラが生成するものをそのまま使用します。
  *
  * @tparam T 要素の型

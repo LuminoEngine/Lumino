@@ -23,10 +23,10 @@ protected:
 private:
     VulkanDevice* m_device = nullptr;
     VkCommandBuffer m_cmd = VK_NULL_HANDLE;
-    VulkanRenderPass* m_encoder = nullptr; // non-owning; owned by m_renderPassCache
+    VulkanRenderPass* m_encoder = nullptr; // 所有しない。m_renderPassCache が所有する
     VkFence m_inFlightFences = VK_NULL_HANDLE;
 
-    // Cached RenderPass objects keyed by attachment layout
+    // アタッチメントレイアウトをキーとする RenderPass オブジェクトのキャッシュ
     std::unordered_map<RenderPassKey, Ref<VulkanRenderPass>, RenderPassKeyHash> m_renderPassCache;
 };
 

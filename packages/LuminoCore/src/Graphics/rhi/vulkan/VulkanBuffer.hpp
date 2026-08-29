@@ -7,9 +7,9 @@ class VulkanBuffer final : public Buffer {
 public:
     VulkanBuffer();
     /**
-     * @param deviceLocal  If true, allocates DEVICE_LOCAL memory (not CPU-mappable).
-     *                     Vertex and Index buffers use this path; initial data is
-     *                     uploaded later via StagingBufferPool::uploadImmediate().
+     * @param deviceLocal  true なら DEVICE_LOCAL メモリ (CPU からマップ不可) を確保する。
+     *                     Vertex と Index のバッファはこの経路を使い、初期データは後で
+     *                     StagingBufferPool::uploadImmediate() 経由でアップロードする。
      */
     VoidResult init(VulkanDevice* device, VkPhysicalDevice physicalDevice, const BufferDesc& desc,
                     bool deviceLocal = false);

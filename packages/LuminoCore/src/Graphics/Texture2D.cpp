@@ -26,7 +26,7 @@ Result<Ref<Texture>> Texture::createDepthStencil(
     uint32_t width,
     uint32_t height) {
 
-    // Depth texture (Depth24Stencil8 - matches swapchain depth)
+    // 深度テクスチャ (Depth24Stencil8 - スワップチェーンの深度と一致させる)
     rhi::TextureDesc depthDesc;
     depthDesc.width = width;
     depthDesc.height = height;
@@ -49,7 +49,7 @@ Result<Ref<Texture>> Texture::createDepthStencil(
 }
 
 Result<Ref<Texture>> Texture::createRenderTarget(rhi::Device* device, uint32_t width, uint32_t height) {
-    // Color texture (BGRA8Unorm - matches swapchain for pipeline compatibility)
+    // カラーテクスチャ (BGRA8Unorm - パイプラインの互換性のためスワップチェーンと一致させる)
     rhi::TextureDesc colorDesc;
     colorDesc.width = width;
     colorDesc.height = height;

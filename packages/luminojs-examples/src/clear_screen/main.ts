@@ -10,17 +10,17 @@ async function main() {
     canvas.width = canvas.clientWidth;
     canvas.height = canvas.clientHeight;
 
-    // Load WASM module and initialize Lumino instance (creates WebGPU device)
+    // WASM モジュールをロードし、Lumino インスタンスを初期化する (WebGPU デバイスが作成される)
     await Runtime.initialize({
         wasmPath: new URL("../../../luminojs/lib/LuminoC.wasm", import.meta.url).href,
     });
 
-    // Create GraphicsContext from canvas
+    // canvas から GraphicsContext を作成する
     const context = await GraphicsContext.createFromCanvas("#my_canvas");
 
     const camera = Camera.create();
 
-    // Render loop
+    // 描画ループ
     function frame() {
         const frameInfo = context.beginFrame();
         if (!frameInfo) {

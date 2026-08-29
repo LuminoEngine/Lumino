@@ -58,7 +58,7 @@ int main(void) {
         // レンダーパス終了
         LNRenderer_EndRenderPass(renderer);
 
-        // フレーム終了・画面表示
+        // フレーム終了と画面表示
         //   GPU コマンドの Submit とスワップチェインの Present は内部に隠蔽されています。
         LNGraphicsContext_EndFrame(graphicsContext);
     }

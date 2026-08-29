@@ -8,7 +8,7 @@ extern "C" {
 #endif // __cplusplus
 
 //------------------------------------------------------------------------------
-// Phase 0 smoke test
+// for smoke tests.
 //------------------------------------------------------------------------------
 
 /**
@@ -124,14 +124,14 @@ extern LUMINO_API LNResult LNWindow_GetGraphicsContext(LNHandle handle, LNHandle
 extern LUMINO_API LNResult LNWindow_ProcessEvents(LNHandle handle, LNBool* outQuit);
 
 //------------------------------------------------------------------------------
-// Constants
+// 定数
 //------------------------------------------------------------------------------
 
 /** 同時に指定できるカラーアタッチメントの最大数 */
 #define LN_MAX_COLOR_ATTACHMENTS 8
 
 //------------------------------------------------------------------------------
-// Render pass descriptor structs
+// レンダーパス記述子の構造体
 //------------------------------------------------------------------------------
 
 /**
@@ -145,7 +145,7 @@ typedef struct LNColorAttachmentDesc {
 } LNColorAttachmentDesc;
 
 /**
- * デプス・ステンシルアタッチメントの設定。
+ * デプスステンシルアタッチメントの設定。
  * @note depthBuffer が LN_NULL_HANDLE の場合、バックバッファのデプスバッファが使用されます。
  */
 typedef struct LNDepthStencilAttachmentDesc {
@@ -180,7 +180,7 @@ typedef enum LNSortMode {
 typedef struct LNRenderPassDesc {
     uint32_t colorAttachmentCount; /**< 使用するカラーアタッチメント数 (0 の場合バックバッファを使用) */
     LNColorAttachmentDesc colorAttachments[LN_MAX_COLOR_ATTACHMENTS]; /**< カラーアタッチメント配列 */
-    LNDepthStencilAttachmentDesc depthStencil;     /**< デプス・ステンシルアタッチメント */
+    LNDepthStencilAttachmentDesc depthStencil;     /**< デプスステンシルアタッチメント */
     /**
      * このレンダーパス内でマテリアルから優先的に選択する ShaderPass の名前。
      * NULL または空文字列の場合は "Forward" が使用されます。
@@ -293,7 +293,7 @@ extern LUMINO_API LNResult LNGraphicsContext_CaptureBackbuffer(
 );
 
 //------------------------------------------------------------------------------
-// Value structs
+// 値構造体
 //------------------------------------------------------------------------------
 
 /**
@@ -321,7 +321,7 @@ typedef struct LNSubMesh {
  */
 typedef struct LNTransform {
     float posX, posY, posZ;
-    float rotX, rotY, rotZ, rotW;   /* quaternion (x, y, z, w) */
+    float rotX, rotY, rotZ, rotW;   /* クォータニオン (x, y, z, w) */
     float scaleX, scaleY, scaleZ;
 } LNTransform;
 
@@ -781,7 +781,7 @@ extern LUMINO_API LNResult LNMaterial_SetDepthWriteEnabled(
 //------------------------------------------------------------------------------
 
 /**
- * 頂点・インデックスデータからメッシュを作成します。
+ * 頂点データとインデックスデータからメッシュを作成します。
  *
  * @param[in]  graphicsContext GraphicsContext のハンドル
  * @param[in]  vertices        LNVertex 配列
@@ -916,11 +916,11 @@ extern LUMINO_API LNResult LNCamera_SetOrthographic(
 );
 
 /**
- * カメラに 2D 用の正射影投影 (左上原点・Y軸下向き) を設定します。
+ * カメラに 2D 用の正射影投影 (左上原点、Y軸下向き) を設定します。
  * 画面座標 (0, 0) が左上、(width, height) が右下に対応します。
  * ビュー行列は単位行列に設定されます。
  * このカメラで LNRenderer_DrawSprite による描画を行うと、スプライト頂点が
- * 左上原点・Y軸下向きのレイアウトで自動生成されます (UV 反転やマテリアルの
+ * 左上原点、Y軸下向きのレイアウトで自動生成されます (UV 反転やマテリアルの
  * カリング設定変更は不要です)。
  *
  * 注意: このカメラで 3D メッシュ (LNRenderer_DrawMesh) を描画する場合は、
@@ -1052,7 +1052,7 @@ extern LUMINO_API LNResult LNRenderer_DrawMeshImmediateWithMaterial(
 
 /**
  * フルスクリーン矩形を指定マテリアルで描画します。
- * ポストプロセス・スクリーンスペースエフェクト用です。
+ * ポストプロセスやスクリーンスペースエフェクト用です。
  * NDC [-1,1]x[-1,1] をカバーする矩形を描画します。
  *
  * @param[in] renderer  Renderer のハンドル
@@ -1068,7 +1068,7 @@ extern LUMINO_API LNResult LNRenderer_DrawScreenRect(
  *
  * スプライトは size と pivot で定義されるローカル矩形を offset だけずらし、transform で
  * ワールド空間へ配置して描画します (world = transform * (localCorner + offset))。
- * 位置・回転・スケールは transform に畳み込んでください (LNRenderer_DrawMesh と同じく、
+ * 位置、回転、スケールは transform に畳み込んでください (LNRenderer_DrawMesh と同じく、
  * クライアント側のシーングラフから求めたワールド行列をそのまま渡せます)。
  * size / pivot / uv / color / offset はスプライトローカルのプロパティです。
  *
@@ -1083,7 +1083,7 @@ extern LUMINO_API LNResult LNRenderer_DrawScreenRect(
  * @param[in] offsetX,offsetY ノードローカル空間でのスプライト位置 (transform 適用前に加算)。
  *                            矩形上の pivot 位置がこの座標に配置されます。
  * @param[in] sizeW,sizeH     サイズ (ローカル)
- * @param[in] pivotX,pivotY   矩形上の基準点 (0.0〜1.0)。(0,0)=視覚的な左上, (0.5,0.5)=中央, (1,1)=右下。
+ * @param[in] pivotX,pivotY   矩形上の基準点 (0.0-1.0)。(0,0)=視覚的な左上, (0.5,0.5)=中央, (1,1)=右下。
  *                            この点が offset 位置に配置され、transform の回転軸にもなります。
  *                            CanvasRenderingContext2D の fillRect のように左上原点で描きたい場合は (0,0) を指定します。
  * @param[in] uvX,uvY,uvW,uvH UV 矩形

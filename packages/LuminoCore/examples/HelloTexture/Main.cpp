@@ -47,7 +47,7 @@ int main() {
         // 2. ForwardRenderer
         auto renderer = *ForwardRenderer::create(ctx);
 
-        // 3. Unlit Material
+        // 3. Unlit マテリアル
         auto material = *MaterialFactory::createUnlit(ctx);
 
         // 4. PNG テクスチャ読み込み
@@ -98,7 +98,7 @@ int main() {
             100.0f);
         camera.setLookAt({0.0f, 0.0f, 3.0f}, {0.0f, 0.0f, 0.0f});
 
-        // 8. Main loop
+        // 8. メインループ
         while (window->processEvents()) {
             RenderObject obj;
             obj.mesh = mesh;

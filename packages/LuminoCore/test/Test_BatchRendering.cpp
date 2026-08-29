@@ -5,12 +5,12 @@
 using namespace ln;
 
 //------------------------------------------------------------------------------
-// Helpers: fake Material pointers for sort-key testing (never dereferenced)
+// ヘルパー: ソートキーのテスト用の偽の Material ポインタ (参照はしない)
 //------------------------------------------------------------------------------
 static Material* fakeMat(uintptr_t id) { return reinterpret_cast<Material*>(id); }
 
 //------------------------------------------------------------------------------
-// DrawCommandBuffer tests
+// DrawCommandBuffer のテスト
 //------------------------------------------------------------------------------
 
 class Test_DrawCommandBuffer : public ::testing::Test {
@@ -56,7 +56,7 @@ TEST_F(Test_DrawCommandBuffer, DrawSprite) {
 
 TEST_F(Test_DrawCommandBuffer, DrawSubMesh) {
     Material* mat = fakeMat(0x2000);
-    Mesh* mesh = reinterpret_cast<Mesh*>(0x3000); // never dereferenced in buffer
+    Mesh* mesh = reinterpret_cast<Mesh*>(0x3000); // バッファ内では参照されない
     Transform t;
     t.position = {4, 5, 6};
 
@@ -81,7 +81,7 @@ TEST_F(Test_DrawCommandBuffer, Clear) {
 }
 
 //------------------------------------------------------------------------------
-// SortKey tests
+// SortKey のテスト
 //------------------------------------------------------------------------------
 
 class Test_SortKey : public ::testing::Test {};
@@ -99,7 +99,7 @@ TEST_F(Test_SortKey, ZIndexPrimary) {
 }
 
 TEST_F(Test_SortKey, SequenceSecondary) {
-    // 同一 zIndex・同一 type のスプライトは投入順 (sequence) でキーが決まる。
+    // 同一 zIndex かつ同一 type のスプライトは投入順 (sequence) でキーが決まる。
     // マテリアルのアドレスはキーに影響しない (旧実装のマテリアルハッシュ tiebreak を廃止し、
     // 「後から描いたものが前面」というペインターズアルゴリズムを保証するため)。
     DrawCommand a{}, b{};
@@ -121,7 +121,7 @@ TEST_F(Test_SortKey, SequenceSecondary) {
 }
 
 TEST_F(Test_SortKey, TypeTertiary) {
-    // Same zIndex + same material, different type
+    // 同一 zIndex かつ同一マテリアルで、type だけが異なる
     DrawCommand a{}, b{};
     a.zIndex = 0;
     b.zIndex = 0;
@@ -131,12 +131,12 @@ TEST_F(Test_SortKey, TypeTertiary) {
     b.type = DrawCommandType::SubMesh;
 
     EXPECT_NE(a.sortKey(), b.sortKey());
-    // Sprite (0) < SubMesh (1) in the lowest bit
+    // 最下位ビットで Sprite (0) < SubMesh (1)
     EXPECT_LT(a.sortKey(), b.sortKey());
 }
 
 //------------------------------------------------------------------------------
-// Sort tests
+// ソートのテスト
 //------------------------------------------------------------------------------
 
 class Test_BatchSort : public ::testing::Test {};
@@ -185,24 +185,23 @@ TEST_F(Test_BatchSort, SameZIndex_SpritePreservesSubmissionOrder) {
 }
 
 TEST_F(Test_BatchSort, SameZIndex_SubMeshPreservesSubmissionOrder) {
-    // SubMesh draws at the same zIndex must keep submission order, independent of
-    // material address. flushSubMeshGroup draws each submesh individually (no
-    // material batching to gain), and reordering would break order-dependent draws
-    // such as depth-test/-write-disabled overdraw. Both sprites and submeshes now
-    // preserve submission order via the sequence tiebreaker.
+    // 同一 zIndex の SubMesh 描画は、マテリアルのアドレスに関係なく投入順を保持しなければならない。
+    // flushSubMeshGroup は各サブメッシュを個別に描画する (マテリアルでバッチ化しても得が無い) ため、
+    // 並べ替えると深度テスト/書き込み無効の重ね描きのような順序依存の描画が壊れる。
+    // スプライトもサブメッシュも sequence による同順位の決着で投入順を保持する。
     DrawCommandBuffer buf;
     Material* matA = fakeMat(0x2000);
-    Material* matB = fakeMat(0x1000); // intentionally lower address than matA
+    Material* matB = fakeMat(0x1000); // 意図的に matA より低いアドレス
     Mesh* mesh = reinterpret_cast<Mesh*>(0x3000);
     Transform t;
 
-    buf.drawSubMesh(mesh, 0, matA, t, 0); // submitted 1st
-    buf.drawSubMesh(mesh, 0, matB, t, 0); // submitted 2nd
+    buf.drawSubMesh(mesh, 0, matA, t, 0); // 1 番目に投入
+    buf.drawSubMesh(mesh, 0, matB, t, 0); // 2 番目に投入
 
     std::vector<DrawCommand> cmds = buf.commands();
     BatchProcessor::sortCommands(cmds);
 
-    EXPECT_EQ(cmds[0].material, matA); // submission order preserved
+    EXPECT_EQ(cmds[0].material, matA); // 投入順が保持される
     EXPECT_EQ(cmds[1].material, matB);
 }
 
@@ -271,14 +270,14 @@ TEST_F(Test_BatchSort, DepthSort_EqualDepthKeepsSubmissionOrder) {
 }
 
 //------------------------------------------------------------------------------
-// SpriteMeshPool tests
+// SpriteMeshPool のテスト
 //
-// Regression guard for the bug where every sprite flush in a frame reused a single
-// shared DynamicMesh buffer. Because draws are recorded into one command encoder
-// and executed only at submit, a shared buffer let later flushes (e.g. UI sprites)
-// overwrite earlier flushes (e.g. the background sprite), so the background drew
-// the last flush's geometry instead of its own. The pool must hand each flush a
-// distinct slot within a frame, and recycle slots across frames.
+// フレーム内の全スプライトフラッシュが単一の共有 DynamicMesh バッファを再利用していた
+// バグの回帰防止。描画は 1 つのコマンドエンコーダに記録され submit 時にのみ実行されるため、
+// バッファを共有すると後のフラッシュ (例: UI スプライト) が先のフラッシュ (例: 背景スプライト)
+// を上書きし、背景が自身のジオメトリではなく最後のフラッシュのジオメトリで描かれていた。
+// プールはフレーム内の各フラッシュに別々のスロットを渡し、フレームをまたいでスロットを
+// 再利用しなければならない。
 //------------------------------------------------------------------------------
 
 class Test_SpriteMeshPool : public ::testing::Test {};
@@ -286,8 +285,8 @@ class Test_SpriteMeshPool : public ::testing::Test {};
 TEST_F(Test_SpriteMeshPool, DistinctSlotsWithinFrame) {
     SpriteMeshPool pool;
 
-    // Each flush in a frame must get a distinct, monotonically increasing slot so
-    // that no two flushes share a buffer.
+    // フレーム内の各フラッシュは、2 つのフラッシュがバッファを共有しないよう、
+    // 別々の単調増加するスロットを受け取らなければならない。
     EXPECT_EQ(pool.acquireSlot(), 0u);
     EXPECT_EQ(pool.acquireSlot(), 1u);
     EXPECT_EQ(pool.acquireSlot(), 2u);
@@ -302,40 +301,40 @@ TEST_F(Test_SpriteMeshPool, ResetFrameRecyclesSlots) {
     pool.acquireSlot();
     EXPECT_EQ(pool.slotCount(), 2u);
 
-    // New frame: cursor rewinds and slots are reused rather than reallocated.
+    // 新しいフレーム: カーソルが巻き戻り、スロットは再確保ではなく再利用される。
     pool.resetFrame();
     EXPECT_EQ(pool.frameCursor(), 0u);
     EXPECT_EQ(pool.acquireSlot(), 0u);
     EXPECT_EQ(pool.acquireSlot(), 1u);
-    EXPECT_EQ(pool.slotCount(), 2u); // no growth: same two slots reused
+    EXPECT_EQ(pool.slotCount(), 2u); // 増えない: 同じ 2 つのスロットが再利用される
 }
 
 TEST_F(Test_SpriteMeshPool, SlotCountGrowsToPeakFlushesPerFrame) {
     SpriteMeshPool pool;
 
-    // Frame 1: 2 flushes.
+    // フレーム 1: フラッシュ 2 回。
     pool.acquireSlot();
     pool.acquireSlot();
     pool.resetFrame();
 
-    // Frame 2: 4 flushes -> pool grows to the new peak.
+    // フレーム 2: フラッシュ 4 回 -> プールは新しいピークまで成長する。
     for (int i = 0; i < 4; ++i) pool.acquireSlot();
     EXPECT_EQ(pool.slotCount(), 4u);
 
-    // Frame 3: 1 flush -> pool retains its peak capacity (slots kept for reuse).
+    // フレーム 3: フラッシュ 1 回 -> プールはピーク時の容量を保持する (スロットは再利用のため保持)。
     pool.resetFrame();
     pool.acquireSlot();
     EXPECT_EQ(pool.slotCount(), 4u);
 }
 
 TEST_F(Test_SpriteMeshPool, GrowCapacityDoublesFromBase) {
-    // Empty slot grows to the 256-sprite base, then doubles to fit the request.
+    // 空のスロットは 256 スプライトの基準値まで成長し、以降は要求に収まるまで倍々になる。
     EXPECT_EQ(SpriteMeshPool::growCapacity(0, 1), 256u);
     EXPECT_EQ(SpriteMeshPool::growCapacity(0, 256), 256u);
     EXPECT_EQ(SpriteMeshPool::growCapacity(0, 257), 512u);
     EXPECT_EQ(SpriteMeshPool::growCapacity(0, 1000), 1024u);
 
-    // An already-sized slot only grows when the request exceeds it.
+    // サイズ確保済みのスロットは、要求が容量を超えたときだけ成長する。
     EXPECT_EQ(SpriteMeshPool::growCapacity(512, 100), 512u);
     EXPECT_EQ(SpriteMeshPool::growCapacity(512, 600), 1024u);
 }
@@ -343,14 +342,14 @@ TEST_F(Test_SpriteMeshPool, GrowCapacityDoublesFromBase) {
 TEST_F(Test_SpriteMeshPool, SlotCapacityRetainedAcrossFrames) {
     SpriteMeshPool pool;
 
-    // Frame 1: first flush needs 300 sprites -> caller allocates 512 capacity.
+    // フレーム 1: 最初のフラッシュに 300 スプライトが必要 -> 呼び出し側は容量 512 を確保する。
     uint32_t idx = pool.acquireSlot();
     auto& slot = pool.slotAt(idx);
-    ASSERT_LT(slot.capacity, 300u); // freshly created slot starts empty
+    ASSERT_LT(slot.capacity, 300u); // 新規作成されたスロットは空で始まる
     slot.capacity = SpriteMeshPool::growCapacity(slot.capacity, 300);
     EXPECT_EQ(slot.capacity, 512u);
 
-    // Frame 2: same slot reused for a smaller flush -> no reallocation needed.
+    // フレーム 2: 同じスロットをより小さいフラッシュに再利用 -> 再確保は不要。
     pool.resetFrame();
     uint32_t idx2 = pool.acquireSlot();
     EXPECT_EQ(idx2, idx);
@@ -373,7 +372,7 @@ TEST_F(Test_BatchSort, MixedTypes_SeparatedByType) {
 
     BatchProcessor::sortCommands(cmds);
 
-    // Sprites (type=0) should come before SubMesh (type=1)
+    // Sprite (type=0) が SubMesh (type=1) より前に来るはず
     EXPECT_EQ(cmds[0].type, DrawCommandType::Sprite);
     EXPECT_EQ(cmds[1].type, DrawCommandType::Sprite);
     EXPECT_EQ(cmds[2].type, DrawCommandType::SubMesh);

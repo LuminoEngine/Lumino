@@ -15,22 +15,22 @@ async function main() {
     canvas.width = canvas.clientWidth;
     canvas.height = canvas.clientHeight;
 
-    // Load WASM module and initialize Lumino instance (creates WebGPU device)
+    // WASM モジュールをロードし、Lumino インスタンスを初期化する (WebGPU デバイスが作成される)
     await Runtime.initialize({
         wasmPath: new URL("../../../luminojs/lib/LuminoC.wasm", import.meta.url).href,
     });
 
-    // Create GraphicsContext from canvas
+    // canvas から GraphicsContext を作成する
     const context = await GraphicsContext.createFromCanvas("#my_canvas");
 
-    // Load texture
+    // テクスチャをロードする
     const texture = await Texture.loadFromURL(new URL("./assets/picture1.png", import.meta.url).href);
 
-    // Create Unlit material with texture
+    // テクスチャ付きの Unlit マテリアルを作成する
     const material = Material.createUnlit();
     material.setMainTexture(texture);
 
-    // Create quad mesh
+    // 四角形メッシュを作成する
     const mesh = Mesh.create(
         [
             { position: [-0.5, 0.5, 0], normal: [0, 0, 1], uv: [0, 0], color: [1, 1, 1, 1], tangent: [1, 0, 0, 0] },
@@ -43,7 +43,7 @@ async function main() {
     );
     mesh.setMaterial(0, material);
 
-    // 7. Create perspective camera
+    // 7. 透視投影カメラを作成する
     const camera = Camera.create();
     const viewMatrix = Matrix4x4.makeLookAt(
         { x: 0, y: 0, z: 3 }, { x: 0, y: 0, z: 0 }, { x: 0, y: 1, z: 0 });
@@ -51,7 +51,7 @@ async function main() {
         (60 * Math.PI) / 180, canvas.width / canvas.height, 0.1, 100);
     camera.setMatrices(viewMatrix, projMatrix);
 
-    // 8. Render loop
+    // 8. 描画ループ
     const identity: Transform = { position: [0, 0, 0], rotation: [0, 0, 0, 1], scale: [1, 1, 1] };
 
     function frame() {

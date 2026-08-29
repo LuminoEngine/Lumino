@@ -2,7 +2,7 @@ import { defineConfig } from "vite";
 import { resolve } from "path";
 import { readdirSync, statSync, readFileSync, existsSync } from "fs";
 
-// Collect all sample entry points: src/*/index.html
+// すべてのサンプルのエントリポイント (src/*/index.html) を収集する
 function getSampleInputs(): Record<string, string> {
   const srcDir = resolve(__dirname, "src");
   const inputs: Record<string, string> = {};
@@ -16,16 +16,16 @@ function getSampleInputs(): Record<string, string> {
   return inputs;
 }
 
-// Plugin that serves raw TypeScript source files without transformation,
-// so the example viewer can display the original source (with comments, etc.).
+// TypeScript ソースファイルを変換せずそのまま配信するプラグイン。
+// サンプルビューアが元のソース (コメントなどを含む) を表示できるようにする。
 function rawSourcePlugin() {
   const srcDir = resolve(__dirname, "src");
   return {
     name: "raw-source",
     configureServer(server: any) {
       server.middlewares.use((req: any, res: any, next: any) => {
-        // Match requests like /src/<id>/main.ts?raw-source (query param distinguishes
-        // source-display fetches from actual module script imports)
+        // /src/<id>/main.ts?raw-source 形式のリクエストに一致させる (クエリパラメータで
+        // ソース表示用の fetch とモジュールスクリプトとしての import を区別する)
         const m = req.url?.match(/^\/src\/([^/]+)\/main\.ts\?.*raw-source/);
         if (!m) return next();
         const filePath = resolve(srcDir, m[1], "main.ts");
@@ -56,7 +56,7 @@ export default defineConfig({
   },
   server: {
     fs: {
-      // Allow serving files from both this directory and the luminojs lib/
+      // このディレクトリと luminojs の lib/ の両方からファイルを配信できるようにする
       allow: [resolve(__dirname), resolve(__dirname, "../luminojs")],
     },
   },

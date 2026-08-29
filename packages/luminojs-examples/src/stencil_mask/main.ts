@@ -1,5 +1,5 @@
 /**
- * Stencil Mask example
+ * Stencil Mask サンプル
  *
  * 中央の円形メッシュをステンシルマスクとしてプッシュし、
  * マスク領域内でだけ敷き詰めたスプライトが見えるデモ。
@@ -29,7 +29,7 @@ async function main() {
     });
     const context = await GraphicsContext.createFromCanvas("#my_canvas");
 
-    // --- Mask material (StencilMask compiled shader) ---
+    // --- マスク用マテリアル (StencilMask のコンパイル済みシェーダ) ---
     // StencilMask シェーダは texture.a * color.a * vertex.a < 0.5 で discard するため、
     // デフォルト白テクスチャ + color α=1 + 頂点 α=1 で全域を有効マスクにする。
     const maskResp = await fetch(
@@ -67,13 +67,13 @@ async function main() {
     );
     maskMesh.setMaterial(0, maskMat);
 
-    // --- Content: batched sprites ---
+    // --- コンテンツ: バッチ描画されるスプライト ---
     const texture = await Texture.loadFromURL(
         new URL("../../public/picture1.png", import.meta.url).href);
     const spriteMat = Material.createUnlit();
     spriteMat.setMainTexture(texture);
 
-    // --- Camera (orthographic, origin at center) ---
+    // --- カメラ (正射影、原点は画面中央) ---
     const camera = Camera.create();
     const viewMatrix = Matrix4x4.makeLookAt(
         { x: 0, y: 0, z: 1 },
@@ -89,7 +89,7 @@ async function main() {
         scale: [1, 1, 1],
     };
 
-    // Stats overlay
+    // 統計情報のオーバーレイ
     const statsEl = document.getElementById("stats")!;
     let lastTime = performance.now();
     let frameCount = 0;

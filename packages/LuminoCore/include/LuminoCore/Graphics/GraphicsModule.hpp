@@ -39,7 +39,7 @@ public:
     ~GraphicsModule() override;
     void dispose();
 
-    /** The RHI device owned by this instance. */
+    /** このインスタンスが所有する RHI デバイス。 */
     rhi::Device* device() const { return m_device.get(); }
 
     /** 現在のデバイス状態。 */
@@ -68,17 +68,17 @@ public:
     /** GraphicsContext の破棄時に呼ばれ、登録を解除する。 */
     void unregisterContext(GraphicsContext* ctx);
 
-    /** Cached builtin ShaderPasses (all passes of a built-in shader). */
+    /** キャッシュ済みの組み込み ShaderPass (組み込みシェーダの全パス)。 */
     const std::vector<Ref<ShaderPass>>& builtinShaderPasses(BuiltinShader id) const {
         return m_builtinShaders[static_cast<int>(id)];
     }
 
-    /** Default (primary) ShaderPass of a builtin shader — first pass registered (usually "Forward"). */
+    /** 組み込みシェーダの既定 (主) の ShaderPass - 最初に登録されたパス (通常は "Forward")。 */
     const Ref<ShaderPass>& builtinShader(BuiltinShader id) const {
         return m_builtinShaders[static_cast<int>(id)].front();
     }
 
-    /** Shared default white texture. */
+    /** 共有の既定の白テクスチャ。 */
     const Ref<rhi::Texture>& whiteTexture() const { return m_whiteTexture; }
 
 private:
@@ -96,7 +96,7 @@ private:
 
     Settings m_settings;
     Ref<rhi::Device> m_device;
-    // Each builtin shader holds a list of ShaderPasses (e.g. {Forward, GBuffer, ...}).
+    // 各組み込みシェーダは ShaderPass のリストを持つ (例: {Forward, GBuffer, ...})。
     std::array<std::vector<Ref<ShaderPass>>, 3> m_builtinShaders;
     Ref<rhi::Texture> m_whiteTexture;
 

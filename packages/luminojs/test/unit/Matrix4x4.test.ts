@@ -118,7 +118,7 @@ describe("Matrix4x4.makeOrthographic", () => {
         expect(m.m[14]).toBeCloseTo(nearZ / (nearZ - farZ), 6);
         expect(m.m[15]).toBe(1);
 
-        // 非対角・非平行移動成分は 0
+        // 対角成分と平行移動成分以外は 0
         for (const i of [1, 2, 3, 4, 6, 7, 8, 9, 11, 12, 13]) {
             expect(m.m[i]).toBe(0);
         }
@@ -126,7 +126,7 @@ describe("Matrix4x4.makeOrthographic", () => {
 
     it("Z=nearZ が NDC の 0、Z=farZ が NDC の 1 に写像される (深度範囲 [0,1])", () => {
         // 右手座標系でカメラは既定で -Z 方向を見る (docs/graphics-conventions.md)。
-        // そのためカメラ前方 (nearZ〜farZ の視錐台内) にある点のビュー空間 Z は負になる。
+        // そのためカメラ前方 (nearZ-farZ の視錐台内) にある点のビュー空間 Z は負になる。
         // perspectiveRH_ZO と同様、ortho も -nearZ -> NDC 0, -farZ -> NDC 1 に写像する。
         const nearZ = 1;
         const farZ = 10;

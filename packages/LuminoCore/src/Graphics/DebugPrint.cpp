@@ -5,14 +5,14 @@
 #include <LuminoCore/Graphics/TextureLoader.hpp>
 #include <LuminoCore/Graphics/Transform.hpp>
 
-// Embedded bitmap font PNG: 16x8 ASCII glyph grid, 16px wide × 20px tall per glyph.
+// 埋め込みビットマップフォントの PNG: 16x8 の ASCII グリフグリッドで、1 グリフは幅 16px、高さ 20px。
 static const unsigned char s_fontPngData[] = {
 #include "text_16.png.inl"
 };
 
 namespace ln {
 
-// Font atlas layout (must match the embedded PNG)
+// フォントアトラスのレイアウト (埋め込み PNG と一致させること)
 static constexpr float kGlyphW    = 16.0f;
 static constexpr float kGlyphH    = 20.0f;
 static constexpr int   kAtlasCols = 16;
@@ -22,7 +22,7 @@ static constexpr float kPadTop    = 8.0f;
 Result<Ref<DebugPrint>> DebugPrint::create(GraphicsContext* ctx) {
     auto dp = Ref<DebugPrint>::adopt(new DebugPrint());
 
-    // Load font texture from embedded PNG.
+    // 埋め込み PNG からフォントテクスチャを読み込む。
     auto texResult = TextureLoader::loadFromMemory(
         ctx->device(), s_fontPngData, sizeof(s_fontPngData));
     if (!texResult) {
@@ -30,7 +30,7 @@ Result<Ref<DebugPrint>> DebugPrint::create(GraphicsContext* ctx) {
     }
     dp->m_fontTexture = std::move(*texResult);
 
-    // Unlit material: alpha blending on, depth off (overlay).
+    // Unlit マテリアル: アルファブレンド有効、深度無効 (オーバーレイ)。
     auto matResult = MaterialFactory::createUnlit(ctx);
     if (!matResult) {
         return LN_FORWARD_ERROR(matResult);
@@ -75,7 +75,7 @@ Result<void> DebugPrint::render(GraphicsContext* ctx) {
     const float textureWidth = static_cast<float>(m_fontTexture->width());
     const float textureHeight = static_cast<float>(m_fontTexture->height());
 
-    // Convert screen-space pixels to NDC. Origin is top-left.
+    // スクリーン空間のピクセルを NDC へ変換する。原点は左上。
     const auto ndcX = [&](float x) { return (x / screenWidth) * 2.0f - 1.0f; };
     const auto ndcY = [&](float y) { return 1.0f - (y / screenHeight) * 2.0f; };
     const auto makeVertex = [](float x, float y, float u, float v) {
@@ -103,27 +103,27 @@ Result<void> DebugPrint::render(GraphicsContext* ctx) {
             cp = '?';
         }
 
-        // Screen-space pixel corners.
+        // スクリーン空間でのピクセルの 4 隅。
         const float sx0 = kPadLeft + textX;
         const float sy0 = kPadTop + textY;
         const float sx1 = sx0 + kGlyphW;
         const float sy1 = sy0 + kGlyphH;
 
-        // UV in the font atlas.
+        // フォントアトラス内の UV。
         const float u0 = (cp % kAtlasCols) * kGlyphW / textureWidth;
         const float v0 = (cp / kAtlasCols) * kGlyphH / textureHeight;
         const float u1 = u0 + kGlyphW / textureWidth;
         const float v1 = v0 + kGlyphH / textureHeight;
 
-        // NDC corners.
+        // NDC での 4 隅。
         const float nx0 = ndcX(sx0), ny0 = ndcY(sy0);
         const float nx1 = ndcX(sx1), ny1 = ndcY(sy1);
 
         uint32_t base = static_cast<uint32_t>(m_vertexStaging.size());
-        m_vertexStaging.push_back(makeVertex(nx0, ny0, u0, v0)); // top-left
-        m_vertexStaging.push_back(makeVertex(nx0, ny1, u0, v1)); // bottom-left
-        m_vertexStaging.push_back(makeVertex(nx1, ny0, u1, v0)); // top-right
-        m_vertexStaging.push_back(makeVertex(nx1, ny1, u1, v1)); // bottom-right
+        m_vertexStaging.push_back(makeVertex(nx0, ny0, u0, v0)); // 左上
+        m_vertexStaging.push_back(makeVertex(nx0, ny1, u0, v1)); // 左下
+        m_vertexStaging.push_back(makeVertex(nx1, ny0, u1, v0)); // 右上
+        m_vertexStaging.push_back(makeVertex(nx1, ny1, u1, v1)); // 右下
         m_indexStaging.insert(m_indexStaging.end(), {base+0, base+1, base+2, base+2, base+1, base+3});
 
         textX += kGlyphW;
@@ -134,7 +134,7 @@ Result<void> DebugPrint::render(GraphicsContext* ctx) {
         return {};
     }
 
-    // Upload geometry.
+    // ジオメトリをアップロードする。
     auto r1 = m_mesh->updateVertices(0, m_vertexStaging.data(), static_cast<uint32_t>(m_vertexStaging.size()));
     if (!r1) {
         return r1;
@@ -146,7 +146,7 @@ Result<void> DebugPrint::render(GraphicsContext* ctx) {
     const SubMesh submesh{0, static_cast<uint32_t>(m_indexStaging.size()), 0};
     m_mesh->setSubmeshes(&submesh, 1);
 
-    // Render as overlay (LoadOp::Load - preserves the scene).
+    // オーバーレイとして描画する (LoadOp::Load - シーンを保持する)。
     Renderer* renderer = ctx->renderer();
     const FramebufferInfo* fb = ctx->currentFramebuffer();
     renderer->beginOverlayRenderPass(fb->colorTexture->rhiTextureView());

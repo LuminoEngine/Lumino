@@ -67,7 +67,7 @@ inline WGPULoadOp toWGPULoadOp(LoadOp op) {
     switch (op) {
         case LoadOp::Load:    return WGPULoadOp_Load;
         case LoadOp::Clear:   return WGPULoadOp_Clear;
-        case LoadOp::DontCare: return WGPULoadOp_Clear; // WebGPU has no DontCare for load
+        case LoadOp::DontCare: return WGPULoadOp_Clear; // WebGPU の load には DontCare が無い
         default:              return WGPULoadOp_Clear;
     }
 }

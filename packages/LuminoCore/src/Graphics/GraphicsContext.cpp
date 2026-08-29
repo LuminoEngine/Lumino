@@ -24,7 +24,7 @@ GraphicsContext::~GraphicsContext() {
     auto* dev = device();
     if (dev) {
         dev->waitIdle();
-        // Destroy Renderer first (holds material cache, UBO allocators, etc.)
+        // 先に Renderer を破棄する (マテリアルキャッシュや UBO アロケータ等を保持している)
         m_renderer.reset();
         if (m_pipelineCache) {
             m_pipelineCache->clear();
@@ -155,8 +155,8 @@ void GraphicsContext::endFrame() {
     // レイアウト遷移を含む一切の使用ができなくなる
     // (VUID UNASSIGNED-non-acquired-swapchain-image-used)。
     // そのため、キャプチャ要求があるフレームは present() 直前に読み戻す。
-    // この時点では描画コマンドは submit 済みで、イメージは acquire 済み・
-    // PRESENT_SRC_KHR レイアウトのまま残っている。
+    // この時点では描画コマンドは submit 済みで、イメージは acquire 済みのまま
+    // PRESENT_SRC_KHR レイアウトで残っている。
     if (m_captureRequested) {
         (void)captureBackbufferInternal();
         m_captureRequested = false;
@@ -194,7 +194,7 @@ Result<void> GraphicsContext::captureBackbufferInternal() {
 
     m_captureBuffer = std::move(*result);
 
-    // BGRA → RGBA swizzle (swapchain format is BGRA8Unorm)
+    // BGRA -> RGBA のスウィズル (スワップチェーンのフォーマットは BGRA8Unorm)
     for (size_t i = 0; i + 3 < m_captureBuffer.size(); i += 4) {
         std::swap(m_captureBuffer[i], m_captureBuffer[i + 2]);
     }
@@ -223,9 +223,9 @@ Result<void> GraphicsContext::initDebugPrint() {
 void GraphicsContext::debugPrintText(const char* str) {
     if (!str) return;
     if (!m_debugPrint) {
-        // Lazy init on first use.
+        // 初回使用時に遅延初期化する。
         auto r = initDebugPrint();
-        if (!r) return; // silently ignore if initialization fails
+        if (!r) return; // 初期化に失敗した場合は黙って無視する
     }
     m_debugPrint->print(str);
 }
@@ -233,11 +233,11 @@ void GraphicsContext::debugPrintText(const char* str) {
 #else // __EMSCRIPTEN__
 
 Result<void> GraphicsContext::initDebugPrint() {
-    return {}; // not supported on web
+    return {}; // Web では未サポート
 }
 
 void GraphicsContext::debugPrintText(const char* /*str*/) {
-    // not supported on web
+    // Web では未サポート
 }
 
 #endif // __EMSCRIPTEN__
@@ -274,7 +274,7 @@ Result<Ref<GraphicsContext>> GraphicsContext::createForCanvas(
 
     ctx->m_pipelineCache = std::make_unique<PipelineCache>(dev);
 
-    // SwapChain - pass the canvas selector via nativeWindowHandle
+    // SwapChain - canvas セレクタを nativeWindowHandle 経由で渡す
     rhi::SwapChainDesc scDesc;
     scDesc.nativeWindowHandle = const_cast<char*>(canvasSelector.c_str());
     scDesc.width = width;
@@ -284,7 +284,7 @@ Result<Ref<GraphicsContext>> GraphicsContext::createForCanvas(
     if (!swapChainResult) return LN_FORWARD_ERROR(swapChainResult);
     ctx->m_swapChain = std::move(*swapChainResult);
 
-    // InFlightFrame framebuffers
+    // InFlightFrame ごとのフレームバッファ
     const uint32_t inFlights = ctx->m_swapChain->maxFramesInFlight();
     for (uint32_t i = 0; i < inFlights; i++) {
         FramebufferInfo fb;
@@ -369,7 +369,7 @@ Result<void> GraphicsContext::rebuildAfterDeviceRecovery() {
         m_framebuffers.push_back(std::move(fb));
     }
 
-    // Renderer の再作成 (マテリアルキャッシュ・UBO アロケータ等を新デバイス上に構築)
+    // Renderer の再作成 (マテリアルキャッシュや UBO アロケータ等を新デバイス上に構築)
     auto rendererResult = Renderer::create(this);
     if (!rendererResult) return LN_FORWARD_ERROR(rendererResult);
     m_renderer = std::move(*rendererResult);

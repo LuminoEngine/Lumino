@@ -16,7 +16,7 @@
 #include "../Utils.h"
 
 //------------------------------------------------------------------------------
-// Constants
+// 定数
 //------------------------------------------------------------------------------
 #define SPRITE_COUNT 1024
 #define MAX_VERTICES (SPRITE_COUNT * 4)
@@ -24,7 +24,7 @@
 #define SPRITE_SIZE  16.0f
 
 //------------------------------------------------------------------------------
-// Sprite data (client-side, what JS would manage)
+// スプライトデータ (クライアント側。JS が管理する想定のもの)
 //------------------------------------------------------------------------------
 typedef struct Sprite {
     float x, y;
@@ -32,13 +32,13 @@ typedef struct Sprite {
     float uvL, uvT, uvW, uvH;
     float r, g, b, a;
     int zIndex;
-    int textureSlot; /* 0 or 1 - determines which material/texture to use */
+    int textureSlot; /* 0 か 1 - 使用するマテリアル/テクスチャを決める */
 } Sprite;
 
 static Sprite s_sprites[SPRITE_COUNT];
 
 //------------------------------------------------------------------------------
-// Comparison function for qsort (zIndex first, then textureSlot for batching)
+// qsort 用の比較関数 (zIndex を優先し、次にバッチ化のため textureSlot で比較)
 //------------------------------------------------------------------------------
 static int compareSprites(const void* a, const void* b) {
     const Sprite* sa = (const Sprite*)a;
@@ -48,7 +48,7 @@ static int compareSprites(const void* a, const void* b) {
 }
 
 //------------------------------------------------------------------------------
-// Initialize sprites in a grid pattern
+// スプライトを格子状に初期化する
 //------------------------------------------------------------------------------
 static void initSprites(void) {
     int cols = 32;
@@ -71,17 +71,17 @@ static void initSprites(void) {
         s_sprites[i].g = 0.5f + 0.5f * (float)row / (SPRITE_COUNT / cols);
         s_sprites[i].b = 1.0f;
         s_sprites[i].a = 1.0f;
-        s_sprites[i].zIndex = row;              /* z sort by row */
-        s_sprites[i].textureSlot = (i % 2);     /* alternate textures */
+        s_sprites[i].zIndex = row;              /* 行ごとに z ソート */
+        s_sprites[i].textureSlot = (i % 2);     /* テクスチャを交互に使う */
     }
 }
 
 //------------------------------------------------------------------------------
-// Build vertex/index data and submeshes from sorted sprites
+// ソート済みスプライトから頂点/インデックスデータとサブメッシュを構築する
 //------------------------------------------------------------------------------
 static LNVertex s_vertexBuf[MAX_VERTICES];
 static uint32_t s_indexBuf[MAX_INDICES];
-static LNSubMesh s_submeshBuf[SPRITE_COUNT]; /* worst case: 1 submesh per sprite */
+static LNSubMesh s_submeshBuf[SPRITE_COUNT]; /* 最悪ケース: スプライトごとに 1 サブメッシュ */
 
 static uint32_t buildBatches(
     const Sprite* sprites,
@@ -92,17 +92,17 @@ static uint32_t buildBatches(
     uint32_t* outVertCount,
     uint32_t* outIdxCount) {
 
-    uint32_t vi = 0; /* vertex index */
-    uint32_t ii = 0; /* index index */
+    uint32_t vi = 0; /* 頂点インデックス */
+    uint32_t ii = 0; /* インデックスのインデックス */
     uint32_t batchCount = 0;
     int batchStart = 0;
 
     for (int i = 0; i <= spriteCount; i++) {
-        /* Detect batch boundary: end of array or texture change */
+        /* バッチ境界の検出: 配列の終端またはテクスチャの切り替わり */
         if (i == spriteCount ||
             (i > batchStart && sprites[i].textureSlot != sprites[i - 1].textureSlot)) {
 
-            /* Record submesh for the batch [batchStart .. i) */
+            /* バッチ [batchStart .. i) のサブメッシュを記録 */
             outSubs[batchCount].indexOffset = (uint32_t)(batchStart * 6);
             outSubs[batchCount].indexCount  = (uint32_t)((i - batchStart) * 6);
             outSubs[batchCount].materialIndex = (uint32_t)sprites[batchStart].textureSlot;
@@ -111,14 +111,14 @@ static uint32_t buildBatches(
         }
         if (i == spriteCount) break;
 
-        /* Emit 4 vertices for this sprite (quad) */
+        /* このスプライト (四角形) の頂点を 4 つ出力 */
         const Sprite* s = &sprites[i];
         float hw = s->w * 0.5f;
         float hh = s->h * 0.5f;
         float u0 = s->uvL, v0 = s->uvT;
         float u1 = s->uvL + s->uvW, v1 = s->uvT + s->uvH;
 
-        /* v0: top-left,  v1: top-right, v2: bottom-left, v3: bottom-right */
+        /* v0: 左上,  v1: 右上, v2: 左下, v3: 右下 */
         LNVertex v;
         memset(&v, 0, sizeof(v));
         v.normZ = 1.0f;
@@ -145,7 +145,7 @@ static uint32_t buildBatches(
         v.u = u1; v.v = v1;
         outVerts[vi + 3] = v;
 
-        /* indices: 0,2,1, 1,2,3 (CCW) */
+        /* インデックス: 0,2,1, 1,2,3 (CCW) */
         outIndices[ii + 0] = vi + 0;
         outIndices[ii + 1] = vi + 2;
         outIndices[ii + 2] = vi + 1;
@@ -173,13 +173,13 @@ int main() {
     LNHandle graphicsContext = LN_NULL_HANDLE;
     LNWindow_GetGraphicsContext(window, &graphicsContext);
 
-    // 2. Textures - load the same image for both slots (demo purposes)
+    // 2. テクスチャ - 両スロットに同じ画像を読み込む (デモのため)
     LNHandle texture0 = LN_NULL_HANDLE;
     LNHandle texture1 = LN_NULL_HANDLE;
     LNTexture2D_LoadFromFile(graphicsContext, ASSETS_DIR "/picture1.png", &texture0);
     LNTexture2D_LoadFromFile(graphicsContext, ASSETS_DIR "/picture1.png", &texture1);
 
-    // 3. Materials - two unlit materials with different tints
+    // 3. マテリアル - 色味の異なる Unlit マテリアルを 2 つ
     LNHandle material0 = LN_NULL_HANDLE;
     LNHandle material1 = LN_NULL_HANDLE;
     LNMaterial_CreateFromBuiltinShader(graphicsContext, LN_BUILTIN_SHADER_UNLIT, &material0);
@@ -187,64 +187,64 @@ int main() {
     LNMaterial_CreateFromBuiltinShader(graphicsContext, LN_BUILTIN_SHADER_UNLIT, &material1);
     LNMaterial_SetMainTexture(material1, texture1);
 
-    // 4. Dynamic mesh
+    // 4. 動的メッシュ
     LNHandle mesh = LN_NULL_HANDLE;
     LNMesh_CreateDynamic(graphicsContext, MAX_VERTICES, MAX_INDICES, &mesh);
 
-    // Pre-assign materials to slot 0 and 1
-    // We need at least one submesh to size the material array initially.
-    // SetSubMeshes will expand as needed, but let's set materials after first build.
+    // スロット 0 と 1 にマテリアルを事前に割り当てる
+    // マテリアル配列のサイズを決めるには、最初に 1 つ以上のサブメッシュが必要。
+    // SetSubMeshes が必要に応じて拡張するので、マテリアルは最初のビルド後に設定する。
 
-    // 5. Orthographic camera (pixel-space: origin at center)
+    // 5. 正射影カメラ (ピクセル空間。原点は中央)
     LNHandle camera = LN_NULL_HANDLE;
     LNCamera_Create(&camera);
     LNCamera_SetOrthographic(camera, (float)WINDOW_W, (float)WINDOW_H, -1000.0f, 1000.0f);
     LNCamera_SetLookAt(camera,
-        0.0f, 0.0f, 1.0f,   // eye
-        0.0f, 0.0f, 0.0f,   // target
-        0.0f, 1.0f, 0.0f);  // up
+        0.0f, 0.0f, 1.0f,   // 視点
+        0.0f, 0.0f, 0.0f,   // 注視点
+        0.0f, 1.0f, 0.0f);  // 上方向
 
-    // 6. Initialize sprites
+    // 6. スプライトを初期化
     initSprites();
 
     printf("Lumino BatchSprite: %d sprites. Rendering...\n", SPRITE_COUNT);
 
-    // 7. Main loop
+    // 7. メインループ
     LNTransform identity = { 0,0,0,  0,0,0,1,  1,1,1 };
     int frame = 0;
     LNBool quit = LN_FALSE;
     int materialsAssigned = 0;
 
     while (LNWindow_ProcessEvents(window, &quit) == LN_OK && !quit) {
-        // Animate: slight wobble
+        // アニメーション: わずかに揺らす
         float t = frame * 0.02f;
         for (int i = 0; i < SPRITE_COUNT; i++) {
             s_sprites[i].zIndex = (int)(sinf(t + i * 0.1f) * 10.0f);
         }
 
-        // Sort sprites (z-index primary, texture secondary for batch efficiency)
+        // スプライトをソート (zIndex を主キー、バッチ効率のためテクスチャを副キーに)
         qsort(s_sprites, SPRITE_COUNT, sizeof(Sprite), compareSprites);
 
-        // Build vertex data and batches
+        // 頂点データとバッチを構築
         uint32_t vertCount = 0, idxCount = 0;
         uint32_t batchCount = buildBatches(
             s_sprites, SPRITE_COUNT,
             s_vertexBuf, s_indexBuf, s_submeshBuf,
             &vertCount, &idxCount);
 
-        // Upload to dynamic mesh
+        // 動的メッシュへアップロード
         LNMesh_UpdateVertices(mesh, 0, s_vertexBuf, vertCount);
         LNMesh_UpdateIndices(mesh, 0, s_indexBuf, idxCount);
         LNMesh_SetSubMeshes(mesh, s_submeshBuf, batchCount);
 
-        // Assign materials (safe to call every frame; cheap)
+        // マテリアルを割り当て (毎フレーム呼んでも安全で軽い)
         if (!materialsAssigned) {
             LNMesh_SetMaterial(mesh, 0, material0);
             LNMesh_SetMaterial(mesh, 1, material1);
             materialsAssigned = 1;
         }
 
-        // Draw
+        // 描画
         LNHandle renderer, colorBuffer, depthBuffer;
         LNGraphicsContext_BeginFrame(graphicsContext, WINDOW_W, WINDOW_H, &renderer, &colorBuffer, &depthBuffer);
         LNRenderPassDesc rpDesc;
@@ -261,7 +261,7 @@ int main() {
         frame++;
     }
 
-    // 8. Cleanup
+    // 8. 解放
     LNObject_Release(mesh);
     LNObject_Release(material1);
     LNObject_Release(material0);

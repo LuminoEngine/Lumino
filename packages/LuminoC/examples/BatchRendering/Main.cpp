@@ -1,13 +1,13 @@
 ﻿/**
- * BatchRendering example
+ * BatchRendering サンプル
  *
- * Demonstrates transparent batch rendering via LNRenderer_DrawSprite
- * and LNRenderer_DrawMesh. 1024 sprites with 2 alternating materials
- * are automatically batched and drawn with minimal draw calls.
- * A mesh is also drawn via the same Renderer.
+ * LNRenderer_DrawSprite と LNRenderer_DrawMesh による透過的なバッチ描画のデモ。
+ * 2 種類のマテリアルを交互に使う 1024 個のスプライトが自動的にバッチ化され、
+ * 最小限のドローコールで描画される。
+ * 同じ Renderer でメッシュも 1 つ描画する。
  *
- * Compare with the old BatchSprite example where the client had to
- * manage sorting, vertex generation, and dynamic mesh updates manually.
+ * クライアント側でソート、頂点生成、動的メッシュの更新を手動で行っていた
+ * 旧 BatchSprite サンプルと比較のこと。
  */
 #include "../Utils.h"
 
@@ -22,13 +22,13 @@ int main() {
     LNHandle graphicsContext = LN_NULL_HANDLE;
     LNWindow_GetGraphicsContext(window, &graphicsContext);
 
-    // Textures
+    // テクスチャ
     LNHandle texture0 = LN_NULL_HANDLE;
     LNHandle texture1 = LN_NULL_HANDLE;
     LNTexture2D_LoadFromFile(graphicsContext, ASSETS_DIR "/picture1.png", &texture0);
     LNTexture2D_LoadFromFile(graphicsContext, ASSETS_DIR "/picture1.png", &texture1);
 
-    // Materials - two unlit materials
+    // マテリアル - Unlit マテリアルを 2 つ
     LNHandle material0 = LN_NULL_HANDLE;
     LNHandle material1 = LN_NULL_HANDLE;
     LNMaterial_CreateFromBuiltinShader(graphicsContext, LN_BUILTIN_SHADER_UNLIT, &material0);
@@ -38,7 +38,7 @@ int main() {
     LNMaterial_SetMainTexture(material1, texture1);
     LNMaterial_SetColor(material1, 0.8f, 0.8f, 1.0f, 1.0f);
 
-    // Camera (orthographic, origin at center)
+    // カメラ (正射影、原点は中央)
     LNHandle camera = LN_NULL_HANDLE;
     LNCamera_Create(&camera);
     LNCamera_SetOrthographic(camera, (float)WINDOW_W, (float)WINDOW_H, -1000.0f, 1000.0f);
@@ -47,24 +47,24 @@ int main() {
         0.0f, 0.0f, 0.0f,
         0.0f, 1.0f, 0.0f);
 
-    // A simple quad mesh to demonstrate mixed sprite + mesh rendering
+    // スプライトとメッシュの混在描画を示すための単純な四角形メッシュ
     LNVertex quadVerts[4] = {};
-    // Top-left
+    // 左上
     quadVerts[0].posX = -50.0f; quadVerts[0].posY =  50.0f; quadVerts[0].posZ = 0.0f;
     quadVerts[0].normZ = 1.0f; quadVerts[0].tanX = 1.0f;
     quadVerts[0].u = 0.0f; quadVerts[0].v = 0.0f;
     quadVerts[0].colorR = 1; quadVerts[0].colorG = 1; quadVerts[0].colorB = 1; quadVerts[0].colorA = 1;
-    // Top-right
+    // 右上
     quadVerts[1].posX =  50.0f; quadVerts[1].posY =  50.0f; quadVerts[1].posZ = 0.0f;
     quadVerts[1].normZ = 1.0f; quadVerts[1].tanX = 1.0f;
     quadVerts[1].u = 1.0f; quadVerts[1].v = 0.0f;
     quadVerts[1].colorR = 1; quadVerts[1].colorG = 1; quadVerts[1].colorB = 1; quadVerts[1].colorA = 1;
-    // Bottom-left
+    // 左下
     quadVerts[2].posX = -50.0f; quadVerts[2].posY = -50.0f; quadVerts[2].posZ = 0.0f;
     quadVerts[2].normZ = 1.0f; quadVerts[2].tanX = 1.0f;
     quadVerts[2].u = 0.0f; quadVerts[2].v = 1.0f;
     quadVerts[2].colorR = 1; quadVerts[2].colorG = 1; quadVerts[2].colorB = 1; quadVerts[2].colorA = 1;
-    // Bottom-right
+    // 右下
     quadVerts[3].posX =  50.0f; quadVerts[3].posY = -50.0f; quadVerts[3].posZ = 0.0f;
     quadVerts[3].normZ = 1.0f; quadVerts[3].tanX = 1.0f;
     quadVerts[3].u = 1.0f; quadVerts[3].v = 1.0f;
@@ -78,14 +78,14 @@ int main() {
 
     printf("BatchRendering: %d sprites + 1 mesh. Rendering...\n", SPRITE_COUNT);
 
-    // --- Main loop ---
+    // --- メインループ ---
     int frame = 0;
     LNBool quit = LN_FALSE;
 
     while (LNWindow_ProcessEvents(window, &quit) == LN_OK && !quit) {
         float t = frame * 0.02f;
 
-        // Render
+        // 描画
         LNHandle renderer = LN_NULL_HANDLE, colorBuffer, depthBuffer;
         LNGraphicsContext_BeginFrame(graphicsContext, WINDOW_W, WINDOW_H, &renderer, &colorBuffer, &depthBuffer);
         LNRenderPassDesc rpDesc;
@@ -96,7 +96,7 @@ int main() {
         rpDesc.colorAttachments[0].clearColor[3] = 1.0f;
         LNRenderer_BeginRenderPass(renderer, graphicsContext, &rpDesc, camera);
 
-        // Add sprites
+        // スプライトを投入
         int cols = 32;
         float spacing = 18.0f;
         float offsetX = -(cols * spacing) * 0.5f;
@@ -123,7 +123,7 @@ int main() {
                 1.0f, 1.0f, 1.0f, 1.0f);
         }
 
-        // Add mesh
+        // メッシュを投入
         LNTransform meshTransform = { 200.0f, 200.0f, 0.0f,  0,0,0,1,  1,1,1 };
         LNRenderer_DrawMesh(renderer, mesh, &meshTransform, 0);
 
@@ -136,7 +136,7 @@ int main() {
         frame++;
     }
 
-    // --- Cleanup ---
+    // --- 解放 ---
     LNObject_Release(mesh);
     LNObject_Release(material1);
     LNObject_Release(material0);

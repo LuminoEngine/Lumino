@@ -80,7 +80,7 @@ struct Blob {
     std::vector<uint8_t> data;
 };
 
-// Error helper macros for the shader package.
+// シェーダパッケージ用のエラーヘルパーマクロ。
 #define LNSHADER_MAKE_ERROR(msg) tl::make_unexpected(::ln::Error{::ln::ErrorCode::ShaderCompilationFailed, msg})
 #define LNSHADER_MAKE_ERROR_FMT(msg) tl::make_unexpected(::ln::Error{::ln::ErrorCode::ShaderCompilationFailed, msg})
 #define LNSHADER_OK() ::ln::VoidResult{}

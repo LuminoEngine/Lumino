@@ -10,12 +10,12 @@ Result<Ref<ForwardRenderer>> ForwardRenderer::create(GraphicsContext* ctx) {
     fw->m_ctx      = ctx;
     fw->m_renderer = ctx->renderer();
 
-    // Use BasicLit's PipelineLayout as reference for the scene allocator
+    // シーンアロケータの参照用として BasicLit の PipelineLayout を使う
     const auto& refShaderPass = ctx->module()->builtinShader(BuiltinShader::BasicLit);
     auto* refPipelineLayout = refShaderPass->pipelineLayout();
     int16_t sceneSetIndex = refShaderPass->sceneSetIndex();
 
-    // ---- Dynamic UBO allocator for per-frame scene data (lighting) ----
+    // ---- フレームごとのシーンデータ (ライティング) 用の動的 UBO アロケータ ----
     {
         auto r = DynamicUniformAllocator::create(
             ctx->device(), refPipelineLayout,
@@ -38,12 +38,12 @@ Result<void> ForwardRenderer::renderFrame(
     size_t objectCount,
     const Color& clearColor) {
 
-    // ---- Render via the core Renderer ----
-    // beginFrame resets allocators; scene allocator must also be reset with the same frame counter.
+    // ---- コアの Renderer で描画する ----
+    // beginFrame はアロケータをリセットする。シーンアロケータも同じフレームカウンタでリセットすること。
     m_renderer->beginFrame();
     m_sceneAllocator->beginFrame(m_renderer->currentFrameSlot());
 
-    // ---- Allocate and upload Scene UBO (lighting) from the per-frame allocator ----
+    // ---- フレームごとのアロケータから Scene UBO (ライティング) を確保してアップロードする ----
     auto sceneAlloc = m_sceneAllocator->allocate();
     {
         SceneParamsUBO sceneParams{};

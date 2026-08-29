@@ -18,7 +18,7 @@ import {
 import { Logger } from "./Logger";
 
 //------------------------------------------------------------------------------
-// Emscripten Module type (subset we use)
+// Emscripten Module の型 (使用する部分のみ)
 //------------------------------------------------------------------------------
 
 interface EmscriptenModule {
@@ -34,10 +34,10 @@ interface EmscriptenModule {
 type ModuleFactory = (opts?: Record<string, unknown>) => Promise<EmscriptenModule>;
 
 //------------------------------------------------------------------------------
-// Internal cwrap bindings
+// 内部用 cwrap バインディング
 //------------------------------------------------------------------------------
 
-/** @internal Holds cwrap'ed C function references. */
+/** @internal cwrap した C 関数の参照を保持する。 */
 export const API: Record<string, (...args: never[]) => unknown> = {};
 
 //------------------------------------------------------------------------------
@@ -45,15 +45,15 @@ export const API: Record<string, (...args: never[]) => unknown> = {};
 //------------------------------------------------------------------------------
 
 export class Runtime {
-    /** The raw Emscripten module. Accessible for advanced usage. */
+    /** 生の Emscripten モジュール。高度な用途向けに公開する。 */
     static module: EmscriptenModule;
 
-    // Pre-allocated 4-byte slot for single out-parameter reads.
+    // 単一の out パラメータ読み取り用に事前確保した 4 バイトのスロット。
     private static _returnPtr = 0;
     private static _returnView: Uint32Array | undefined;
     private static _heapBuffer: ArrayBufferLike | undefined;
 
-    /** Has `initialize` been called? */
+    /** `initialize` が呼ばれたかどうか。 */
     static get initialized(): boolean {
         return !!this.module;
     }
@@ -68,7 +68,7 @@ export class Runtime {
     }
 
     /**
-     * Load the Emscripten WASM module and bind all C-API symbols.
+     * Emscripten の WASM モジュールをロードし、すべての C-API シンボルをバインドする。
      */
     static async initialize(options?: RuntimeOptions): Promise<void> {
         if (this.initialized) return;
@@ -79,7 +79,7 @@ export class Runtime {
             Logger.setLevel(options.logLevel);
         }
 
-        // Dynamic import – the file sits in lib/ alongside the built TS output.
+        // 動的 import。このファイルはビルド済み TS 出力と同じ lib/ に置かれる。
         const { default: LuminoC } = await import("./LuminoC.mjs") as { default: ModuleFactory };
 
         const moduleOpts: Record<string, unknown> = {};
@@ -89,7 +89,7 @@ export class Runtime {
                 path.endsWith(".wasm") ? wasmPath : path;
         }
 
-        // Setup print functions.
+        // print 関数を設定する。
         let printFunc: ((text: string) => void) | undefined = options?.print;
         let printErrFunc: ((text: string) => void) | undefined = options?.printErr;
         if (!printFunc)  {
@@ -107,10 +107,10 @@ export class Runtime {
 
         this.module = await LuminoC(moduleOpts);
 
-        // Pre-allocate a 4-byte slot for out-parameter reads.
+        // out パラメータ読み取り用の 4 バイトスロットを事前確保する。
         this._returnPtr = this.module._malloc(4);
 
-        // Bind all C-API functions via cwrap.
+        // すべての C-API 関数を cwrap でバインドする。
         this._bindAPI();
 
         // ログレベルをネイティブ側にも反映する。
@@ -125,7 +125,7 @@ export class Runtime {
         // 起こすため、ここで即座に例外を投げて早期に検出する。
         this._verifyStructLayouts();
 
-        // Initialize Lumino graphics instance.
+        // Lumino のグラフィックスインスタンスを初期化する。
         const m = this.module;
         const ptr = m._malloc(SIZEOF_INSTANCE_INIT_SETTINGS);
         const view = new DataView(m.HEAPU8.buffer, ptr, SIZEOF_INSTANCE_INIT_SETTINGS);
@@ -154,7 +154,7 @@ export class Runtime {
         this.safeCall(() => (API.LNLogger_SetLevel as (level: number) => number)(level));
     }
 
-    /** Shut down the Lumino runtime. */
+    /** Lumino ランタイムを終了する。 */
     static async terminate(): Promise<void> {
         await (API.LNInstance_Terminate as () => Promise<void>)();
     }
@@ -217,13 +217,13 @@ export class Runtime {
     }
 
     //--------------------------------------------------------------------------
-    // Return-pointer helpers (handles HEAP buffer grow)
+    // 戻り値ポインタのヘルパー (HEAP バッファの成長に対応)
     //--------------------------------------------------------------------------
 
     /**
-     * Get the pre-allocated return pointer and a Uint32Array view into it.
-     * Automatically recreates the view if the backing ArrayBuffer has changed
-     * due to WASM memory growth.
+     * 事前確保した戻り値ポインタと、それを指す Uint32Array ビューを返す。
+     * WASM メモリの成長で背後の ArrayBuffer が変わっていた場合は
+     * ビューを自動的に作り直す。
      */
     static getReturnPointerInfo(): [ptr: number, view: Uint32Array] {
         const buf = this.module.HEAPU8.buffer;
@@ -235,10 +235,10 @@ export class Runtime {
     }
 
     //--------------------------------------------------------------------------
-    // Safe-call wrappers (sync)
+    // 安全呼び出しラッパー (同期)
     //--------------------------------------------------------------------------
 
-    /** Call a C function and throw on non-OK result. */
+    /** C 関数を呼び出し、結果が OK でなければ例外を投げる。 */
     static safeCall(fn: () => number): void {
         const rc = fn();
         if (rc !== Result.OK) {
@@ -246,7 +246,7 @@ export class Runtime {
         }
     }
 
-    /** Call a C function that returns a handle via the pre-allocated out-pointer. */
+    /** 事前確保した out ポインタ経由でハンドルを返す C 関数を呼び出す。 */
     static safeCallWithReturnHandle(fn: (ptr: number) => number): Handle {
         const [ptr, view] = this.getReturnPointerInfo();
         const rc = fn(ptr);
@@ -257,10 +257,10 @@ export class Runtime {
     }
 
     //--------------------------------------------------------------------------
-    // Safe-call wrappers (async — ASYNCIFY)
+    // 安全呼び出しラッパー (非同期 - ASYNCIFY)
     //--------------------------------------------------------------------------
 
-    /** Async variant of `safeCall`. */
+    /** `safeCall` の非同期版。 */
     static async safeCallAsync(fn: () => number | Promise<number>): Promise<void> {
         const rc = await fn();
         if (rc !== Result.OK) {
@@ -268,14 +268,14 @@ export class Runtime {
         }
     }
 
-    /** Async variant of `safeCallWithReturnHandle`. */
+    /** `safeCallWithReturnHandle` の非同期版。 */
     static async safeCallWithReturnHandleAsync(fn: (ptr: number) => number | Promise<number>): Promise<Handle> {
         const [ptr, view] = this.getReturnPointerInfo();
         const rc = await fn(ptr);
         if (rc !== Result.OK) {
             throw new Error(`Lumino C-API error: ${rc}`);
         }
-        // Re-read view after await (HEAP may have grown).
+        // await 後にビューを取り直す (HEAP が成長している可能性がある)。
         const [, freshView] = this.getReturnPointerInfo();
         return freshView[0];
     }

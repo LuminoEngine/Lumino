@@ -5,21 +5,21 @@ Slang シェーダをコンパイルし、マルチターゲット (SPIRV / DXIL
 ## 設計方針
 
 シェーダリソースは **更新頻度別** に Descriptor Set へ分離する。マテリアルパラメータは
-`$Global`（bare uniform）、システムデータ（カメラ・ライト・オブジェクト行列）は
+`$Global`（bare uniform）、システムデータ（カメラ、ライト、オブジェクト行列）は
 `ParameterBlock<T>` で宣言する。
 
 ```text
-Set 0 ($Global / per-material) : マテリアルパラメータ・テクスチャ — マテリアル切り替え時
-Set 1 (per-view)               : カメラ — フレームに1回更新
-Set 2 (per-scene)              : ライト — フレームに1回更新
-Set 3 (per-object)             : ワールド行列 — オブジェクトごと
+Set 0 ($Global / per-material) : マテリアルパラメータとテクスチャ - マテリアル切り替え時
+Set 1 (per-view)               : カメラ - フレームに1回更新
+Set 2 (per-scene)              : ライト - フレームに1回更新
+Set 3 (per-object)             : ワールド行列 - オブジェクトごと
 ```
 
 bare uniform は `$Global`（Set 0）にまとめられ、`ParameterBlock<T>` は独立した descriptor set
-（Set 1〜3）にマップされる。システム ParameterBlock（Set 1〜3）は `import lumino;` が提供するため、
+（Set 1-3）にマップされる。システム ParameterBlock（Set 1-3）は `import lumino;` が提供するため、
 シェーダ作者が宣言するのは Set 0 のマテリアルパラメータだけでよい。
 
-> シェーダの書き方・Material API からのパラメータ設定は
+> シェーダの書き方と Material API からのパラメータ設定は
 > [docs/shader-conventions.md](../../docs/shader-conventions.md) を参照。
 
 ## シェーダの書き方

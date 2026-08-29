@@ -13,8 +13,8 @@ class UnifiedShaderSerializer2 final {
 public:
     enum FileVersion {
         FileVersion_1 = 1,
-        FileVersion_2 = 2,   // Added GlobalMemberInfo to ParameterBlockLayout2
-        FileVersion_3 = 3,   // Added UnifiedShader2::sourceName
+        FileVersion_2 = 2,   // ParameterBlockLayout2 に GlobalMemberInfo を追加
+        FileVersion_3 = 3,   // UnifiedShader2::sourceName を追加
         FileVersion_Last,
         FileVersion_Current = FileVersion_Last - 1,
     };

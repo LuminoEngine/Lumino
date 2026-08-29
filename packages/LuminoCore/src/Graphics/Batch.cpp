@@ -188,11 +188,11 @@ Result<void> BatchProcessor::flush(Renderer* renderer, DrawCommandBuffer* comman
         DrawCommandType groupType = commands[groupStart].type;
         uint32_t groupEnd = groupStart + 1;
 
-        // Find contiguous group of same type.
-        // Sprites with different materials are batched together into one flushSpriteGroup call,
-        // which builds separate submeshes per material in a single vertex buffer.
-        // Splitting by material here would cause each group to overwrite the same m_spriteMesh
-        // buffer from offset 0, corrupting vertex data for earlier draw calls.
+        // 同じ type の連続したグループを見つける。
+        // マテリアルが異なるスプライトも 1 回の flushSpriteGroup 呼び出しにまとめられ、
+        // そこで単一の頂点バッファ内にマテリアルごとの別々のサブメッシュが構築される。
+        // ここでマテリアルごとに分割すると、各グループが同じ m_spriteMesh バッファを
+        // オフセット 0 から上書きし、先行するドローコールの頂点データを壊してしまう。
         while (groupEnd < count &&
                commands[groupEnd].type == groupType) {
             ++groupEnd;
@@ -217,9 +217,9 @@ Result<void> BatchProcessor::flush(Renderer* renderer, DrawCommandBuffer* comman
 Result<void> BatchProcessor::flushSpriteGroup(
     Renderer* renderer, const DrawCommand* begin, uint32_t count) {
 
-    // Acquire a distinct pool slot for this flush. Each flush within a frame must
-    // use its own buffer: draws are recorded now but executed at submit, so a
-    // shared buffer would let later flushes overwrite earlier flushes' vertices.
+    // このフラッシュ用に別々のプールスロットを取得する。フレーム内の各フラッシュは
+    // 自身のバッファを使わなければならない: 描画は今記録されるが実行は submit 時なので、
+    // バッファを共有すると後のフラッシュが先のフラッシュの頂点を上書きしてしまう。
     uint32_t slotIndex = m_spritePool.acquireSlot();
     auto& slot = m_spritePool.slotAt(slotIndex);
     if (count > slot.capacity) {
@@ -242,12 +242,12 @@ Result<void> BatchProcessor::flushSpriteGroup(
     m_indexStaging.resize(totalIndices);
     m_submeshStaging.clear();
 
-    // Track material boundaries for submesh splitting
+    // サブメッシュ分割のためにマテリアルの境界を追跡する
     Material* currentMaterial = begin[0].material;
     uint32_t batchStartSprite = 0;
 
     for (uint32_t i = 0; i <= count; ++i) {
-        // Detect material boundary
+        // マテリアルの境界を検出する
         if (i == count || begin[i].material != currentMaterial) {
             SubMesh sub;
             sub.indexOffset = batchStartSprite * 6;
@@ -272,7 +272,7 @@ Result<void> BatchProcessor::flushSpriteGroup(
         float left  = -s.pivot.x * w;
         float right = (1.0f - s.pivot.x) * w;
 
-        // Corner offsets (before rotation)
+        // 4 隅のオフセット (回転前)
         //   v0=TL(left,top) v1=TR(right,top) v2=BL(left,bottom) v3=BR(right,bottom)
         //   3D (Y+ up):   top は +、bottom は - (pivot.y=0 が視覚的な上端)
         //   2D (Y+ down): top/bottom の符号が反転
@@ -306,33 +306,33 @@ Result<void> BatchProcessor::flushSpriteGroup(
         uint32_t vi = i * 4;
         uint32_t ii = i * 6;
 
-        // Generate 4 vertices
+        // 4 頂点を生成する
         Vertex v{};
         v.normal = {0, 0, 1};
         v.tangent = {1, 0, 0, 1};
         v.color = s.color;
 
-        // v0: top-left
+        // v0: 左上
         v.position = world[0];
         v.uv = {u0, v0};
         m_vertexStaging[vi + 0] = v;
 
-        // v1: top-right
+        // v1: 右上
         v.position = world[1];
         v.uv = {u1, v0};
         m_vertexStaging[vi + 1] = v;
 
-        // v2: bottom-left
+        // v2: 左下
         v.position = world[2];
         v.uv = {u0, v1};
         m_vertexStaging[vi + 2] = v;
 
-        // v3: bottom-right
+        // v3: 右下
         v.position = world[3];
         v.uv = {u1, v1};
         m_vertexStaging[vi + 3] = v;
 
-        // Indices: 0,2,1, 1,2,3 (CCW)
+        // インデックス: 0,2,1, 1,2,3 (CCW)
         m_indexStaging[ii + 0] = vi + 0;
         m_indexStaging[ii + 1] = vi + 2;
         m_indexStaging[ii + 2] = vi + 1;
@@ -341,7 +341,7 @@ Result<void> BatchProcessor::flushSpriteGroup(
         m_indexStaging[ii + 5] = vi + 3;
     }
 
-    // Upload to GPU
+    // GPU へアップロードする
     auto vr = spriteMesh->updateVertices(0, m_vertexStaging.data(), totalVertices);
     if (!vr) {
         return vr;
@@ -353,14 +353,14 @@ Result<void> BatchProcessor::flushSpriteGroup(
 
     spriteMesh->setSubmeshes(m_submeshStaging.data(), static_cast<uint32_t>(m_submeshStaging.size()));
 
-    // Assign materials to mesh slots
+    // メッシュのスロットにマテリアルを割り当てる
     auto& meshMaterials = spriteMesh->materials();
     meshMaterials.resize(m_submeshStaging.size());
     currentMaterial = begin[0].material;
     uint32_t matSlot = 0;
     for (uint32_t i = 0; i <= count; ++i) {
         if (i == count || (i > 0 && begin[i].material != currentMaterial)) {
-            // addRef + adopt: borrow a non-owning raw pointer into a Ref
+            // addRef + adopt: 非所有の生ポインタを Ref に取り込む
             currentMaterial->addRef();
             meshMaterials[matSlot] = Ref<Material>::adopt(currentMaterial);
             if (i < count) {
@@ -370,7 +370,7 @@ Result<void> BatchProcessor::flushSpriteGroup(
         }
     }
 
-    // Draw with identity transform (positions are already world-space)
+    // 単位トランスフォームで描画する (位置はすでにワールド空間)
     return renderer->drawMeshImmediate(spriteMesh, Transform::identity());
 }
 
@@ -379,7 +379,7 @@ Result<void> BatchProcessor::flushSubMeshGroup(
     const DrawCommand* begin,
     uint32_t count) {
 
-    // Phase 1: draw each submesh individually
+    // フェーズ 1: 各サブメッシュを個別に描画する
     for (uint32_t i = 0; i < count; ++i) {
         const auto& cmd = begin[i];
         auto result = renderer->drawSingleSubMesh(

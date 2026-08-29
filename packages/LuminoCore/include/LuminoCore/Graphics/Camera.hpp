@@ -34,7 +34,7 @@ public:
      * pivot=(0,0) で左上、(0.5,0.5) で画面中央、(1,1) で右下が原点になります。
      * 既定の pivot=(0,0) では (0,0) が左上、(width, height) が右下に対応します。
      * ビュー行列は単位行列に設定されます。
-     * このカメラで描画するスプライトは、左上原点・Y軸下向きのレイアウトで自動生成されます。
+     * このカメラで描画するスプライトは、左上原点、Y軸下向きのレイアウトで自動生成されます。
      */
     void setOrthographic2D(float width, float height, float nearClip, float farClip,
                            float pivotX = 0.0f, float pivotY = 0.0f);

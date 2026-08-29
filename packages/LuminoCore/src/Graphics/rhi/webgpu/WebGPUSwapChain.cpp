@@ -24,7 +24,7 @@ VoidResult WebGPUSwapChain::init(WebGPUDevice* device, const SwapChainDesc& desc
     m_width = desc.width;
     m_height = desc.height;
 
-    // Create WGPUSurface
+    // WGPUSurface を作成
     {
 #if defined(__EMSCRIPTEN__)
         // Web: canvas selector 文字列から surface を作成する。
@@ -66,7 +66,7 @@ VoidResult WebGPUSwapChain::init(WebGPUDevice* device, const SwapChainDesc& desc
 #endif // __EMSCRIPTEN__
     }
 
-    // Query surface capabilities
+    // サーフェスの機能を問い合わせる
     WGPUSurfaceCapabilities caps = WGPU_SURFACE_CAPABILITIES_INIT;
     if (wgpuSurfaceGetCapabilities(m_surface, device->wgpuAdapter(), &caps) != WGPUStatus_Success) {
         return LN_MAKE_ERROR("wgpuSurfaceGetCapabilities failed.");
@@ -86,7 +86,7 @@ VoidResult WebGPUSwapChain::init(WebGPUDevice* device, const SwapChainDesc& desc
         LN_LOG_WARNING("[WebGPU] Surface does not support CopySrc; backbuffer readback will be unavailable.");
     }
 
-    // Choose present mode: prefer Mailbox (non-vsync) or Fifo (vsync)
+    // present モードを選択: vsync なしなら Mailbox、vsync ありなら Fifo を優先する
     WGPUPresentMode presentMode = WGPUPresentMode_Fifo;
     if (!desc.vsync) {
         for (size_t i = 0; i < caps.presentModeCount; ++i) {
@@ -98,7 +98,7 @@ VoidResult WebGPUSwapChain::init(WebGPUDevice* device, const SwapChainDesc& desc
     }
     m_presentMode = presentMode;
 
-    // Configure the surface
+    // サーフェスを構成
     WGPUSurfaceConfiguration config = WGPU_SURFACE_CONFIGURATION_INIT;
     config.device = device->wgpuDevice();
     config.format = m_surfaceFormat;
@@ -109,7 +109,7 @@ VoidResult WebGPUSwapChain::init(WebGPUDevice* device, const SwapChainDesc& desc
     config.presentMode = presentMode;
     wgpuSurfaceConfigure(m_surface, &config);
 
-    // Create the backbuffer view wrapper (reused each frame)
+    // バックバッファビューのラッパーを作成 (毎フレーム再利用する)
     m_currentBackbufferView = Ref<WebGPUTextureView>::adopt(new WebGPUTextureView());
     m_currentBackbufferView->initFromExternal(nullptr, m_surfaceFormat, m_width, m_height);
 
@@ -120,7 +120,7 @@ VoidResult WebGPUSwapChain::init(WebGPUDevice* device, const SwapChainDesc& desc
     }
 #endif
 
-    // Create CommandBuffers for each in-flight frame
+    // in-flight フレームごとに CommandBuffer を作成
     m_maxFrames = 2;
     for (uint32_t i = 0; i < m_maxFrames; ++i) {
         auto cmdBuf = Ref<WebGPUCommandBuffer>::adopt(new WebGPUCommandBuffer());
@@ -135,7 +135,7 @@ VoidResult WebGPUSwapChain::init(WebGPUDevice* device, const SwapChainDesc& desc
 }
 
 TextureView* WebGPUSwapChain::acquireNextTexture() {
-    // Release previous frame's texture resources
+    // 前フレームのテクスチャリソースを解放
     if (m_currentTextureView) {
         wgpuTextureViewRelease(m_currentTextureView);
         m_currentTextureView = nullptr;
@@ -145,7 +145,7 @@ TextureView* WebGPUSwapChain::acquireNextTexture() {
         m_currentTexture = nullptr;
     }
 
-    // Get current texture from the surface
+    // サーフェスから現在のテクスチャを取得
     WGPUSurfaceTexture surfaceTexture = WGPU_SURFACE_TEXTURE_INIT;
     wgpuSurfaceGetCurrentTexture(m_surface, &surfaceTexture);
     if (surfaceTexture.status != WGPUSurfaceGetCurrentTextureStatus_SuccessOptimal &&
@@ -162,7 +162,7 @@ TextureView* WebGPUSwapChain::acquireNextTexture() {
     }
     m_currentTexture = surfaceTexture.texture;
 
-    // Create a view for this frame's texture
+    // このフレームのテクスチャに対するビューを作成
     WGPUTextureViewDescriptor viewDesc = WGPU_TEXTURE_VIEW_DESCRIPTOR_INIT;
     viewDesc.format = m_surfaceFormat;
     viewDesc.dimension = WGPUTextureViewDimension_2D;
@@ -177,7 +177,7 @@ TextureView* WebGPUSwapChain::acquireNextTexture() {
         return nullptr;
     }
 
-    // Update the wrapper view。
+    // ラッパービューを更新する。
     // readback のコピー元は present 後も生存する永続キャプチャテクスチャを指す
     // (サーフェステクスチャは present で破棄されるため直接は使えない)。
 #if !defined(__EMSCRIPTEN__)
@@ -186,7 +186,7 @@ TextureView* WebGPUSwapChain::acquireNextTexture() {
     m_currentBackbufferView->rewrap(m_currentTextureView, nullptr);
 #endif
 
-    // Begin the command buffer for this frame
+    // このフレームのコマンドバッファを開始
     if (!m_commandBuffers[m_currentFrame]->begin()) {
         return nullptr;
     }
@@ -195,7 +195,7 @@ TextureView* WebGPUSwapChain::acquireNextTexture() {
 }
 
 void WebGPUSwapChain::present() {
-    // Submit the command buffer
+    // コマンドバッファを送信
     m_commandBuffers[m_currentFrame]->submit();
 
 #if !defined(__EMSCRIPTEN__)
@@ -204,14 +204,14 @@ void WebGPUSwapChain::present() {
     copyBackbufferToCaptureTexture();
 #endif
 
-    // Present the surface
-    // On the web, requestAnimationFrame handles presentation automatically;
-    // wgpuSurfacePresent is unsupported in emdawnwebgpu.
+    // サーフェスを present する
+    // Web では requestAnimationFrame が自動的に present を行う。
+    // emdawnwebgpu では wgpuSurfacePresent は未サポート。
 #ifndef __EMSCRIPTEN__
     wgpuSurfacePresent(m_surface);
 #endif
 
-    // Round-robin frame index
+    // フレームインデックスをラウンドロビンで進める
     m_currentFrame = (m_currentFrame + 1) % m_maxFrames;
 }
 
@@ -226,7 +226,7 @@ VoidResult WebGPUSwapChain::resize(uint32_t width, uint32_t height) {
 
     m_device->waitIdle();
 
-    // Release current frame's texture resources
+    // 現在フレームのテクスチャリソースを解放
     if (m_currentTextureView) {
         wgpuTextureViewRelease(m_currentTextureView);
         m_currentTextureView = nullptr;
@@ -236,7 +236,7 @@ VoidResult WebGPUSwapChain::resize(uint32_t width, uint32_t height) {
         m_currentTexture = nullptr;
     }
 
-    // Reconfigure the surface with new dimensions
+    // 新しいサイズでサーフェスを再構成
     WGPUSurfaceConfiguration config = WGPU_SURFACE_CONFIGURATION_INIT;
     config.device = m_device->wgpuDevice();
     config.format = m_surfaceFormat;
@@ -250,7 +250,7 @@ VoidResult WebGPUSwapChain::resize(uint32_t width, uint32_t height) {
     m_width = width;
     m_height = height;
 
-    // Update the backbuffer view wrapper dimensions
+    // バックバッファビューのラッパーのサイズを更新
     m_currentBackbufferView->initFromExternal(nullptr, m_surfaceFormat, m_width, m_height);
 
 #if !defined(__EMSCRIPTEN__)
@@ -265,7 +265,7 @@ VoidResult WebGPUSwapChain::resize(uint32_t width, uint32_t height) {
 }
 
 void WebGPUSwapChain::finalize() {
-    // Wait for GPU to finish
+    // GPU の完了を待つ
     if (m_device && m_device->wgpuDevice()) {
         m_device->waitIdle();
     }

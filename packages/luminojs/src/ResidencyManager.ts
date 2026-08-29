@@ -57,7 +57,7 @@ export class ResidencyManager {
         }
     }
 
-    /** @internal デバッグ・テスト用 */
+    /** @internal デバッグとテスト用 */
     get threshold(): number { return this._threshold; }
     set threshold(v: number) { this._threshold = v; }
 }

@@ -2,16 +2,16 @@
 
 /**
  * @file StagingBufferPool.hpp
- * Host-visible staging buffer pool for synchronous CPU → GPU uploads.
- * 
- * Device-local buffers (Vertex, Index) cannot be mapped by the CPU.
- * This pool maintains a set of HOST_VISIBLE | HOST_COHERENT staging buffers
- * and provides `uploadImmediate()` to copy data through a one-time command
- * buffer, waiting for completion before returning.
- * 
- * Freed pages are returned to the pool and reused, avoiding repeated
- * vkAllocateMemory calls.  Phase 1-4 uses synchronous transfer only;
- * async pipelined staging can be added in Phase 2 when needed.
+ * CPU から GPU への同期アップロード用の、ホスト可視ステージングバッファプール。
+ *
+ * デバイスローカルなバッファ (Vertex, Index) は CPU からマップできない。
+ * このプールは HOST_VISIBLE | HOST_COHERENT なステージングバッファの集合を保持し、
+ * ワンタイムのコマンドバッファ経由でデータをコピーして完了を待ってから返る
+ * `uploadImmediate()` を提供する。
+ *
+ * 解放されたページはプールに戻して再利用し、vkAllocateMemory の繰り返し呼び出しを避ける。
+ * Phase 1-4 では同期転送のみ。非同期パイプライン化したステージングは
+ * 必要になれば Phase 2 で追加できる。
  */
 
 #include <LuminoBase/Types.hpp>
@@ -44,22 +44,22 @@ public:
     }
 
     /**
-     * Copy `size` bytes from `data` into `dstBuffer` (device-local).
-     * Allocates or recycles a staging page, records a one-time command
-     * buffer, submits it, and waits for the queue to be idle before returning.
+     * `data` から `size` バイトを `dstBuffer` (デバイスローカル) へコピーする。
+     * ステージングページを確保または再利用し、ワンタイムのコマンドバッファを記録して
+     * 送信し、キューがアイドルになるのを待ってから返る。
      */
     void uploadImmediate(VkQueue queue, VkCommandPool cmdPool,
                          VkBuffer dstBuffer, const void* data, VkDeviceSize size,
                          VkDeviceSize dstOffset = 0) {
         Page staging = acquirePage(size);
 
-        // Map and fill the staging buffer.
+        // ステージングバッファをマップして書き込む。
         void* mapped = nullptr;
         vkMapMemory(m_device, staging.memory, 0, size, 0, &mapped);
         std::memcpy(mapped, data, size);
         vkUnmapMemory(m_device, staging.memory);
 
-        // Allocate and record a one-time command buffer.
+        // ワンタイムのコマンドバッファを確保して記録する。
         VkCommandBufferAllocateInfo allocInfo{};
         allocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
         allocInfo.commandPool = cmdPool;
@@ -79,7 +79,7 @@ public:
 
         vkEndCommandBuffer(cmd);
 
-        // Submit and wait for completion.
+        // 送信して完了を待つ。
         VkSubmitInfo submitInfo{};
         submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
         submitInfo.commandBufferCount = 1;
@@ -92,8 +92,8 @@ public:
     }
 
     /**
-     * Copy `size` bytes from `data` into `dstImage` (device-local).
-     * Transitions the image layout and copies via a staging buffer.
+     * `data` から `size` バイトを `dstImage` (デバイスローカル) へコピーする。
+     * イメージレイアウトを遷移し、ステージングバッファ経由でコピーする。
      */
     void uploadTextureImmediate(VkQueue queue, VkCommandPool cmdPool,
                                 VkImage dstImage, const void* data, VkDeviceSize size,
@@ -119,7 +119,7 @@ public:
         beginInfo.flags = VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT;
         vkBeginCommandBuffer(cmd, &beginInfo);
 
-        // Transition UNDEFINED → TRANSFER_DST_OPTIMAL
+        // UNDEFINED -> TRANSFER_DST_OPTIMAL へ遷移
         VkImageMemoryBarrier barrier{};
         barrier.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER;
         barrier.oldLayout = VK_IMAGE_LAYOUT_UNDEFINED;
@@ -138,10 +138,10 @@ public:
             VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT, VK_PIPELINE_STAGE_TRANSFER_BIT,
             0, 0, nullptr, 0, nullptr, 1, &barrier);
 
-        // Copy buffer → image
+        // バッファ -> イメージへコピー
         VkBufferImageCopy region{};
         region.bufferOffset = 0;
-        region.bufferRowLength = 0;   // tightly packed
+        region.bufferRowLength = 0;   // 隙間なく詰める
         region.bufferImageHeight = 0;
         region.imageSubresource.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
         region.imageSubresource.mipLevel = 0;
@@ -152,7 +152,7 @@ public:
         vkCmdCopyBufferToImage(cmd, staging.buffer, dstImage,
             VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 1, &region);
 
-        // Transition TRANSFER_DST_OPTIMAL → SHADER_READ_ONLY_OPTIMAL
+        // TRANSFER_DST_OPTIMAL -> SHADER_READ_ONLY_OPTIMAL へ遷移
         barrier.oldLayout = VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL;
         barrier.newLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
         barrier.srcAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT;
@@ -175,8 +175,8 @@ public:
     }
 
     /**
-     * Copy pixel data from `srcImage` (device-local) into a CPU-side buffer.
-     * Transitions the image layout for transfer and restores it afterwards.
+     * `srcImage` (デバイスローカル) のピクセルデータを CPU 側のバッファへコピーする。
+     * 転送用にイメージレイアウトを遷移し、完了後に元へ戻す。
      */
     std::vector<uint8_t> downloadTextureImmediate(
         VkQueue queue, VkCommandPool cmdPool,
@@ -200,7 +200,7 @@ public:
         beginInfo.flags = VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT;
         vkBeginCommandBuffer(cmd, &beginInfo);
 
-        // Transition currentLayout → TRANSFER_SRC_OPTIMAL
+        // currentLayout -> TRANSFER_SRC_OPTIMAL へ遷移
         VkImageMemoryBarrier barrier{};
         barrier.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER;
         barrier.oldLayout = currentLayout;
@@ -219,10 +219,10 @@ public:
             VK_PIPELINE_STAGE_ALL_COMMANDS_BIT, VK_PIPELINE_STAGE_TRANSFER_BIT,
             0, 0, nullptr, 0, nullptr, 1, &barrier);
 
-        // Copy image → buffer
+        // イメージ -> バッファへコピー
         VkBufferImageCopy region{};
         region.bufferOffset = 0;
-        region.bufferRowLength = 0;   // tightly packed
+        region.bufferRowLength = 0;   // 隙間なく詰める
         region.bufferImageHeight = 0;
         region.imageSubresource.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
         region.imageSubresource.mipLevel = 0;
@@ -233,7 +233,7 @@ public:
         vkCmdCopyImageToBuffer(cmd, srcImage,
             VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL, staging.buffer, 1, &region);
 
-        // Transition TRANSFER_SRC_OPTIMAL → original layout
+        // TRANSFER_SRC_OPTIMAL -> 元のレイアウトへ遷移
         barrier.oldLayout = VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL;
         barrier.newLayout = currentLayout;
         barrier.srcAccessMask = VK_ACCESS_TRANSFER_READ_BIT;
@@ -251,7 +251,7 @@ public:
         checkQueueResult(vkQueueSubmit(queue, 1, &submitInfo, VK_NULL_HANDLE), "vkQueueSubmit (staging)");
         checkQueueResult(vkQueueWaitIdle(queue), "vkQueueWaitIdle (staging)");
 
-        // Map staging buffer and copy to CPU vector.
+        // ステージングバッファをマップして CPU 側の vector へコピーする。
         void* mapped = nullptr;
         vkMapMemory(m_device, staging.memory, 0, size, 0, &mapped);
         std::vector<uint8_t> result(size);
@@ -272,7 +272,7 @@ private:
 
     VkDevice m_device = VK_NULL_HANDLE;
     VkPhysicalDevice m_physicalDevice = VK_NULL_HANDLE;
-    Device* m_owner = nullptr; // non-owning (親の VulkanDevice)
+    Device* m_owner = nullptr; // 所有しない (親の VulkanDevice)
     std::vector<Page> m_freePages;
 
     /** キュー操作の結果を検査し、VK_ERROR_DEVICE_LOST であれば owner をロスト状態にする。 */
@@ -283,7 +283,7 @@ private:
     }
 
     Page acquirePage(VkDeviceSize size) {
-        // Reuse any free page that is large enough.
+        // 十分な大きさの空きページがあれば再利用する。
         for (auto it = m_freePages.begin(); it != m_freePages.end(); ++it) {
             if (it->capacity >= size) {
                 Page p = *it;

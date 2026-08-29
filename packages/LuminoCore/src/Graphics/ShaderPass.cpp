@@ -100,7 +100,7 @@ static std::vector<std::string> resolveSamplerTextureNames(
 }
 
 //------------------------------------------------------------------------------
-// Internal: shared implementation used by createFromCompiledShader and createFromUnifiedShader
+// 内部用: createFromCompiledShader と createFromUnifiedShader が共有する実装
 Result<Ref<ShaderPass>> ShaderPass::buildFromUnifiedShader(
     shader::UnifiedShader2* unifiedShader,
     rhi::Device* device,
@@ -115,7 +115,7 @@ Result<Ref<ShaderPass>> ShaderPass::buildFromUnifiedShader(
         resolvedName = "(unnamed shader)";
     }
 
-    // Select the requested pass for the backend's shader target.
+    // バックエンドのシェーダターゲットに対応する、要求されたパスを選択する。
     auto& globalPasses = unifiedShader->globalShaderPasses();
     if (globalPasses.empty()) {
         return LN_MAKE_ERROR("No shader passes found (shader: %s)", resolvedName.c_str());
@@ -149,7 +149,7 @@ Result<Ref<ShaderPass>> ShaderPass::buildFromUnifiedShader(
     auto* vertBlob = unifiedShader->blob(vertEP->codeBlobId);
     auto* fragBlob = unifiedShader->blob(fragEP->codeBlobId);
 
-    // Create shader modules
+    // シェーダモジュールを作成する
     // debugName は WebGPU オブジェクトのラベルになる。ブラウザ / Dawn は不正なシェーダを
     // `[Invalid ShaderModule "<label>"]` の形で報告するため、ここに名前を載せておくと
     // 実行時ログから「どのシェーダのどのエントリポイントか」が分かる。
@@ -179,7 +179,7 @@ Result<Ref<ShaderPass>> ShaderPass::buildFromUnifiedShader(
             fsResult.error().message.c_str());
     }
 
-    // Build material BindGroupLayout from the optional "$Material" ParameterBlock.
+    // 任意の "$Material" ParameterBlock からマテリアルの BindGroupLayout を構築する。
     //
     // $Material は「素の uniform / リソース」をまとめた合成ブロック。
     // フルスクリーン blit のような最小シェーダではマテリアル定数バッファを持たない
@@ -202,7 +202,7 @@ Result<Ref<ShaderPass>> ShaderPass::buildFromUnifiedShader(
         }
     }
 
-    // Discover view/scene/object blocks from reflection
+    // リフレクションから view/scene/object ブロックを見つける
     auto* viewBlock = detail::findParameterBlock(unifiedShader, "viewData");
     auto* sceneBlock = detail::findParameterBlock(unifiedShader, "sceneData");
     auto* objectBlock = detail::findParameterBlock(unifiedShader, "objectData");
@@ -216,7 +216,7 @@ Result<Ref<ShaderPass>> ShaderPass::buildFromUnifiedShader(
     int16_t sceneSetIndex = sceneBlock->setIndex;
     int16_t objectSetIndex = objectBlock->setIndex;
 
-    // Build BindGroupLayoutDescs from reflection (with dynamic offset for UBOs)
+    // リフレクションから BindGroupLayoutDesc を構築する (UBO には動的オフセットを付ける)
     auto viewLayoutDesc = detail::buildBindGroupLayoutFromReflection(*viewBlock, targetPass->bindingLayout);
     for (auto& entry : viewLayoutDesc.entries) {
         if (entry.type == rhi::BindingType::UniformBuffer) entry.hasDynamicOffset = true;
@@ -239,7 +239,7 @@ Result<Ref<ShaderPass>> ShaderPass::buildFromUnifiedShader(
             resolvedName.c_str(), globalPass->name.c_str());
     }
 
-    // Collect binding names for the material set (parallel to materialLayoutDesc entries)
+    // マテリアルセットのバインディング名を集める (materialLayoutDesc の entries と並行)
     std::vector<std::string> materialBindingNames;
     for (const auto& binding : targetPass->bindingLayout.bindings) {
         if (binding.setIndex == materialSetIdx) {
@@ -247,10 +247,10 @@ Result<Ref<ShaderPass>> ShaderPass::buildFromUnifiedShader(
         }
     }
 
-    // Determine the max set index to size the PipelineLayoutDesc properly
+    // PipelineLayoutDesc のサイズを正しく決めるため、最大のセットインデックスを求める
     int16_t maxSet = std::max({materialSetIdx, viewSetIndex, sceneSetIndex, objectSetIndex});
 
-    // Assemble PipelineLayoutDesc using reflection-based set indices
+    // リフレクションから得たセットインデックスで PipelineLayoutDesc を組み立てる
     rhi::PipelineLayoutDesc plDesc;
     plDesc.setLayouts.resize(static_cast<size_t>(maxSet) + 1);
     if (materialSetIdx >= 0) {
@@ -260,7 +260,7 @@ Result<Ref<ShaderPass>> ShaderPass::buildFromUnifiedShader(
     plDesc.setLayouts[sceneSetIndex] = sceneLayoutDesc;
     plDesc.setLayouts[objectSetIndex] = objectLayoutDesc;
 
-    // Convert GlobalMemberInfo to MaterialMemberInfo
+    // GlobalMemberInfo を MaterialMemberInfo へ変換する
     std::vector<MaterialMemberInfo> members;
     if (materialBlock) {
         members.reserve(materialBlock->members.size());
@@ -269,7 +269,7 @@ Result<Ref<ShaderPass>> ShaderPass::buildFromUnifiedShader(
         }
     }
 
-    // Create Instance
+    // インスタンスを作成する
     auto plResult = device->createPipelineLayout(plDesc);
     if (!plResult) {
         return LN_MAKE_ERROR(
@@ -313,7 +313,7 @@ Result<Ref<ShaderPass>> ShaderPass::createFromCompiledShader(
     size_t passIndex,
     const std::string& shaderName) {
 
-    // Deserialize the unified shader from the binary blob.
+    // バイナリ blob から UnifiedShader をデシリアライズする。
     auto loadResult = shader::UnifiedShaderSerializer2::loadFromData(data, size);
     if (!loadResult) {
         return LN_FORWARD_ERROR(loadResult);

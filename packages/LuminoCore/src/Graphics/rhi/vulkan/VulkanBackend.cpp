@@ -123,7 +123,7 @@ VoidResult VulkanBindGroupLayout::init(VulkanDevice* device, const BindGroupLayo
         b.descriptorCount = 1;
         b.stageFlags = toVkShaderStage(e.visibility);
 
-        // Use dynamic descriptor type when hasDynamicOffset is set.
+        // hasDynamicOffset が設定されていれば dynamic なディスクリプタタイプを使う。
         bool isDynamic = e.hasDynamicOffset &&
             (e.type == BindingType::UniformBuffer || e.type == BindingType::StorageBuffer);
         if (isDynamic) {
@@ -192,7 +192,7 @@ VoidResult VulkanBindGroup::init(VulkanDevice* device, DescriptorPoolManager& po
             bufInfos[i].offset = e.offset;
             bufInfos[i].range = e.size > 0 ? e.size : VK_WHOLE_SIZE;
 
-            // Use dynamic descriptor type if the layout binding has hasDynamicOffset.
+            // レイアウトのバインディングに hasDynamicOffset があれば dynamic なディスクリプタタイプを使う。
             bool isDynamic = (e.binding < dynFlags.size()) && dynFlags[e.binding];
             if (isDynamic) {
                 w.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC;
@@ -239,7 +239,7 @@ VulkanPipelineLayout::VulkanPipelineLayout() = default;
 VoidResult VulkanPipelineLayout::init(VulkanDevice* vulkanDevice, const PipelineLayoutDesc& desc) {
     m_device = vulkanDevice;
 
-    // Create internal BindGroupLayouts from the descriptor
+    // desc から内部の BindGroupLayout を作成する
     m_bindGroupLayouts.reserve(desc.setLayouts.size());
     std::vector<VkDescriptorSetLayout> vkLayouts;
     vkLayouts.reserve(desc.setLayouts.size());
@@ -283,8 +283,8 @@ void VulkanPipelineLayout::finalize() {
 
 // ------ VulkanRenderPipeline ------------------------------------------------------------------------------------------------
 
-// Minimal SPIR-V reflection: returns the set of vertex input locations consumed by the shader.
-// Parses OpVariable (storage class Input) and OpDecorate (Location decoration) instructions.
+// 最小限の SPIR-V リフレクション: シェーダが消費する頂点入力ロケーションの集合を返す。
+// OpVariable (storage class が Input) と OpDecorate (Location デコレーション) の命令を解析する。
 static std::unordered_set<uint32_t> reflectVertexInputLocations(const uint32_t* spirv, size_t sizeBytes) {
     const size_t wordCount = sizeBytes / 4;
     if (wordCount < 5) return {};
@@ -292,7 +292,7 @@ static std::unordered_set<uint32_t> reflectVertexInputLocations(const uint32_t* 
     std::unordered_set<uint32_t> inputVarIds;
     std::unordered_map<uint32_t, uint32_t> locationByVarId;
 
-    size_t i = 5; // skip header
+    size_t i = 5; // ヘッダをスキップ
     while (i < wordCount) {
         uint32_t word = spirv[i];
         uint32_t opcode = word & 0xFFFF;
@@ -326,7 +326,7 @@ VulkanRenderPipeline::VulkanRenderPipeline() = default;
 
 VoidResult VulkanRenderPipeline::init(VulkanDevice* device, VkRenderPass renderPass, const RenderPipelineDesc& desc) {
     m_device = device;
-    // Shader stages
+    // シェーダステージ
     VkPipelineShaderStageCreateInfo stages[2]{};
     stages[0].sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
     stages[0].stage = VK_SHADER_STAGE_VERTEX_BIT;
@@ -337,7 +337,7 @@ VoidResult VulkanRenderPipeline::init(VulkanDevice* device, VkRenderPass renderP
     stages[1].module = static_cast<VulkanShaderModule*>(desc.fragmentShader)->handle();
     stages[1].pName = desc.fragmentEntry.c_str();
 
-    // Vertex input
+    // 頂点入力
     std::vector<VkVertexInputBindingDescription> bindingDescs;
     std::vector<VkVertexInputAttributeDescription> attrDescs;
     for (uint32_t i = 0; i < desc.vertexBuffers.size(); ++i) {
@@ -358,9 +358,9 @@ VoidResult VulkanRenderPipeline::init(VulkanDevice* device, VkRenderPass renderP
         }
     }
 
-    // Filter vertex attributes to only those actually consumed by the vertex shader.
-    // This avoids Vulkan Validation WARNING-Shader-OutputNotConsumed when the standard
-    // layout declares attributes (e.g. normal, tangent) that the shader doesn't use.
+    // 頂点属性を、頂点シェーダが実際に消費するものだけに絞り込む。
+    // 標準レイアウトがシェーダの使わない属性 (normal, tangent など) を宣言している場合の
+    // Vulkan Validation WARNING-Shader-OutputNotConsumed を避けるため。
     if (desc.vertexShader) {
         auto* vsModule = static_cast<VulkanShaderModule*>(desc.vertexShader);
         auto usedLocations = reflectVertexInputLocations(vsModule->spirvData(), vsModule->spirvSizeBytes());
@@ -381,7 +381,7 @@ VoidResult VulkanRenderPipeline::init(VulkanDevice* device, VkRenderPass renderP
     vertexInput.vertexAttributeDescriptionCount = static_cast<uint32_t>(attrDescs.size());
     vertexInput.pVertexAttributeDescriptions = attrDescs.data();
 
-    // Input assembly
+    // 入力アセンブリ
     VkPipelineInputAssemblyStateCreateInfo inputAssembly{};
     inputAssembly.sType = VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO;
     switch (desc.topology) {
@@ -392,7 +392,7 @@ VoidResult VulkanRenderPipeline::init(VulkanDevice* device, VkRenderPass renderP
         case PrimitiveTopology::PointList:     inputAssembly.topology = VK_PRIMITIVE_TOPOLOGY_POINT_LIST; break;
     }
 
-    // Dynamic viewport/scissor
+    // 動的なビューポートとシザー
     VkPipelineViewportStateCreateInfo viewportState{};
     viewportState.sType = VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO;
     viewportState.viewportCount = 1;
@@ -404,7 +404,7 @@ VoidResult VulkanRenderPipeline::init(VulkanDevice* device, VkRenderPass renderP
     dynamicState.dynamicStateCount = 3;
     dynamicState.pDynamicStates = dynStates;
 
-    // Rasterization
+    // ラスタライズ
     VkPipelineRasterizationStateCreateInfo rasterizer{};
     rasterizer.sType = VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_STATE_CREATE_INFO;
     rasterizer.polygonMode = VK_POLYGON_MODE_FILL;
@@ -416,19 +416,19 @@ VoidResult VulkanRenderPipeline::init(VulkanDevice* device, VkRenderPass renderP
     }
     rasterizer.frontFace = desc.frontFace == FrontFace::CCW ? VK_FRONT_FACE_COUNTER_CLOCKWISE : VK_FRONT_FACE_CLOCKWISE;
 
-    // Multisampling
+    // マルチサンプリング
     VkPipelineMultisampleStateCreateInfo multisampling{};
     multisampling.sType = VK_STRUCTURE_TYPE_PIPELINE_MULTISAMPLE_STATE_CREATE_INFO;
     multisampling.rasterizationSamples = VK_SAMPLE_COUNT_1_BIT;
 
-    // Color blend
-    // NOTE: independentBlend is not required, so all attachments must be identical.
-    // For attachments beyond what the material specifies, fall back to blendStates[0].
+    // カラーブレンド
+    // NOTE: independentBlend は必須機能ではないため、全アタッチメントを同一にする必要がある。
+    // マテリアルが指定した数を超えるアタッチメントは blendStates[0] にフォールバックする。
     std::vector<VkPipelineColorBlendAttachmentState> blendAttachments;
     const auto& colorFormats = desc.renderPass->layoutDesc().colorFormats;
     const bool hasBs = !desc.blendStates.empty();
     for (size_t i = 0; i < colorFormats.size(); ++i) {
-        // Use per-attachment state if available, otherwise replicate the first entry.
+        // アタッチメントごとのステートがあればそれを使い、なければ先頭のエントリを複製する。
         const size_t bsIdx = (i < desc.blendStates.size()) ? i : 0;
         VkPipelineColorBlendAttachmentState att{};
         bool colorWrite = hasBs ? desc.blendStates[bsIdx].colorWriteEnabled : true;
@@ -460,7 +460,7 @@ VoidResult VulkanRenderPipeline::init(VulkanDevice* device, VkRenderPass renderP
     colorBlend.attachmentCount = static_cast<uint32_t>(blendAttachments.size());
     colorBlend.pAttachments = blendAttachments.data();
 
-    // Depth stencil
+    // デプスステンシル
     VkPipelineDepthStencilStateCreateInfo depthStencil{};
     depthStencil.sType = VK_STRUCTURE_TYPE_PIPELINE_DEPTH_STENCIL_STATE_CREATE_INFO;
     depthStencil.depthTestEnable = desc.depthStencil.depthTestEnable ? VK_TRUE : VK_FALSE;
@@ -478,7 +478,7 @@ VoidResult VulkanRenderPipeline::init(VulkanDevice* device, VkRenderPass renderP
             desc.depthStencil.stencilWriteMask);
     }
 
-    // Pipeline layout
+    // パイプラインレイアウト
     auto* pLayout = static_cast<VulkanPipelineLayout*>(desc.layout);
     VkPipelineLayout vkLayout = pLayout ? pLayout->handle() : VK_NULL_HANDLE;
 
@@ -544,9 +544,9 @@ void VulkanRenderPass::beginEncoding(
 
     vkCmdBeginRenderPass(m_cmd, &rpBegin, VK_SUBPASS_CONTENTS_INLINE);
 
-    // Set default viewport and scissor.
-    // Use negative height (y = height, h = -height) to flip Vulkan's Y axis so that
-    // +Y points upward, matching standard math / OpenGL NDC convention.
+    // デフォルトのビューポートとシザーを設定する。
+    // 負の高さ (y = height, h = -height) で Vulkan の Y 軸を反転し、+Y が上向きになるようにする。
+    // 一般的な数学や OpenGL の NDC の慣習に合わせるため。
     // (VK_KHR_maintenance1)
     VkViewport vp{0, static_cast<float>(extent.height), static_cast<float>(extent.width), -static_cast<float>(extent.height), 0, 1};
     vkCmdSetViewport(m_cmd, 0, 1, &vp);

@@ -1,9 +1,9 @@
-// DepthNormal.slang — View-space linear depth + normal output
+// DepthNormal.slang - ビュー空間の線形深度と法線の出力
 //
-// Renders view-space linear depth to R channel and encoded normal to GBA.
-// Output format: RGBA16Float
-//   R  = linear depth (positive distance from camera)
-//   GBA = view-space normal (encoded: n * 0.5 + 0.5)
+// ビュー空間の線形深度を R チャンネルに、エンコードした法線を GBA に描画する。
+// 出力フォーマット: RGBA16Float
+//   R  = 線形深度 (カメラからの正の距離)
+//   GBA = ビュー空間の法線 (エンコード: n * 0.5 + 0.5)
 
 import lumino;
 
@@ -50,7 +50,7 @@ struct FSOutput {
     //  - SSR: レイマーチのたびに計算するのが不要になる。
     //  - SSAO: 近くのサンプル数の数だけ計算するのが不要になる。
     //  - CSM(Cascaded Shadow Maps)
-    //  - Fog・大気散乱
+    //  - Fog、大気散乱
     //  - Depth of Field
     //  などなど。
 };
@@ -62,7 +62,7 @@ VSOutput vsMain(VSInput input) {
     float4 viewPos4 = mul(viewData.view, worldPos);
     output.position = mul(viewData.proj, viewPos4);
     output.viewPos  = viewPos4.xyz;
-    // Transform normal to view space
+    // 法線をビュー空間へ変換
     float3 worldNorm = normalize(mul((float3x3)objectData.normalMatrix, input.normal));
     output.worldNormal = worldNorm;//normalize(mul((float3x3)viewData.view, worldNorm));
     //output.viewPos4 = viewPos4;
@@ -75,8 +75,8 @@ VSOutput vsMain(VSInput input) {
 FSOutput fsMain(VSOutput input) {
     FSOutput output;
     
-    // Linear view-space depth: -viewPos.z (camera looks along -Z, so this is positive
-    // distance in front of the near plane). Cleared value 0 means "no geometry".
+    // ビュー空間の線形深度: -viewPos.z (カメラは -Z 方向を向くため、ニア平面より
+    // 手前側の正の距離になる)。クリア値 0 は「ジオメトリなし」を意味する。
     float viewDepth = -input.viewPos.z;
     float3 worldNormal = input.worldNormal;
 
@@ -85,7 +85,7 @@ FSOutput fsMain(VSOutput input) {
 
     output.gbufferA = float4(color.rgb, 1);
     output.gbufferB = float4(worldNormal, viewDepth);
-    // dummy: metallic=0.5, roughness=0.1, AO=1.0 — makes surfaces reflective for the SSR demo
+    // ダミー: metallic=0.5, roughness=0.1, AO=1.0 - SSR デモ用に表面を反射させる
     output.gbufferC = float4(0.5, 0.1, 1.0, 1.0);
 
 

@@ -1,21 +1,21 @@
-// BasicLit.slang — Blinn-Phong ライティング (1 Directional Light)
+// BasicLit.slang - Blinn-Phong ライティング (1 Directional Light)
 //
-// BindGroup layout (via ParameterBlock):
-//   Set 0 (per-view):     ViewParams  { viewProj, cameraPos, lightDir, lightColor, ambientColor }
-//   Set 1 (per-material): MaterialData { params, baseTexture, baseSampler }
-//   Set 2 (per-object):   ObjectParams { world, normalMatrix }
+// BindGroup レイアウト (ParameterBlock 経由):
+//   Set 0 (ビュー単位):       ViewParams  { viewProj, cameraPos, lightDir, lightColor, ambientColor }
+//   Set 1 (マテリアル単位):   MaterialData { params, baseTexture, baseSampler }
+//   Set 2 (オブジェクト単位): ObjectParams { world, normalMatrix }
 
 struct ViewParams {
     float4x4 viewProj;
-    float4   cameraPos;    // xyz = position
-    float4   lightDir;     // xyz = direction (towards light)
-    float4   lightColor;   // xyz = color, w = intensity
-    float4   ambientColor; // xyz = ambient color
+    float4   cameraPos;    // xyz = 位置
+    float4   lightDir;     // xyz = 方向 (ライトへ向かう向き)
+    float4   lightColor;   // xyz = 色, w = 強度
+    float4   ambientColor; // xyz = 環境光の色
 };
 
 struct MaterialParams {
-    float4 color;      // base color (rgba)
-    float4 specular;   // xyz = specular color, w = shininess
+    float4 color;      // ベースカラー (rgba)
+    float4 specular;   // xyz = スペキュラ色, w = 光沢度
 };
 
 struct MaterialData {
@@ -71,16 +71,16 @@ float4 fsMain(VSOutput input) : SV_TARGET {
     float3 V = normalize(viewData.cameraPos.xyz - input.worldPos);
     float3 H = normalize(L + V);
 
-    // Diffuse (Lambert)
+    // 拡散反射 (Lambert)
     float NdotL = max(dot(N, L), 0.0);
     float3 diffuse = baseColor.rgb * viewData.lightColor.xyz * NdotL;
 
-    // Specular (Blinn-Phong)
+    // 鏡面反射 (Blinn-Phong)
     float NdotH = max(dot(N, H), 0.0);
     float shininess = materialData.params.specular.w;
     float3 specular = materialData.params.specular.xyz * viewData.lightColor.xyz * pow(NdotH, shininess);
 
-    // Ambient
+    // 環境光
     float3 ambient = baseColor.rgb * viewData.ambientColor.xyz;
 
     float3 finalColor = ambient + diffuse + specular;

@@ -54,7 +54,7 @@ public:
     VoidResult init(VulkanDevice* device, const BindGroupLayoutDesc& desc);
     VkDescriptorSetLayout handle() const { return m_layout; }
 
-    /** Per-binding dynamic offset flags (parallel to desc.entries). */
+    /** バインディングごとの動的オフセットフラグ (desc.entries と同じ並び)。 */
     const std::vector<bool>& dynamicFlags() const { return m_dynamicFlags; }
 
 protected:
@@ -81,7 +81,7 @@ protected:
 
 private:
     VulkanDevice* m_device = nullptr;
-    VkDescriptorPool m_pool = VK_NULL_HANDLE; ///< Pool that owns m_set; used for vkFreeDescriptorSets.
+    VkDescriptorPool m_pool = VK_NULL_HANDLE; ///< m_set を所有するプール。vkFreeDescriptorSets に使う。
     VkDescriptorSet m_set = VK_NULL_HANDLE;
 };
 
@@ -116,11 +116,11 @@ public:
     const RenderPassLayoutDesc& layoutDesc() const override { return m_desc; }
     VkRenderPass handle() const { return m_vkRenderPass; }
 
-    // Called by VulkanCommandBuffer::beginRenderPass to activate encoding
+    // VulkanCommandBuffer::beginRenderPass から呼ばれ、エンコードを開始する
     void beginEncoding(VkCommandBuffer cmd, VkFramebuffer framebuffer,
                        VkExtent2D extent, const RenderPassDesc& desc);
 
-    // Encoding methods
+    // エンコード用メソッド
     void setPipeline(RenderPipeline* pipeline) override;
     void setVertexBuffer(uint32_t slot, Buffer* buffer, uint64_t offset) override;
     void setIndexBuffer(Buffer* buffer, IndexFormat format, uint64_t offset) override;
@@ -137,7 +137,7 @@ public:
 private:
     VkRenderPass m_vkRenderPass;
     RenderPassLayoutDesc m_desc;
-    // Encoding state (valid between beginEncoding and end)
+    // エンコード状態 (beginEncoding から end の間だけ有効)
     VkCommandBuffer m_cmd = VK_NULL_HANDLE;
     VkPipelineLayout m_currentPipelineLayout = VK_NULL_HANDLE;
 };

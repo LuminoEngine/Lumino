@@ -50,7 +50,7 @@ static VKAPI_ATTR VkBool32 VKAPI_CALL debugCallback(VkDebugUtilsMessageSeverityF
             // TODO: type は 次のようにして文字列化できるようにしたい。
             // #include <vulkan/vk_enum_string_helper.h>
             // const char* typeName = string_VkObjectType(VK_OBJECT_TYPE_DEVICE);
-            // Returns "VK_OBJECT_TYPE_DEVICE"
+            // "VK_OBJECT_TYPE_DEVICE" が返る
             LN_LOG_ERROR("  [%d] Type: %d, Handle: 0x%llx, Name: %s", i, (int)obj.objectType, (unsigned long long)obj.objectHandle, (obj.pObjectName ? obj.pObjectName : "N/A"));
         }
     }
@@ -75,7 +75,7 @@ VoidResult VulkanDevice::init(const DeviceDesc& desc) {
         return LN_MAKE_ERROR("Vulkan loader is not available on this system.");
     }
 
-    // Create instance
+    // インスタンスを作成
     VkApplicationInfo appInfo{};
     appInfo.sType = VK_STRUCTURE_TYPE_APPLICATION_INFO;
     appInfo.pApplicationName = "Lumino";
@@ -122,7 +122,7 @@ VoidResult VulkanDevice::init(const DeviceDesc& desc) {
     volkLoadInstanceOnly(m_instance);
 
 #if 1
-    // Setup debug messenger
+    // デバッグメッセンジャーを設定
     if (desc.enableValidation) {
         VkDebugUtilsMessengerCreateInfoEXT createInfo{};
         createInfo.sType = VK_STRUCTURE_TYPE_DEBUG_UTILS_MESSENGER_CREATE_INFO_EXT;
@@ -135,7 +135,7 @@ VoidResult VulkanDevice::init(const DeviceDesc& desc) {
     }
 #endif
 
-    // Select physical device
+    // 物理デバイスを選択
     uint32_t deviceCount = 0;
     vkEnumeratePhysicalDevices(m_instance, &deviceCount, nullptr);
     if (deviceCount == 0) return LN_MAKE_ERROR("No Vulkan-capable GPU found.");
@@ -156,7 +156,7 @@ VoidResult VulkanDevice::init(const DeviceDesc& desc) {
     }
 
 
-    // Create logical device
+    // 論理デバイスを作成
     float priority = 1.0f;
     VkDeviceQueueCreateInfo queueInfo{};
     queueInfo.sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
@@ -185,14 +185,14 @@ VoidResult VulkanDevice::init(const DeviceDesc& desc) {
 
     vkGetDeviceQueue(m_device, m_graphicsQueuFamily, 0, &m_graphicsQueue);
 
-    // Command pool
+    // コマンドプール
     VkCommandPoolCreateInfo poolInfo{};
     poolInfo.sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
     poolInfo.queueFamilyIndex = m_graphicsQueuFamily;
     poolInfo.flags = VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT;
     vkCreateCommandPool(m_device, &poolInfo, nullptr, &m_commandPool);
 
-    // Resource management subsystems
+    // リソース管理サブシステム
     m_descriptorPoolManager.init(m_device);
     m_stagingPool.init(m_device, m_physicalDevice, this);
     return LN_MAKE_SUCCESS();
@@ -201,10 +201,10 @@ VoidResult VulkanDevice::init(const DeviceDesc& desc) {
 void VulkanDevice::finalize() {
     if (m_device) vkDeviceWaitIdle(m_device);
 
-    // Flush any deferred cleanups (e.g., command buffers) before destroying the pool.
+    // プールを破棄する前に、遅延破棄 (コマンドバッファなど) をすべて実行する。
     m_frameResources.flushAll();
 
-    // Destroy caches
+    // キャッシュを破棄
     for (auto& [key, fb] : m_framebufferCache) vkDestroyFramebuffer(m_device, fb, nullptr);
     for (auto& [key, rp] : m_renderPassCache) vkDestroyRenderPass(m_device, rp, nullptr);
 
@@ -235,7 +235,7 @@ VkRenderPass VulkanDevice::getOrCreateRenderPass(const RenderPassKey& key) {
         att.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
         if (key.colorAttachments[i].isSwapchainBackbuffer) {
             // NOTE: スワップチェーンのバックバッファは present 前後どちらも PRESENT_SRC_KHR とする。
-            //   present 後・再 acquire 後のレイアウトは PRESENT_SRC_KHR のまま残るため、initialLayout も PRESENT_SRC_KHR を指定する。
+            //   present 後や再 acquire 後のレイアウトは PRESENT_SRC_KHR のまま残るため、initialLayout も PRESENT_SRC_KHR を指定する。
             //   各イメージの初回 acquire 時のみ UNDEFINED から PRESENT_SRC_KHR へ遷移させる処理を
             //   VulkanSwapChain::acquireNextTexture() で行っている (presentable image は acquire 後でないと遷移できないため)。
             //   ※ Vulkan Tutorial ではシングルパスでフレーム開始時にクリアするため UNDEFINED を指定しているが、
@@ -303,7 +303,7 @@ VkRenderPass VulkanDevice::getOrCreateRenderPass(const RenderPassKey& key) {
     dep.dstStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
     dep.dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
     if (key.depthFormat != VK_FORMAT_UNDEFINED) {
-        // デプス・ステンシルを Load する場合、直前パスのデプス書き込みと
+        // デプスステンシルを Load する場合、直前パスのデプス書き込みと
         // 本パスのデプス読み書きを正しく同期させる。
         dep.srcStageMask |= VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT | VK_PIPELINE_STAGE_LATE_FRAGMENT_TESTS_BIT;
         dep.dstStageMask |= VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT | VK_PIPELINE_STAGE_LATE_FRAGMENT_TESTS_BIT;
@@ -364,8 +364,8 @@ Result<Ref<SwapChain>> VulkanDevice::createSwapChain(const SwapChainDesc& desc) 
 }
 
 Result<Ref<Buffer>> VulkanDevice::createBuffer(const BufferDesc& desc) {
-    // Vertex and Index buffers benefit from device-local (GPU-optimal) memory,
-    // unless the caller explicitly requests mappable (host-visible) buffers.
+    // Vertex と Index のバッファはデバイスローカル (GPU に最適な) メモリの方が有利。
+    // ただし呼び出し側が明示的にマップ可能 (ホスト可視) なバッファを要求した場合は除く。
     bool useDeviceLocal =
         !desc.mappable &&
         ((desc.usage & BufferUsage::Vertex) || (desc.usage & BufferUsage::Index));
@@ -389,9 +389,9 @@ Result<Ref<Texture>> VulkanDevice::createTexture(const TextureDesc& desc) {
         return LN_MAKE_ERROR("Failed to create texture.");
     }
 
-    // Upload initial data via staging buffer if provided.
+    // 初期データがあればステージングバッファ経由でアップロードする。
     if (desc.initialData) {
-        uint32_t bpp = 4; // Assume 4 bytes per pixel for common formats.
+        uint32_t bpp = 4; // 一般的なフォーマットは 1 ピクセル 4 バイトとみなす。
         if (desc.format == TextureFormat::R8Unorm) bpp = 1;
         else if (desc.format == TextureFormat::RG8Unorm) bpp = 2;
         else if (desc.format == TextureFormat::RGBA16Float) bpp = 8;
@@ -504,7 +504,7 @@ Result<std::vector<uint8_t>> VulkanDevice::readbackTexture(TextureView* view) {
         return LN_MAKE_ERROR("Invalid TextureView for readback.");
     }
 
-    // Swapchain images are in PRESENT_SRC_KHR after present().
+    // スワップチェーンのイメージは present() 後は PRESENT_SRC_KHR になっている。
     const VkImageLayout currentLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
 
     auto pixels = m_stagingPool.downloadTextureImmediate(
@@ -544,7 +544,7 @@ void VulkanDevice::endSingleTimeCommands(VkCommandBuffer commandBuffer) {
     VkResult result = checkDeviceLost(vkEndCommandBuffer(commandBuffer), "vkEndCommandBuffer");
     if (result != VK_SUCCESS) {
         LN_LOG_ERROR("endSingleTimeCommands: vkEndCommandBuffer failed (%d)", static_cast<int>(result));
-        // no return, continue.
+        // return せず続行する。
     }
 
     VkSubmitInfo submitInfo = {};
@@ -555,13 +555,13 @@ void VulkanDevice::endSingleTimeCommands(VkCommandBuffer commandBuffer) {
         vkQueueSubmit(m_graphicsQueue, 1, &submitInfo, VK_NULL_HANDLE), "vkQueueSubmit");
     if (result != VK_SUCCESS) {
         LN_LOG_ERROR("endSingleTimeCommands: vkQueueSubmit failed (%d)", static_cast<int>(result));
-        // no return, continue.
+        // return せず続行する。
     }
 
     result = checkDeviceLost(vkQueueWaitIdle(m_graphicsQueue), "vkQueueWaitIdle");
     if (result != VK_SUCCESS) {
         LN_LOG_ERROR("endSingleTimeCommands: vkQueueWaitIdle failed (%d)", static_cast<int>(result));
-        // no return, continue.
+        // return せず続行する。
     }
 
     vkFreeCommandBuffers(m_device, m_commandPool, 1, &commandBuffer);

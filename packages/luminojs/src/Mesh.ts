@@ -18,8 +18,7 @@ export class Mesh extends LuminoObject implements ResidentResource {
     get lastUsedFrame(): number { return this._lastUsedFrame; }
 
     /**
-     * Define a mesh from vertex, index, and sub-mesh data.
-     * 頂点・インデックス・サブメッシュデータからメッシュを定義します。
+     * 頂点、インデックス、サブメッシュの各データからメッシュを定義します。
      * GPU バッファは最初の描画時に遅延生成される。
      * @param vertices  頂点配列
      * @param indices   インデックス配列 (uint32)
@@ -41,7 +40,6 @@ export class Mesh extends LuminoObject implements ResidentResource {
     }
 
     /**
-     * Assign a material to the given slot index.
      * 指定マテリアルスロットにマテリアルを設定します。(JS 側シャドウ、ensure 時に C 側へ反映)
      * @param materialIndex マテリアルスロットインデックス
      * @param material      設定するマテリアル
@@ -53,8 +51,8 @@ export class Mesh extends LuminoObject implements ResidentResource {
     }
 
     /**
-     * @internal Called by Renderer at draw time. Uploads vertex/index/submesh
-     * buffers if not yet resident, then ensures dependent Materials and binds them.
+     * @internal 描画時に Renderer から呼ばれる。頂点/インデックス/サブメッシュの各バッファが
+     * 未常駐ならアップロードし、続けて依存する Material を ensure してバインドする。
      */
     ensure(ctx: GraphicsContext): void {
         if (!this._isResidencyTarget) return;
@@ -66,7 +64,7 @@ export class Mesh extends LuminoObject implements ResidentResource {
             }
             this._createGpuMesh(ctx);
             this._dirty = false;
-            // After (re)creation, all material bindings must be re-applied.
+            // (再) 生成後は、すべてのマテリアルバインディングを再適用する必要がある。
             this._materialsDirty = true;
         }
 
@@ -88,12 +86,12 @@ export class Mesh extends LuminoObject implements ResidentResource {
         ctx.residencyManager.register(this);
     }
 
-    /** @internal Release the GPU mesh while keeping source data. */
+    /** @internal ソースデータは保持したまま GPU メッシュを解放する。 */
     evict(): void {
         if (this._handle === 0) return;
         (API.LNObject_Release as (h: number) => number)(this._handle);
         this._handle = 0;
-        // Next ensure() must re-bind materials on the new mesh.
+        // 次の ensure() で新しいメッシュにマテリアルを再バインドする必要がある。
         this._materialsDirty = true;
     }
 
@@ -127,7 +125,7 @@ export class Mesh extends LuminoObject implements ResidentResource {
         const subPtr = m._malloc(subBytes);
 
         try {
-            // Serialize vertices (16 floats each = 64 bytes)
+            // 頂点をシリアライズする (1 頂点 = float x 16 = 64 バイト)
             const vView = new DataView(m.HEAPU8.buffer, vertPtr, vertBytes);
             for (let i = 0; i < vertices.length; i++) {
                 const v = vertices[i];
@@ -150,10 +148,10 @@ export class Mesh extends LuminoObject implements ResidentResource {
                 vView.setFloat32(base + 60, v.tangent[3], true);
             }
 
-            // Copy indices
+            // インデックスをコピーする
             m.HEAPU8.set(new Uint8Array(indices.buffer, indices.byteOffset, idxBytes), idxPtr);
 
-            // Serialize submeshes (3 uint32 each = 12 bytes)
+            // サブメッシュをシリアライズする (1 つ = uint32 x 3 = 12 バイト)
             const sView = new DataView(m.HEAPU8.buffer, subPtr, subBytes);
             for (let i = 0; i < submeshes.length; i++) {
                 const s = submeshes[i];

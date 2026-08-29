@@ -10,9 +10,9 @@ namespace ln::rhi::webgpu {
 class WebGPUDevice;
 
 //------------------------------------------------------------------------------
-// Key for caching WebGPURenderPass objects. Only pipeline-compatibility fields
-// belong here (formats + sample count); load/store ops and clear values don't
-// affect pipeline compatibility.
+// WebGPURenderPass オブジェクトをキャッシュするためのキー。パイプライン互換性に関わる
+// フィールド (フォーマットとサンプル数) だけを含める。load/store op やクリア値は
+// パイプライン互換性に影響しない。
 struct WebGPURenderPassLayoutKey {
     SmallVector<TextureFormat, kMaxMultiRenderTargets> colorFormats;
     TextureFormat depthStencilFormat = TextureFormat::Undefined;
@@ -84,9 +84,9 @@ private:
     WebGPUDevice* m_device = nullptr;
     WGPUCommandEncoder m_encoder = nullptr;
     Ref<WebGPURenderPass> m_currentRenderPass;
-    // Cache of WebGPURenderPass wrappers keyed by attachment layout. The
-    // wrapper identity must remain stable across frames so that downstream
-    // PipelineCache (which hashes by rhi::RenderPass*) can hit consistently.
+    // アタッチメントレイアウトをキーとする WebGPURenderPass ラッパーのキャッシュ。
+    // 下流の PipelineCache (rhi::RenderPass* でハッシュする) が安定してヒットするよう、
+    // ラッパーの同一性はフレームをまたいで保たれなければならない。
     std::unordered_map<WebGPURenderPassLayoutKey, Ref<WebGPURenderPass>, WebGPURenderPassLayoutKeyHash> m_renderPassCache;
 };
 

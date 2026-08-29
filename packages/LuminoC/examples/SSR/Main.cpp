@@ -15,14 +15,14 @@
 int main() {
     InitializeInstance();
 
-    // Window + GraphicsContext
+    // Window と GraphicsContext
     LNHandle window = LN_NULL_HANDLE;
     LNWindow_Create("LuminoC-SSR", WINDOW_W, WINDOW_H, &window);
     LNHandle graphicsContext = LN_NULL_HANDLE;
     LNWindow_GetGraphicsContext(window, &graphicsContext);
 
     //--------------------------------------------------------------
-    // Render targets
+    // レンダーターゲット
     //--------------------------------------------------------------
 
     // GBufferA: Albedo.x, Albedo.y, Albedo.z, 0
@@ -59,28 +59,28 @@ int main() {
         LN_TEXTURE_FORMAT_RGBA32_FLOAT,
         &debugRenderTarget);
 
-    // Shared depth buffer
+    // 共有デプスバッファ
     LNHandle sceneDepth = LN_NULL_HANDLE;
     LNTexture2D_CreateDepthStencil(graphicsContext, WINDOW_W, WINDOW_H, &sceneDepth);
 
     //--------------------------------------------------------------
-    // Materials
+    // マテリアル
     //--------------------------------------------------------------
 
     LNHandle gridTexture = LN_NULL_HANDLE;
     LNTexture2D_LoadFromFile(graphicsContext, ASSETS_DIR "/CheckerGridGray1.png", &gridTexture);
 
-    // Scene materials (Unlit)
+    // シーン用マテリアル (Unlit)
     LNHandle groundMaterial = LN_NULL_HANDLE;
     LNMaterial_CreateFromBuiltinShader(graphicsContext, LN_BUILTIN_SHADER_UNLIT, &groundMaterial);
-    LNMaterial_SetColor(groundMaterial, 0.8f, 0.3f, 0.3f, 1.0f); // dark gray ground
+    LNMaterial_SetColor(groundMaterial, 0.8f, 0.3f, 0.3f, 1.0f); // 暗いグレーの地面
     LNMaterial_SetMainTexture(groundMaterial, gridTexture);
 
     LNHandle triangleMaterial = LN_NULL_HANDLE;
     LNMaterial_CreateFromBuiltinShader(graphicsContext, LN_BUILTIN_SHADER_UNLIT, &triangleMaterial);
-    LNMaterial_SetColor(triangleMaterial, 1.0f, 0.4f, 0.2f, 1.0f); // orange
+    LNMaterial_SetColor(triangleMaterial, 1.0f, 0.4f, 0.2f, 1.0f); // オレンジ
 
-    // SSR material
+    // SSR マテリアル
     LNHandle matSSR = LN_NULL_HANDLE;
     LNMaterial_CreateFromShaderSourceFile(
         graphicsContext,
@@ -88,21 +88,21 @@ int main() {
         LN_REPO_ROOT_DIR "/packages/LuminoShader/shaders",
         &matSSR);
 
-    // SSR parameters: maxDistance, stepSize, thickness, maxSteps
+    // SSR パラメータ: maxDistance, stepSize, thickness, maxSteps
     const float ssrSettings[4] = {10.0f, 0.05f, 0.3f, 128.0f};
     LNMaterial_SetFloat4(matSSR, "ssrSettings", ssrSettings);
 
-    // Bind render target textures to SSR material
+    // レンダーターゲットテクスチャを SSR マテリアルにバインド
     LNMaterial_SetNamedTexture(matSSR, "u_gbufferA", gbuffersA);
     LNMaterial_SetNamedTexture(matSSR, "u_gbufferB", gbuffersB);
     LNMaterial_SetNamedTexture(matSSR, "u_gbufferC", gbuffersC);
 
     //--------------------------------------------------------------
-    // Scene geometry
+    // シーンのジオメトリ
     //--------------------------------------------------------------
 
     // clang-format off
-    // Ground plane: 4 vertices at Y=0, extends from (-3,-3) to (3,3)
+    // 地面: Y=0 の頂点 4 つ。(-3,-3) から (3,3) まで広がる
     LNVertex groundVertices[4] = {
         // posX   posY   posZ   nX nY nZ   u    v      r g b a   tX tY tZ tW
         { -2.0f,  0.0f, -2.0f,  0, 1, 0,  0.0f, 0.0f,  0.5f,0.5f,0.5f,1,  1,0,0,0 },
@@ -121,7 +121,7 @@ int main() {
         &groundMesh);
     LNMesh_SetMaterial(groundMesh, 0, groundMaterial);
 
-    // Rotating triangle: hovers above ground at Y=0.8
+    // 回転する三角形: 地面の上 Y=0.8 に浮かぶ
     LNVertex triVertices[3] = {
         {  0.0f,  1.0f,  0.0f,  0, 0, 1,  0.5f, 0.0f,  1,0,0,1,  1,0,0,0 },
         {  1.0f,  0.0f,  0.0f,  0, 0, 1,  1.0f, 1.0f,  0,1,0,1,  1,0,0,0 },
@@ -139,7 +139,7 @@ int main() {
     LNMesh_SetMaterial(triMesh, 0, triangleMaterial);
     
     //--------------------------------------------------------------
-    // Camera
+    // カメラ
     //--------------------------------------------------------------
 
     LNHandle camera = LN_NULL_HANDLE;
@@ -150,15 +150,15 @@ int main() {
     //    0.1f, 10.0f);
     LNCamera_SetOrthographic(
         camera,
-        6.0f, 6.0f,   // width, height
+        6.0f, 6.0f,   // 幅, 高さ
         0.1f, 10.0f
     );
     LNCamera_SetLookAt(camera,
-        0.0f, 2.5f, 5.0f,   // eye: slightly above and behind
-        0.0f, 0.5f, 0.0f,   // target: slightly above ground
-        0.0f, 1.0f, 0.0f);  // up
+        0.0f, 2.5f, 5.0f,   // 視点: やや上方かつ後方
+        0.0f, 0.5f, 0.0f,   // 注視点: 地面のやや上
+        0.0f, 1.0f, 0.0f);  // 上方向
 
-    // Main loop
+    // メインループ
     LNTransform groundTransform = { 0,0,0,  0,0,0,1,  1,1,1 };
     LNGraphicsProfiler profiler = {};
     LNBool quit = LN_FALSE;
@@ -171,21 +171,21 @@ int main() {
         triangleAngle += 0.05f;
 
         LNCamera_SetLookAt(camera,
-            0.0f + cameraAngle, 2.5f, 5.0f,   // eye: slightly above and behind
-            0.0f, 0.5f, 0.0f,   // target: slightly above ground
-            0.0f, 1.0f, 0.0f);  // up
+            0.0f + cameraAngle, 2.5f, 5.0f,   // 視点: やや上方かつ後方
+            0.0f, 0.5f, 0.0f,   // 注視点: 地面のやや上
+            0.0f, 1.0f, 0.0f);  // 上方向
 
-        // Triangle transform: rotate around Y axis, hover above ground
+        // 三角形のトランスフォーム: Y 軸回りに回転し、地面の上に浮かべる
         LNTransform triTransform = {
-            0.0f, 1.0f, -1.0f,                                     // position
-            0.0f, sinf(triangleAngle * 0.5f), sinf(triangleAngle * 0.5f)*0.4f, cosf(triangleAngle * 0.5f),  // rotation (Y axis)
-            1.0f, 1.0f, 1.0f                                      // scale
+            0.0f, 1.0f, -1.0f,                                     // 位置
+            0.0f, sinf(triangleAngle * 0.5f), sinf(triangleAngle * 0.5f)*0.4f, cosf(triangleAngle * 0.5f),  // 回転 (Y 軸)
+            1.0f, 1.0f, 1.0f                                      // スケール
         };
 
         LNHandle renderer, colorBuffer, depthBuffer;
         LNGraphicsContext_BeginFrame(graphicsContext, WINDOW_W, WINDOW_H, &renderer, &colorBuffer, &depthBuffer);
         
-#if 0   // test
+#if 0   // テスト
         {
             LNRenderPassDesc rpDesc;
             LNRenderPassDesc_Init(&rpDesc);
@@ -237,7 +237,7 @@ int main() {
         }
 
         //--------------------------------------------------------------
-        // SSR + Composite (fullscreen)
+        // SSR + コンポジット (フルスクリーン)
         //--------------------------------------------------------------
         {
             LNRenderPassDesc rpDesc;
@@ -259,7 +259,7 @@ int main() {
         printGraphicsProfilering(graphicsContext);
         LNGraphicsContext_EndFrame(graphicsContext);
 
-        _sleep(16); // ~60 FPS
+        _sleep(16); // 約 60 FPS
     }
 
     LNObject_Release(triMesh);

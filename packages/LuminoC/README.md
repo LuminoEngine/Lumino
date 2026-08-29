@@ -59,5 +59,5 @@ Lumino のオブジェクトは `LNHandle` (`uint32_t`) で参照します。上
 | [RenderTargets](examples/RenderTargets/Main.cpp) | 複数のレンダーターゲットテクスチャへの描画 |
 | [SSR](examples/SSR/Main.cpp) | マルチパスのスクリーンスペースリフレクション |
 
-シェーダの書き方・Material API からのパラメータ設定は
+シェーダの書き方と Material API からのパラメータ設定は
 [docs/shader-conventions.md](../../docs/shader-conventions.md) を参照してください。

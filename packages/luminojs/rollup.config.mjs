@@ -8,14 +8,14 @@ export default {
         format: "es",
         sourcemap: true,
     },
-    // LuminoC.mjs is an Emscripten-generated module that lives alongside the
-    // output in lib/. It must not be bundled by rollup.
+    // LuminoC.mjs は Emscripten が生成するモジュールで、出力と同じ lib/ に置かれる。
+    // rollup でバンドルしてはいけない。
     external: ["./LuminoC.mjs"],
     plugins: [
         typescript({
             tsconfig: "./tsconfig.json",
-            // Declarations are emitted by tsc during build:typecheck or by the
-            // plugin itself; avoid double-emit issues.
+            // 型宣言は build:typecheck の tsc かこのプラグイン自身が出力する。
+            // 二重出力の問題を避けること。
             declaration: true,
             declarationDir: "lib",
         }),

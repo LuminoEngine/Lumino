@@ -9,38 +9,38 @@
 
 namespace ln {
 
-/** Result of a dynamic uniform buffer sub-allocation. */
+/** 動的ユニフォームバッファのサブアロケーションの結果。 */
 struct DynamicUniformAllocation {
-    void* cpuPtr;                ///< CPU-writable pointer into shadow buffer.
-    rhi::BindGroup* bindGroup;   ///< BindGroup to bind (one per page).
-    uint32_t dynamicOffset;           ///< Dynamic offset to pass to setBindGroup.
+    void* cpuPtr;                ///< シャドウバッファ内の CPU から書き込めるポインタ。
+    rhi::BindGroup* bindGroup;   ///< バインドする BindGroup (ページごとに 1 つ)。
+    uint32_t dynamicOffset;           ///< setBindGroup に渡す動的オフセット。
 };
 
 /**
- * Per-frame linear allocator for dynamic uniform buffers.
+ * 動的ユニフォームバッファ用の、フレームごとのリニアアロケータ。
  *
- * Manages pages of large uniform buffers. Each frame, object UBO data is
- * sub-allocated from a linear allocator. A single BindGroup per page
- * is bound repeatedly with different dynamic offsets.
+ * 大きなユニフォームバッファのページを管理する。毎フレーム、オブジェクトの UBO データは
+ * リニアアロケータからサブアロケートされる。ページごとに 1 つの BindGroup を、
+ * 異なる動的オフセットで繰り返しバインドする。
  *
- * Writes are collected in a CPU shadow buffer and flushed to the GPU
- * via Device::writeBuffer() before submission.
+ * 書き込みは CPU 側のシャドウバッファに集め、送信前に Device::writeBuffer() で
+ * GPU へフラッシュする。
  *
- * Double-buffered: each frame index has its own set of pages so that
- * frame N can write while frame N-1 is still in flight on the GPU.
+ * ダブルバッファリング: フレームインデックスごとに独立したページ群を持つため、
+ * フレーム N-1 がまだ GPU 上で実行中でもフレーム N が書き込める。
  */
 class DynamicUniformAllocator {
 public:
     ~DynamicUniformAllocator() = default;
 
     /**
-     * Create a new allocator.
-     * @param device          RHI device.
-     * @param pipelineLayout  PipelineLayout that owns the BindGroupLayout for the target set.
-     * @param setIndex        Descriptor set index within the PipelineLayout.
-     * @param binding         Binding index of the UBO within the layout.
-     * @param elementSize     Size of one element in bytes (e.g. sizeof(ObjectParamsUBO)).
-     * @param framesInFlight  Number of frames in flight (default 2 for double-buffering).
+     * 新しいアロケータを作成する。
+     * @param device          RHI デバイス。
+     * @param pipelineLayout  対象セットの BindGroupLayout を所有する PipelineLayout。
+     * @param setIndex        PipelineLayout 内のディスクリプタセットのインデックス。
+     * @param binding         レイアウト内の UBO のバインディングインデックス。
+     * @param elementSize     要素 1 つのバイト数 (例: sizeof(ObjectParamsUBO))。
+     * @param framesInFlight  インフライトフレーム数 (ダブルバッファリングなら 2)。
      */
     static Result<std::unique_ptr<DynamicUniformAllocator>> create(
         rhi::Device* device,
@@ -50,13 +50,13 @@ public:
         uint32_t elementSize,
         uint32_t framesInFlight);
 
-    /** Called at the start of each frame to reset the allocator for reuse. */
+    /** 各フレームの開始時に呼び出し、アロケータを再利用のためにリセットする。 */
     void beginFrame(uint32_t frameIndex);
 
-    /** Sub-allocate one element. Returns CPU pointer + bind info. */
+    /** 要素を 1 つサブアロケートする。CPU ポインタとバインド情報を返す。 */
     DynamicUniformAllocation allocate();
 
-    /** Flush all written data in the current frame to the GPU. Call before submit. */
+    /** 現在のフレームで書き込んだデータをすべて GPU へフラッシュする。submit の前に呼び出すこと。 */
     VoidResult flushFrame();
 
 private:

@@ -48,9 +48,9 @@ struct DrawCommand {
     DrawCommand& operator=(const DrawCommand& o) { std::memcpy(static_cast<void*>(this), &o, sizeof(*this)); return *this; }
 
     DrawCommandType type;
-    int32_t zIndex;          // user-specified sort priority
-    Material* material;  // sort key & draw material
-    uint32_t sequence;   // submission order within the render pass (sort tiebreaker)
+    int32_t zIndex;          // ユーザー指定のソート優先度
+    Material* material;  // ソートキー兼描画マテリアル
+    uint32_t sequence;   // レンダーパス内での投入順 (ソートの同順位を決める)
     float viewDepth;     // ビュー平面からの距離。SortMode::FrontToBack/BackToFront 時に
                          // flush() が viewMatrix から算出する (Stable 時は未使用)。
 
@@ -77,7 +77,7 @@ struct DrawCommand {
         SubMeshData submesh;
     };
 
-    // Sort key packed into 64-bit integer
+    // 64 ビット整数にパックしたソートキー
     uint64_t sortKey() const;
 };
 
@@ -99,11 +99,11 @@ public:
                     const Vector2& uvOffset, const Vector2& uvSize,
                     const Color& color);
 
-    // Primary API: submesh granularity (1 command = 1 material)
+    // 主 API: サブメッシュ粒度 (1 コマンド = 1 マテリアル)
     void drawSubMesh(Mesh* mesh, uint32_t submeshIndex, Material* material,
                      const Transform& transform, int32_t zIndex);
 
-    // Convenience API: expands all submeshes into individual commands
+    // 簡易 API: 全サブメッシュを個別のコマンドに展開する
     void drawMesh(Mesh* mesh, const Transform& transform, int32_t zIndex);
 
     const std::vector<DrawCommand>& commands() const { return m_commands; }
@@ -117,41 +117,40 @@ private:
 // SpriteMeshPool
 //------------------------------------------------------------------------------
 
-// Per-frame pool of sprite DynamicMeshes used as a bump allocator.
+// バンプアロケータとして使う、フレームごとのスプライト DynamicMesh のプール。
 //
-// Draw commands are recorded into a single command encoder and only executed at
-// submit time. Reusing one shared vertex/index buffer for every sprite flush in
-// a frame therefore corrupts all but the last flush: each writeBuffer overwrites
-// the buffer that earlier (already-recorded) draws still reference, so at submit
-// time every sprite draw reads the final flush's data.
+// 描画コマンドは単一のコマンドエンコーダに記録され、submit 時にまとめて実行される。
+// そのため、フレーム内の全スプライトフラッシュで 1 つの頂点/インデックスバッファを共有すると、
+// 最後のフラッシュ以外が壊れる: 各 writeBuffer は、先に記録済みの描画がまだ参照している
+// バッファを上書きするので、submit 時にはすべてのスプライト描画が最後のフラッシュの
+// データを読むことになる。
 //
-// To avoid this, each flush within a frame is handed a *distinct* slot (and thus
-// a distinct buffer). resetFrame() rewinds the cursor so slots are recycled on
-// the next frame; cross-frame reuse is safe because writeBuffer is ordered after
-// the previous frame's submit on the queue timeline.
+// これを避けるため、フレーム内の各フラッシュには *別々の* スロット (つまり別のバッファ) を
+// 渡す。resetFrame() がカーソルを巻き戻すので、スロットは次のフレームで再利用される。
+// フレームをまたぐ再利用が安全なのは、キューのタイムライン上で writeBuffer が前フレームの
+// submit の後に順序付けられるためである。
 //
-// The bookkeeping here is intentionally GPU-free so it can be unit tested: mesh
-// creation is performed by the caller (BatchProcessor) using the reported state.
+// ここでの管理は単体テストできるよう意図的に GPU を使わない。メッシュの作成は、
+// ここが報告する状態をもとに呼び出し側 (BatchProcessor) が行う。
 class SpriteMeshPool {
 public:
     struct Slot {
         Ref<Mesh> mesh;
-        uint32_t  capacity = 0; // capacity in sprites
+        uint32_t  capacity = 0; // 容量 (スプライト数)
     };
 
-    // Rewind the per-frame cursor. Allocated slots are kept for reuse.
+    // フレームごとのカーソルを巻き戻す。確保済みのスロットは再利用のため保持する。
     void resetFrame() { m_cursor = 0; }
 
-    // Reserve the next slot for a flush and advance the cursor. The returned slot
-    // index is unique within the current frame, guaranteeing flushes never share
-    // a buffer. The slot is created lazily, so its mesh may still be null / its
-    // capacity insufficient; the caller inspects slotAt() and (re)allocates the
-    // mesh when capacity() < count.
+    // フラッシュ用に次のスロットを予約し、カーソルを進める。返されるスロットインデックスは
+    // 現在のフレーム内で一意であり、フラッシュ同士がバッファを共有しないことを保証する。
+    // スロットは遅延生成されるため、メッシュが null のままだったり容量が不足していたりする。
+    // 呼び出し側は slotAt() を調べ、capacity() < count ならメッシュを (再) 確保する。
     uint32_t acquireSlot();
 
-    // Capacity (in sprites) to allocate so that a slot with `current` capacity can
-    // hold `count` sprites. Doubles from a 256-sprite base. Pure helper for reuse
-    // by the caller and for direct unit testing.
+    // 容量 `current` のスロットが `count` 個のスプライトを保持できるようにするために
+    // 確保すべき容量 (スプライト数)。256 スプライトを基準に倍々に増やす。呼び出し側での
+    // 再利用と直接の単体テストのための純粋なヘルパー。
     static uint32_t growCapacity(uint32_t current, uint32_t count);
 
     Slot& slotAt(uint32_t index) { return m_slots[index]; }
@@ -171,17 +170,17 @@ class BatchProcessor {
 public:
     static Result<std::unique_ptr<BatchProcessor>> create(GraphicsContext* ctx);
 
-    // Sort, batch, and draw all commands via Renderer::drawMesh().
+    // 全コマンドをソートし、バッチ化して、Renderer::drawMesh() で描画する。
     // viewMatrix は SortMode::FrontToBack/BackToFront 時にビュー空間 Z を算出するために使う
     // (Stable 時は無視される)。
     Result<void> flush(Renderer* renderer, DrawCommandBuffer* commandBuffer,
                        const Matrix4x4& viewMatrix, SortMode sortMode);
 
-    // Rewind the per-frame sprite mesh pool. Call once at the start of each frame
-    // so the per-flush buffers are recycled.
+    // フレームごとのスプライトメッシュプールを巻き戻す。フラッシュごとのバッファを
+    // 再利用できるよう、各フレームの開始時に 1 回呼び出すこと。
     void resetFrame() { m_spritePool.resetFrame(); }
 
-    // Exposed for testing. mode に応じて並べ替える。FrontToBack/BackToFront は各コマンドの
+    // テスト用に公開。mode に応じて並べ替える。FrontToBack/BackToFront は各コマンドの
     // viewDepth を読むため、呼び出し前に viewDepth が設定済みである必要がある (flush が設定する)。
     static void sortCommands(std::vector<DrawCommand>& commands,
                              SortMode mode = SortMode::Stable);
@@ -192,10 +191,10 @@ private:
     Result<void> flushSpriteGroup(Renderer* renderer, const DrawCommand* begin, uint32_t count);
     Result<void> flushSubMeshGroup(Renderer* renderer, const DrawCommand* begin, uint32_t count);
 
-    // Per-frame bump allocator of sprite DynamicMeshes (one slot per flush).
+    // フレームごとのスプライト DynamicMesh のバンプアロケータ (フラッシュごとに 1 スロット)。
     SpriteMeshPool m_spritePool;
 
-    // CPU staging buffers
+    // CPU 側のステージングバッファ
     std::vector<Vertex>  m_vertexStaging;
     std::vector<uint32_t>     m_indexStaging;
     std::vector<SubMesh> m_submeshStaging;

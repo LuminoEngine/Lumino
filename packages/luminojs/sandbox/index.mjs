@@ -1,7 +1,7 @@
-// Phase 6: ClearScreen sandbox
+// Phase 6: ClearScreen サンドボックス
 //
-// Uses the luminojs public API to clear the canvas with light green
-// via a requestAnimationFrame loop.
+// luminojs の公開 API を使い、requestAnimationFrame ループで
+// canvas を薄い緑色にクリアする。
 
 import {
     Runtime,
@@ -19,7 +19,7 @@ function appendLog(line) {
 }
 
 try {
-    // 1. Load WASM module
+    // 1. WASM モジュールをロードする
     await Runtime.initialize({
         wasmPath: "../lib/LuminoC.wasm",
         print:    (t) => appendLog("[stdout] " + t),
@@ -28,16 +28,16 @@ try {
     appendLog("Runtime initialized.");
     appendLog("Build timestamp: " + Runtime.getBuildTimestamp());
 
-    // 2. Initialize Lumino instance (creates WebGPU device)
+    // 2. Lumino インスタンスを初期化する (WebGPU デバイスが作成される)
     await Instance.initialize({ preferredBackend: GraphicsBackend.WebGPU });
     appendLog("Instance initialized.");
 
-    // 3. Create Window from canvas
+    // 3. canvas から Window を作成する
     const win = await Window.createFromCanvas("#my_canvas", 1280, 720);
     const ctx = win.getGraphicsContext();
     appendLog("Window + GraphicsContext created.");
 
-    // 4. Render loop
+    // 4. 描画ループ
     function frame() {
         ctx.beginFrame().then(({ renderer }) => {
             renderer.beginRenderPass(ctx, {

@@ -19,17 +19,17 @@ Result<std::unique_ptr<DynamicUniformAllocator>> DynamicUniformAllocator::create
     alloc->m_elementSize = elementSize;
     alloc->m_framesInFlight = framesInFlight;
 
-    // Query alignment from device.
+    // デバイスからアライメントを問い合わせる。
     auto limits = device->deviceLimits();
     uint32_t alignment = limits.minUniformBufferOffsetAlignment;
     alloc->m_alignedElementSize = ((elementSize + alignment - 1) / alignment) * alignment;
     alloc->m_maxElementsPerPage = limits.maxUniformBufferRange / alloc->m_alignedElementSize;
     alloc->m_pageByteSize = alloc->m_maxElementsPerPage * alloc->m_alignedElementSize;
 
-    // Resize frame data to match the requested frames-in-flight count.
+    // 要求されたインフライトフレーム数に合わせてフレームデータをリサイズする。
     alloc->m_frames.resize(framesInFlight);
 
-    // Pre-create one page per frame slot.
+    // フレームスロットごとにページを 1 つ事前に作成する。
     for (uint32_t f = 0; f < framesInFlight; ++f) {
         auto pageResult = alloc->createPage();
         if (!pageResult) return LN_FORWARD_ERROR(pageResult);
@@ -42,7 +42,7 @@ Result<std::unique_ptr<DynamicUniformAllocator>> DynamicUniformAllocator::create
 void DynamicUniformAllocator::beginFrame(uint32_t frameIndex) {
     m_currentFrameSlot = frameIndex % m_framesInFlight;
     auto& frame = m_frames[m_currentFrameSlot];
-    // Reset all pages for reuse.
+    // 再利用のため全ページをリセットする。
     for (auto& page : frame.pages) {
         page.usedElements = 0;
     }
@@ -52,16 +52,16 @@ void DynamicUniformAllocator::beginFrame(uint32_t frameIndex) {
 DynamicUniformAllocation DynamicUniformAllocator::allocate() {
     auto& frame = m_frames[m_currentFrameSlot];
 
-    // Advance to next page if current is full.
+    // 現在のページが満杯なら次のページへ進む。
     while (frame.currentPage < frame.pages.size() &&
            frame.pages[frame.currentPage].usedElements >= m_maxElementsPerPage) {
         ++frame.currentPage;
     }
 
-    // Create a new page if needed.
+    // 必要なら新しいページを作成する。
     if (frame.currentPage >= frame.pages.size()) {
         auto pageResult = createPage();
-        // On failure, return a null allocation (caller should check cpuPtr).
+        // 失敗時は null のアロケーションを返す (呼び出し側は cpuPtr を確認すること)。
         if (!pageResult) {
             return {nullptr, nullptr, 0};
         }
@@ -91,7 +91,7 @@ VoidResult DynamicUniformAllocator::flushFrame() {
 Result<DynamicUniformAllocator::Page> DynamicUniformAllocator::createPage() {
     Page page;
 
-    // Create a large uniform buffer.
+    // 大きなユニフォームバッファを作成する。
     rhi::BufferDesc bufDesc;
     bufDesc.size = m_pageByteSize;
     bufDesc.usage = rhi::BufferUsage::Uniform;
@@ -99,11 +99,11 @@ Result<DynamicUniformAllocator::Page> DynamicUniformAllocator::createPage() {
     if (!bufResult) return LN_FORWARD_ERROR(bufResult);
     page.buffer = std::move(*bufResult);
 
-    // Allocate CPU shadow buffer.
+    // CPU 側のシャドウバッファを確保する。
     page.cpuShadow.resize(m_pageByteSize);
 
-    // Create a BindGroup for this page via PipelineLayout.
-    // The descriptor range is m_alignedElementSize (one element); actual offset is dynamic.
+    // PipelineLayout 経由でこのページ用の BindGroup を作成する。
+    // ディスクリプタの範囲は m_alignedElementSize (要素 1 つ分)。実際のオフセットは動的に指定する。
     const rhi::BindGroupEntry entry{m_binding, page.buffer.get(), 0, m_alignedElementSize, nullptr, nullptr};
     auto bgResult = m_pipelineLayout->createBindGroup(m_setIndex, &entry, 1);
     if (!bgResult) return LN_FORWARD_ERROR(bgResult);

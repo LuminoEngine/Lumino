@@ -60,60 +60,60 @@ enum class BlendMode {
     Multiply = 4,
 };
 
-/** GPU-aligned view params (Set N - camera): must match shader ViewParams struct. */
+/** GPU アライメント済みのビューパラメータ (Set N - カメラ)。シェーダの ViewParams 構造体と一致させること。 */
 struct ViewParamsUBO {
     float viewProj[16];
     float cameraPos[4];
-    float view[16];         // view matrix (world -> view)
-    float proj[16];         // projection matrix (view -> clip)
-    float invViewProj[16]; // inverse of viewProj (clip -> world)
-    float invProj[16];     // inverse of proj (clip -> view)
+    float view[16];         // ビュー行列 (ワールド -> ビュー)
+    float proj[16];         // 射影行列 (ビュー -> クリップ)
+    float invViewProj[16]; // viewProj の逆行列 (クリップ -> ワールド)
+    float invProj[16];     // proj の逆行列 (クリップ -> ビュー)
     float screenSize[4];   // (width, height, 1/width, 1/height)
 };
 
-/** GPU-aligned scene params (Set N - lighting): must match shader SceneParams struct. */
+/** GPU アライメント済みのシーンパラメータ (Set N - ライティング)。シェーダの SceneParams 構造体と一致させること。 */
 struct SceneParamsUBO {
     float lightDir[4];
     float lightColor[4];
     float ambientColor[4];
 };
 
-/** GPU-aligned object params (Set N): must match shader ObjectParams struct. */
+/** GPU アライメント済みのオブジェクトパラメータ (Set N)。シェーダの ObjectParams 構造体と一致させること。 */
 struct ObjectParamsUBO {
     float world[16];
     float normalMatrix[16];
 };
 
 /**
- * Material: shader + parameters + render state + textures.
- * Manages a RenderPipeline and per-material BindGroup.
+ * Material: シェーダ + パラメータ + レンダーステート + テクスチャ。
+ * RenderPipeline とマテリアル単位の BindGroup を管理します。
  *
- * Parameter storage is driven by shader reflection:
- * - $Global CB members are stored in a byte buffer (m_paramBuffer)
- * - Texture/Sampler slots are stored in m_baseTexture (extensible later)
+ * パラメータの格納はシェーダリフレクションに基づきます:
+ * - $Global CB のメンバはバイトバッファ (m_paramBuffer) に格納されます
+ * - Texture/Sampler スロットは m_baseTexture に格納されます (後で拡張可能)
  */
 class Material : public Object {
 public:
     ~Material() override = default;
 
-    /** Set a named float4 parameter in the material's $Global constant buffer. */
+    /** マテリアルの $Global 定数バッファ内の名前付き float4 パラメータを設定します。 */
     void setFloat4(const std::string& name, const float* values);
 
-    /** Set a named float parameter in the material's $Global constant buffer. */
+    /** マテリアルの $Global 定数バッファ内の名前付き float パラメータを設定します。 */
     void setFloat(const std::string& name, float value);
 
-    /** Convenience: set the "color" field of the CB named "u_params". */
+    /** 簡易版: "u_params" という名前の CB の "color" フィールドを設定します。 */
     void setColor(const Color& color);
 
-    /** Convenience: set color + specular for BasicLit-style shaders. */
+    /** 簡易版: BasicLit 系シェーダ向けに色とスペキュラを設定します。 */
     void setSpecular(const Color& color, float shininess);
 
     void setTexture(rhi::Texture* texture);
 
-    /** Set a texture by shader binding name (e.g., "u_sceneColor"). */
+    /** シェーダのバインディング名 (例: "u_sceneColor") でテクスチャを設定します。 */
     void setNamedTexture(const std::string& name, rhi::Texture* texture);
 
-    // Sampler state
+    // サンプラー設定
 
     /**
      * このマテリアルの全テクスチャに適用される既定のサンプラー設定を指定します。
@@ -130,18 +130,18 @@ public:
      */
     void setNamedSamplerState(const std::string& name, const SamplerState& state);
 
-    // Render state
+    // レンダーステート
     void setBlendMode(BlendMode mode);
     void setCullMode(rhi::CullMode mode);
     void setDepthTestEnabled(bool enabled);
     void setDepthWriteEnabled(bool enabled);
 
-    // ShaderPass accessor
-    /** Default (primary) ShaderPass — the first pass registered, typically "Forward".
-     *  Used for material parameter layout and as a fallback accessor. */
+    // ShaderPass のアクセサ
+    /** 既定 (主) の ShaderPass - 最初に登録されたパスで、通常は "Forward"。
+     *  マテリアルパラメータのレイアウトと、フォールバックのアクセサとして使用します。 */
     ShaderPass* shaderPass() const { return m_defaultShaderPass.get(); }
 
-    /** Look up a ShaderPass by name (e.g. "Forward", "GBuffer"). Returns nullptr if absent. */
+    /** 名前 (例: "Forward", "GBuffer") で ShaderPass を検索します。無ければ nullptr を返します。 */
     ShaderPass* findPass(const std::string& name) const {
         for (const auto& pass : m_shaderPasses) {
             if (pass->passName() == name) return pass.get();
@@ -149,13 +149,13 @@ public:
         return nullptr;
     }
 
-    /** Whether this material has a ShaderPass with the given name. */
+    /** このマテリアルが指定した名前の ShaderPass を持つかどうか。 */
     bool hasPass(const std::string& name) const { return findPass(name) != nullptr; }
 
     /** このマテリアルが持つ全パス (登録順)。 */
     const std::vector<Ref<ShaderPass>>& shaderPasses() const { return m_shaderPasses; }
 
-    // Shader / render state accessors (used by PipelineCache key construction)
+    // シェーダ / レンダーステートのアクセサ (PipelineCache のキー構築で使用)
     rhi::ShaderModule* vertexShader() const { return m_defaultShaderPass->vertexShader(); }
     rhi::ShaderModule* fragmentShader() const { return m_defaultShaderPass->fragmentShader(); }
     const std::string& vertexEntry() const { return m_defaultShaderPass->vertexEntry(); }
@@ -176,12 +176,12 @@ public:
      */
     uint64_t bindingVersion() const { return m_bindingVersion; }
 
-    // Accessors for Renderer-side BindGroup construction
+    // Renderer 側で BindGroup を構築するためのアクセサ
     rhi::Texture* baseTexture() const { return m_baseTexture.get(); }
     uint64_t materialParamBufferSize() const { return m_defaultShaderPass->materialParamBufferSize(); }
     const Color& baseColor() const { return m_baseColor; }
 
-    /** Named textures map (for reflection-driven bind group construction). */
+    /** 名前付きテクスチャのマップ (リフレクションに基づく BindGroup 構築用)。 */
     const std::unordered_map<std::string, Ref<rhi::Texture>>& namedTextures() const { return m_namedTextures; }
 
     /** マテリアル単位の既定サンプラー設定。 */
@@ -203,7 +203,7 @@ public:
         return m_samplerState;
     }
 
-    /** Write material UBO data into the given mapped pointer. */
+    /** マテリアルの UBO データを、指定したマップ済みポインタへ書き込みます。 */
     void writeMaterialUBO(void* dst) const;
 
     // ---- 破棄通知 ----
@@ -231,31 +231,31 @@ private:
     // 前提: 同一マテリアル内の全パスは $Material の layout (params/テクスチャ slot) を共有する。
     std::vector<Ref<ShaderPass>> m_shaderPasses;
 
-    // Default (primary) pass — typically the first registered, used for material param layout.
-    // Held as a separate Ref to keep hot-path accessors (shaderPass()/materialParamBufferSize)
-    // from doing map lookups.
+    // 既定 (主) のパス - 通常は最初に登録されたもので、マテリアルパラメータのレイアウトに使う。
+    // ホットパスのアクセサ (shaderPass()/materialParamBufferSize) がマップ検索をしなくて済むよう
+    // 別の Ref として保持する。
     Ref<ShaderPass> m_defaultShaderPass;
 
     uint64_t m_paramVersion;
     uint64_t m_bindingVersion;
 
-    // Generic material parameter buffer (matches $Global CB layout from reflection)
+    // 汎用のマテリアルパラメータバッファ (リフレクションで得た $Global CB のレイアウトに一致)
     std::vector<uint8_t> m_paramBuffer;
 
-    // Cached base color (for convenience accessors)
+    // キャッシュしたベースカラー (簡易アクセサ用)
     Color m_baseColor;
 
-    // Textures
+    // テクスチャ
     Ref<rhi::Texture> m_baseTexture;
 
-    // Named texture slots (keyed by shader binding name, e.g., "u_sceneColor")
+    // 名前付きテクスチャスロット (キーはシェーダのバインディング名。例: "u_sceneColor")
     std::unordered_map<std::string, Ref<rhi::Texture>> m_namedTextures;
 
-    // Sampler state (マテリアル単位の既定と、テクスチャバインディング名ごとの上書き)
+    // サンプラー設定 (マテリアル単位の既定と、テクスチャバインディング名ごとの上書き)
     SamplerState m_samplerState;
     std::unordered_map<std::string, SamplerState> m_namedSamplerStates;
 
-    // Render state
+    // レンダーステート
     rhi::CullMode m_cullMode;
     BlendMode m_blendMode;
     bool m_depthTestEnabled;
@@ -264,7 +264,7 @@ private:
     void markParamDirty() { ++m_paramVersion; }
     void markBindingDirty() { ++m_bindingVersion; }
 
-    /** Find offset of a named member in $Global CB. Returns -1 if not found. */
+    /** $Global CB 内の名前付きメンバのオフセットを検索する。見つからなければ -1 を返す。 */
     int findMemberOffset(const std::string& name) const;
 };
 
@@ -273,25 +273,25 @@ class GraphicsModule;
 class Shader;
 enum class BuiltinShader;
 
-/** Factory for creating built-in materials from precompiled shaders. */
+/** プリコンパイル済みシェーダから組み込みマテリアルを作成するファクトリ。 */
 class MaterialFactory {
 public:
-    /** Create an Unlit material (texture * color, no lighting). */
+    /** Unlit マテリアルを作成します (テクスチャ * 色、ライティングなし)。 */
     static Result<Ref<Material>> createUnlit(GraphicsModule* module);
 
-    /** Create an Unlit material from a GraphicsContext. */
+    /** GraphicsContext から Unlit マテリアルを作成します。 */
     static Result<Ref<Material>> createUnlit(GraphicsContext* ctx);
 
-    /** Create a BasicLit material (Blinn-Phong, 1 directional light). */
+    /** BasicLit マテリアルを作成します (Blinn-Phong、平行光源 1 つ)。 */
     static Result<Ref<Material>> createBasicLit(GraphicsModule* module);
 
-    /** Create a BasicLit material from a GraphicsContext. */
+    /** GraphicsContext から BasicLit マテリアルを作成します。 */
     static Result<Ref<Material>> createBasicLit(GraphicsContext* ctx);
 
-    /** Create a StencilMask material (alpha-tested stencil write, no color output). */
+    /** StencilMask マテリアルを作成します (アルファテスト付きステンシル書き込み、カラー出力なし)。 */
     static Result<Ref<Material>> createStencilMask(GraphicsModule* module);
 
-    /** Create a StencilMask material from a GraphicsContext. */
+    /** GraphicsContext から StencilMask マテリアルを作成します。 */
     static Result<Ref<Material>> createStencilMask(GraphicsContext* ctx);
 
     /**
@@ -309,7 +309,7 @@ public:
     static Result<Ref<Material>> createFromShader(GraphicsContext* ctx, Shader* shader);
 
     /**
-     * Create a material from a compiled shader binary (.lcsh).
+     * コンパイル済みシェーダバイナリ (.lcsh) からマテリアルを作成します。
      *
      * この関数は呼び出しごとに GPU シェーダモジュールとパイプラインレイアウトを
      * 新規生成します。同一シェーダから複数の Material を作る場合は
@@ -318,7 +318,7 @@ public:
     static Result<Ref<Material>> createFromCompiledShader(
         GraphicsModule* module, const void* data, size_t size);
 
-    /** Create a material from a compiled shader binary (.lcsh) via GraphicsContext. */
+    /** GraphicsContext 経由でコンパイル済みシェーダバイナリ (.lcsh) からマテリアルを作成します。 */
     static Result<Ref<Material>> createFromCompiledShader(
         GraphicsContext* ctx, const void* data, size_t size);
 
@@ -338,7 +338,7 @@ private:
     static Result<Ref<Material>> createMaterialFromBuiltin(
         GraphicsModule* module, BuiltinShader shader);
 
-    // Shared helpers (friend access to Material internals via MaterialFactory).
+    // 共通ヘルパー (MaterialFactory の friend 権限で Material の内部にアクセスする)。
     static void registerPass(Material* mat, Ref<ShaderPass> pass);
     static void initParamBufferFromDefaultPass(Material* mat);
 };

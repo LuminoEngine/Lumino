@@ -48,7 +48,7 @@ private:
     Ref<Material>      m_material;
     Ref<Mesh>          m_mesh;
 
-    // CPU staging buffers
+    // CPU 側のステージングバッファ
     std::vector<Vertex>   m_vertexStaging;
     std::vector<uint32_t> m_indexStaging;
 

@@ -14,7 +14,7 @@ Result<Ref<Mesh>> Mesh::create(
     mesh->m_device = device;
     mesh->m_topology = topology;
 
-    // Create vertex buffer.
+    // 頂点バッファを作成する。
     rhi::BufferDesc vbDesc;
     vbDesc.size = vertices.size() * sizeof(Vertex);
     vbDesc.usage = rhi::BufferUsage::Vertex;
@@ -23,7 +23,7 @@ Result<Ref<Mesh>> Mesh::create(
     if (!vbResult) return LN_FORWARD_ERROR(vbResult);
     mesh->m_vertexBuffer = std::move(*vbResult);
 
-    // Create index buffer.
+    // インデックスバッファを作成する。
     rhi::BufferDesc ibDesc;
     ibDesc.size = indices.size() * sizeof(uint32_t);
     ibDesc.usage = rhi::BufferUsage::Index;
@@ -34,7 +34,7 @@ Result<Ref<Mesh>> Mesh::create(
 
     mesh->m_submeshes = submeshes;
 
-    // Determine how many material slots are needed.
+    // 必要なマテリアルスロット数を求める。
     uint32_t maxMaterialIndex = 0;
     for (auto& sub : submeshes) {
         if (sub.materialIndex > maxMaterialIndex) maxMaterialIndex = sub.materialIndex;
@@ -57,9 +57,9 @@ Result<Ref<Mesh>> Mesh::createDynamic(
     mesh->m_maxVertexCount = maxVertexCount;
     mesh->m_maxIndexCount = maxIndexCount;
 
-    // Create vertex buffer for dynamic updates.
-    // mappable=true ensures host-visible memory so writeBuffer() uses map/memcpy
-    // instead of staging+vkQueueWaitIdle, which would stall the GPU every frame.
+    // 動的更新用の頂点バッファを作成する。
+    // mappable=true でホストから見えるメモリになり、writeBuffer() はステージング +
+    // vkQueueWaitIdle (毎フレーム GPU をストールさせる) ではなく map/memcpy を使う。
     rhi::BufferDesc vbDesc;
     vbDesc.size = static_cast<uint64_t>(maxVertexCount) * sizeof(Vertex);
     vbDesc.usage = rhi::BufferUsage::Vertex;
@@ -68,7 +68,7 @@ Result<Ref<Mesh>> Mesh::createDynamic(
     if (!vbResult) return LN_FORWARD_ERROR(vbResult);
     mesh->m_vertexBuffer = std::move(*vbResult);
 
-    // Create index buffer for dynamic updates.
+    // 動的更新用のインデックスバッファを作成する。
     rhi::BufferDesc ibDesc;
     ibDesc.size = static_cast<uint64_t>(maxIndexCount) * sizeof(uint32_t);
     ibDesc.usage = rhi::BufferUsage::Index;
@@ -105,7 +105,7 @@ Result<void> Mesh::updateIndices(uint32_t firstIndex, const uint32_t* indices, u
 void Mesh::setSubmeshes(const SubMesh* submeshes, uint32_t count) {
     m_submeshes.assign(submeshes, submeshes + count);
 
-    // Resize material slots to accommodate new submeshes.
+    // 新しいサブメッシュに合わせてマテリアルスロットをリサイズする。
     uint32_t maxMaterialIndex = 0;
     for (auto& sub : m_submeshes) {
         if (sub.materialIndex > maxMaterialIndex) maxMaterialIndex = sub.materialIndex;

@@ -27,7 +27,7 @@ VoidResult WebGPURenderPipeline::init(WebGPUDevice* device, const RenderPipeline
     WGPURenderPipelineDescriptor pipelineDesc = WGPU_RENDER_PIPELINE_DESCRIPTOR_INIT;
     pipelineDesc.label = {m_debugName.c_str(), m_debugName.size()};
 
-    // Layout
+    // レイアウト
     pipelineDesc.layout = desc.layout
         ? static_cast<WebGPUPipelineLayout*>(desc.layout)->handle()
         : nullptr;
@@ -39,7 +39,7 @@ VoidResult WebGPURenderPipeline::init(WebGPUDevice* device, const RenderPipeline
     pipelineDesc.vertex.constantCount = 0;
     pipelineDesc.vertex.constants = nullptr;
 
-    // Vertex buffer layouts - attribute storage must outlive wgpuDeviceCreateRenderPipeline().
+    // 頂点バッファレイアウト - 属性の格納領域は wgpuDeviceCreateRenderPipeline() より長く生存させる必要がある。
     std::vector<std::vector<WGPUVertexAttribute>> attributeStorage(desc.vertexBuffers.size());
     std::vector<WGPUVertexBufferLayout> bufferLayouts(desc.vertexBuffers.size());
     for (size_t i = 0; i < desc.vertexBuffers.size(); ++i) {
@@ -77,7 +77,7 @@ VoidResult WebGPURenderPipeline::init(WebGPUDevice* device, const RenderPipeline
     std::vector<WGPUBlendState> blendStates(renderPassLayout.colorFormats.size());
     std::vector<WGPUColorTargetState> colorTargets(renderPassLayout.colorFormats.size());
     for (size_t i = 0; i < renderPassLayout.colorFormats.size(); ++i) {
-        // Pick the BlendState for this target (fall back to index 0 or default).
+        // このターゲットの BlendState を選ぶ (無ければインデックス 0、それも無ければデフォルト)。
         BlendState bs;
         if (i < desc.blendStates.size()) {
             bs = desc.blendStates[i];

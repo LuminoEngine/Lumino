@@ -34,11 +34,11 @@ void VulkanCommandBuffer::finalize() {
 
 void VulkanCommandBuffer::dispose() {
     if (m_inFlightFences) {
-        // Wait for execution to complete as it may be pending.
+        // 実行中の可能性があるため、完了を待つ。
         vkWaitForFences(m_device->vkDevice(), 1, &m_inFlightFences, VK_TRUE, UINT64_MAX);
     }
 
-    // CommandBuffer must be released before vkResetDescriptorPool.
+    // CommandBuffer は vkResetDescriptorPool より先に解放しなければならない。
     if (m_cmd) {
         VkCommandPool pool = m_device->commandPool();
         vkFreeCommandBuffers(m_device->vkDevice(), pool, 1, &m_cmd);
@@ -85,7 +85,7 @@ VoidResult VulkanCommandBuffer::begin() {
 }
 
 RenderPass* VulkanCommandBuffer::beginRenderPass(const RenderPassDesc& desc) {
-    // Build RenderPassKey
+    // RenderPassKey を構築
     RenderPassKey rpKey;
     uint32_t fbWidth = 0, fbHeight = 0;
     for (size_t i = 0; i < desc.colorAttachments.size(); ++i) {
@@ -122,10 +122,10 @@ RenderPass* VulkanCommandBuffer::beginRenderPass(const RenderPassDesc& desc) {
 
     VkRenderPass vkRenderPass = m_device->getOrCreateRenderPass(rpKey);
 
-    // Get or create cached VulkanRenderPass
+    // キャッシュ済みの VulkanRenderPass を取得、なければ作成
     auto it = m_renderPassCache.find(rpKey);
     if (it == m_renderPassCache.end()) {
-        // Build RenderPassLayoutDesc from the actual attachments
+        // 実際のアタッチメントから RenderPassLayoutDesc を構築
         RenderPassLayoutDesc layoutDesc;
         for (auto& ca : desc.colorAttachments) {
             auto* view = static_cast<VulkanTextureView*>(ca.view);
@@ -140,7 +140,7 @@ RenderPass* VulkanCommandBuffer::beginRenderPass(const RenderPassDesc& desc) {
         it = m_renderPassCache.emplace(rpKey, std::move(rp)).first;
     }
 
-    // Build FramebufferKey
+    // FramebufferKey を構築
     FramebufferKey fbKey;
     fbKey.renderPass = vkRenderPass;
     fbKey.width = fbWidth;

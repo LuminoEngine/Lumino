@@ -5,7 +5,7 @@
  * Phase 1 の検証マイルストーン: Vulkan バックエンドが正しく動作することを確認する。
  *
  * PlatformWindow でウィンドウを作成し、
- * window->graphicsContext() でデバイス・スワップチェーンを取得する。
+ * window->graphicsContext() でデバイスとスワップチェーンを取得する。
  * 低レベル RHI (Buffer, Pipeline 等) は ctx->device() 経由で使用する。
  */
 
@@ -20,16 +20,16 @@
 #include <cstdio>
 #include <cstdlib>
 
-// ── 頂点データ ──
+// -- 頂点データ --
 struct Vertex {
     float pos[2];
     float color[3];
 };
 
 static const Vertex s_vertices[] = {
-    {{ 0.0f, -0.5f}, {1.0f, 0.0f, 0.0f}},  // top: red
-    {{ 0.5f,  0.5f}, {0.0f, 1.0f, 0.0f}},  // right: green
-    {{-0.5f,  0.5f}, {0.0f, 0.0f, 1.0f}},  // left: blue
+    {{ 0.0f, -0.5f}, {1.0f, 0.0f, 0.0f}},  // 上: 赤
+    {{ 0.5f,  0.5f}, {0.0f, 1.0f, 0.0f}},  // 右: 緑
+    {{-0.5f,  0.5f}, {0.0f, 0.0f, 1.0f}},  // 左: 青
 };
 
 int main() {
@@ -77,7 +77,7 @@ int main() {
 
         auto* globalPass = globalPasses[0].get();
 
-        // Select shader target based on the device backend.
+        // デバイスのバックエンドに基づいてシェーダターゲットを選択する。
         ln::shader::ShaderTarget shaderTarget;
         ShaderCodeFormat codeFormat;
         switch (device->backend()) {

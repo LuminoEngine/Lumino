@@ -1,11 +1,11 @@
-// TestGlobal.slang - Test shader for $Global + ParameterBlock coexistence
+// TestGlobal.slang - $Global と ParameterBlock の共存を確認するテスト用シェーダ
 //
-// Purpose: Verify Slang set/binding assignment when mixing ParameterBlock
-// and bare uniforms ($Global).
+// 目的: ParameterBlock とベアな uniform ($Global) を混在させたときの
+// Slang の set/binding 割り当てを検証する。
 
 import lumino;
 
-// --- Material parameters (bare uniforms → $Global) ---
+// --- マテリアルパラメータ (ベアな uniform -> $Global) ---
 struct MaterialParams {
     float4 color;
     float4 specular;

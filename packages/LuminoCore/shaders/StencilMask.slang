@@ -1,18 +1,18 @@
-// StencilMask.slang — ステンシルマスク用シェーダ
+// StencilMask.slang - ステンシルマスク用シェーダ
 //
 // テクスチャのアルファ値が 0.5 未満のフラグメントを破棄する。
 // ステンシルバッファへの書き込み専用で使用し、
 // カラー出力はパイプラインステート (colorWriteEnabled=false) で抑制する。
 //
-// Set 0 ($Global / material): u_params, u_baseTexture, u_baseSampler
-// Set 1 (per-view):           viewData   — ViewParams
-// Set 2 (per-scene):          sceneData  — SceneParams (unused)
-// Set 3 (per-object):         objectData — ObjectParams
+// Set 0 ($Global / マテリアル):  u_params, u_baseTexture, u_baseSampler
+// Set 1 (ビュー単位):           viewData   - ViewParams
+// Set 2 (シーン単位):           sceneData  - SceneParams (未使用)
+// Set 3 (オブジェクト単位):     objectData - ObjectParams
 
 import lumino;
 
 //------------------------------------------------------------------------------
-// Material parameters (bare uniforms → $Global, Set 0)
+// マテリアルパラメータ (ベアな uniform -> $Global, Set 0)
 //------------------------------------------------------------------------------
 struct MaterialParams {
     float4 color;

@@ -19,14 +19,14 @@ VulkanSwapChain::VulkanSwapChain()
 
 VoidResult VulkanSwapChain::init(VulkanDevice* device, const SwapChainDesc& desc) {
     m_device = device;
-    // Create surface
+    // サーフェスを作成
     glfwCreateWindowSurface(
         m_device->instance(),
         static_cast<GLFWwindow*>(desc.nativeWindowHandle),
         nullptr,
         &m_surface);
 
-    // Query surface capabilities
+    // サーフェスの機能を問い合わせる
     VkSurfaceCapabilitiesKHR caps{};
     vkGetPhysicalDeviceSurfaceCapabilitiesKHR(m_device->physicalDevice(), m_surface, &caps);
 
@@ -63,7 +63,7 @@ VoidResult VulkanSwapChain::init(VulkanDevice* device, const SwapChainDesc& desc
     swapInfo.clipped = VK_TRUE;
     vkCreateSwapchainKHR(m_device->vkDevice(), &swapInfo, nullptr, &m_swapchain);
 
-    // Get swap chain images
+    // スワップチェーンのイメージを取得
     vkGetSwapchainImagesKHR(m_device->vkDevice(), m_swapchain, &imageCount, nullptr);
     m_images.resize(imageCount);
     m_maxFrames = imageCount;
@@ -78,7 +78,7 @@ VoidResult VulkanSwapChain::init(VulkanDevice* device, const SwapChainDesc& desc
     // 初めて取得したときにのみ UNDEFINED -> PRESENT_SRC_KHR の barrier を積む。
     m_imageLayoutInitialized.assign(m_images.size(), false);
 
-    // Create image views
+    // イメージビューを作成
     VkFormat vkFmt = swapInfo.imageFormat;
     m_views.resize(imageCount);
     for (uint32_t i = 0; i < imageCount; ++i) {
@@ -96,17 +96,17 @@ VoidResult VulkanSwapChain::init(VulkanDevice* device, const SwapChainDesc& desc
         m_views[i] = view;
     }
 
-    // Create CommandBuffers for rendering.
+    // 描画用の CommandBuffer を作成する。
     for (uint32_t i = 0; i < m_maxFrames; ++i) {
         auto commandBuffer = m_device->createCommandBuffer();
         if (!commandBuffer) {
-            // TODO: Error handling
+            // TODO: エラー処理
             throw std::runtime_error("Failed to create command buffer for swap chain.");
         }
         m_commandBuffers.push_back(*commandBuffer);
     }
 
-    // Create sync objects
+    // 同期オブジェクトを作成
     VkSemaphoreCreateInfo semInfo{VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO};
 
     m_imageAvailableSemaphores.resize(m_maxFrames);
@@ -176,7 +176,7 @@ VulkanSwapChain::SwapChainSupportDetails VulkanSwapChain::querySwapChainSupport(
         details.preTransform = details.capabilities.currentTransform;
     }
 
-    // Find a supported composite alpha mode
+    // サポートされている composite alpha モードを探す
     details.compositeAlpha = VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR;
     VkCompositeAlphaFlagBitsKHR compositeAlphaFlags[4] = {
         VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR,
@@ -216,7 +216,7 @@ TextureView* VulkanSwapChain::acquireNextTexture() {
         return nullptr;
     }
 
-    // Run deferred cleanups for this frame index now that the GPU is done with it.
+    // GPU がこのフレームインデックスの処理を終えたので、遅延破棄を実行する。
     m_device->beginFrame(m_currentFrame);
 
     // https://vulkan-tutorial.com/Drawing_a_triangle/Drawing/Rendering_and_presentation
@@ -240,7 +240,7 @@ TextureView* VulkanSwapChain::acquireNextTexture() {
     // 取得したイメージが初めての acquire であれば、RenderPass が要求する
     // initialLayout=PRESENT_SRC_KHR に合わせて UNDEFINED から遷移させる。
     // 2 フレーム目以降は直前の present がイメージを PRESENT_SRC_KHR のまま残すため不要。
-    // acquire 後・present 前のこのタイミングで遷移するのは仕様上許可されている。
+    // acquire 後かつ present 前のこのタイミングで遷移するのは仕様上許可されている。
     if (!m_imageLayoutInitialized[m_imageIndex]) {
         VkImageMemoryBarrier barrier = {};
         barrier.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER;

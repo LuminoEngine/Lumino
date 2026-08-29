@@ -1,4 +1,4 @@
-/** Lumino C-API result codes. 失敗時は例外として投げられます。 */
+/** Lumino C-API の結果コード。失敗時は例外として投げられます。 */
 export enum Result {
     /** 成功 */
     OK = 0,
@@ -41,7 +41,7 @@ export enum LogLevel {
     DISABLE = 7,
 }
 
-/** Graphics backend selection. */
+/** グラフィックスバックエンドの選択。 */
 export enum GraphicsBackend {
     DEFAULT = 0,
     VULKAN = 1,
@@ -49,7 +49,6 @@ export enum GraphicsBackend {
 }
 
 /**
- * Render pass attachment load operation.
  * レンダーパスのアタッチメントのロード操作。ゼロ初期化時のデフォルトは `Clear`。
  */
 export enum LoadOp {
@@ -65,7 +64,7 @@ export enum LoadOp {
 }
 
 /**
- * 同一 zIndex 内での描画順 (二次ソート)。matches C `LNSortMode`。
+ * 同一 zIndex 内での描画順 (二次ソート)。C の `LNSortMode` に対応します。
  * zIndex 自体は常に主キー (エンジンが指定するレイヤ/レンダーキュー番号) であり、
  * 本モードはその中での並びだけを決めます。
  * 距離はカメラ位置からのユークリッド距離ではなくビュー平面からの距離 (ビュー空間 Z) で
@@ -81,7 +80,7 @@ export enum SortMode {
     BackToFront = 2,
 }
 
-/** Blend mode (matches C LNBlendMode). 合成方法。 */
+/** 合成方法 (C の LNBlendMode に対応)。 */
 export enum BlendMode {
     /** 通常 */
     Normal   = 0,
@@ -95,17 +94,17 @@ export enum BlendMode {
     Multiply = 4,
 }
 
-/** Face culling mode (matches C LNCullMode). ポリゴンのカリングモード。 */
+/** ポリゴンのカリングモード (C の LNCullMode に対応)。 */
 export enum CullMode {
-    /** No culling - render both sides. カリングなし (両面描画)。 */
+    /** カリングなし (両面描画)。 */
     None  = 0,
-    /** Cull front faces. 前面をカリング。 */
+    /** 前面をカリング。 */
     Front = 1,
-    /** Cull back faces (default). 背面をカリング (デフォルト)。 */
+    /** 背面をカリング (デフォルト)。 */
     Back  = 2,
 }
 
-/** Texture filter mode (matches C `LNTextureFilterMode`). テクスチャのフィルタリング方法。 */
+/** テクスチャのフィルタリング方法 (C の `LNTextureFilterMode` に対応)。 */
 export enum TextureFilterMode {
     /** 最近傍。ドット絵の拡大表示向け。 */
     Nearest = 0,
@@ -114,7 +113,7 @@ export enum TextureFilterMode {
 }
 
 /**
- * Texture address mode (matches C `LNTextureAddressMode`).
+ * テクスチャのアドレスモード (C の `LNTextureAddressMode` に対応)。
  * テクスチャ座標が 0.0 - 1.0 の範囲外になったときの回り込み方法。
  */
 export enum TextureAddressMode {
@@ -126,7 +125,7 @@ export enum TextureAddressMode {
     ClampToEdge    = 2,
 }
 
-/** Built-in shader kind (matches C `LNBuiltinShader`). ビルトインシェーダの種類。 */
+/** ビルトインシェーダの種類 (C の `LNBuiltinShader` に対応)。 */
 export enum BuiltinShader {
     /** Unlit: テクスチャ * カラー、ライティングなし。 */
     Unlit       = 0,
@@ -136,7 +135,7 @@ export enum BuiltinShader {
     StencilMask = 2,
 }
 
-/** Texture format (matches C LNTextureFormat). */
+/** テクスチャフォーマット (C の LNTextureFormat に対応)。 */
 export enum TextureFormat {
     Undefined       = 0,
     BGRA8_UNORM     = 1,
@@ -149,32 +148,30 @@ export enum TextureFormat {
     RGBA32_FLOAT    = 10,
 }
 
-/** Opaque object handle (uint32). */
+/** 不透明なオブジェクトハンドル (uint32)。 */
 export type Handle = number;
 
-/** Null handle sentinel. */
+/** NULL ハンドルを表す番兵値。 */
 export const LN_NULL_HANDLE: Handle = 0;
 
-/** Maximum number of simultaneous color attachments. */
+/** 同時に使用できるカラーアタッチメントの最大数。 */
 export const LN_MAX_COLOR_ATTACHMENTS = 8;
 
 /**
- * Describes a single color attachment for a render pass.
  * カラーアタッチメントの設定。
  * @note `renderTarget` が未設定の場合、バックバッファが使用されます。
  */
 export interface ColorAttachmentDesc {
-    /** Render target handle (`LN_NULL_HANDLE` = back-buffer). */
+    /** レンダーターゲットのハンドル (`LN_NULL_HANDLE` = バックバッファ)。 */
     renderTarget?: Handle;
     /** RGBA クリアカラー。`loadOp` が `Clear` のときに使用されます。デフォルト `[0, 0, 0, 1]`。 */
     clearColor?: [number, number, number, number];
-    /** Load operation. Default `LoadOp.Clear`. */
+    /** ロード操作。デフォルト `LoadOp.Clear`。 */
     loadOp?: LoadOp;
 }
 
 /**
- * Describes the depth-stencil attachment for a render pass.
- * デプス・ステンシルアタッチメントの設定。
+ * デプスステンシルアタッチメントの設定。
  * @note `depthBuffer` が未設定の場合、バックバッファのデプスバッファが使用されます。
  */
 export interface DepthStencilAttachmentDesc {
@@ -191,16 +188,14 @@ export interface DepthStencilAttachmentDesc {
 }
 
 /**
- * Full render pass descriptor (mirrors C `LNRenderPassDesc`).
- * レンダーパスの設定。
+ * レンダーパスの設定 (C の `LNRenderPassDesc` に対応)。
  */
 export interface RenderPassDesc {
     /** カラーアタッチメント配列。未設定または空配列の場合、バックバッファが使用されます。 */
     colorAttachments?: ColorAttachmentDesc[];
-    /** デプス・ステンシルアタッチメント。 */
+    /** デプスステンシルアタッチメント。 */
     depthStencil?: DepthStencilAttachmentDesc;
     /**
-     * Shader pass name to select (e.g. "GBuffer"). NULL/empty = "Forward".
      * マテリアルから優先的に選択する ShaderPass の名前。
      * 未設定または空文字列の場合は "Forward" が使用されます。
      * マテリアルがこの名前の ShaderPass を持たない場合、そのメッシュの描画はスキップされます。
@@ -230,15 +225,15 @@ export interface DecodedImage {
     pixels: Uint8Array;
 }
 
-/** Options for `Runtime.initialize`. */
+/** `Runtime.initialize` のオプション。 */
 export interface RuntimeOptions {
-    /** Path (or URL) to `LuminoC.wasm`. Forwarded to Emscripten `locateFile`. */
+    /** `LuminoC.wasm` のパス (または URL)。Emscripten の `locateFile` に渡されます。 */
     wasmPath?: string;
-    /** Callback for stdout lines from the C runtime. */
+    /** C ランタイムの stdout 出力行を受け取るコールバック。 */
     print?: (text: string) => void;
-    /** Callback for stderr lines from the C runtime. */
+    /** C ランタイムの stderr 出力行を受け取るコールバック。 */
     printErr?: (text: string) => void;
-    /** Enable graphics validation layer. */
+    /** グラフィックスのバリデーションレイヤを有効にします。 */
     enableValidation?: boolean;
     /**
      * ログ出力レベル。省略時は `LogLevel.Info`。
@@ -248,55 +243,54 @@ export interface RuntimeOptions {
 }
 
 //------------------------------------------------------------------------------
-// C struct layout constants (wasm32, 4-byte aligned)
+// C 構造体のレイアウト定数 (wasm32, 4 バイトアライン)
 //------------------------------------------------------------------------------
 
-/** Byte size of `LNColorAttachmentDesc` in wasm memory. */
+/** wasm メモリ上の `LNColorAttachmentDesc` のバイトサイズ。 */
 export const SIZEOF_COLOR_ATTACHMENT_DESC = 24;
-// Layout: renderTarget(u32,0) clearColor(f32x4,4) loadOp(u32,20)
+// レイアウト: renderTarget(u32,0) clearColor(f32x4,4) loadOp(u32,20)
 
-/** Byte size of `LNDepthStencilAttachmentDesc` in wasm memory. */
+/** wasm メモリ上の `LNDepthStencilAttachmentDesc` のバイトサイズ。 */
 export const SIZEOF_DEPTH_STENCIL_ATTACHMENT_DESC = 20;
-// Layout: depthBuffer(u32,0) clearDepth(f32,4) clearStencil(u32,8)
+// レイアウト: depthBuffer(u32,0) clearDepth(f32,4) clearStencil(u32,8)
 //         depthLoadOp(u32,12) stencilLoadOp(u32,16)
 
-/** Byte size of `LNRenderPassDesc` in wasm memory. */
+/** wasm メモリ上の `LNRenderPassDesc` のバイトサイズ。 */
 export const SIZEOF_RENDER_PASS_DESC = 224;
-// Layout: colorAttachmentCount(u32,0)
+// レイアウト: colorAttachmentCount(u32,0)
 //         colorAttachments[8](24*8=192, offset 4)
 //         depthStencil(20, offset 196)
 //         shaderPassName(ptr,216)
 //         sortMode(u32,220)
 
-/** Byte size of `LNInstanceInitializeSettings` in wasm memory. */
+/** wasm メモリ上の `LNInstanceInitializeSettings` のバイトサイズ。 */
 export const SIZEOF_INSTANCE_INIT_SETTINGS = 8;
-// Layout: preferredBackend(u32,0) enableValidation(u32,4)
+// レイアウト: preferredBackend(u32,0) enableValidation(u32,4)
 
-/** Byte size of `LNVertex` in wasm memory. */
+/** wasm メモリ上の `LNVertex` のバイトサイズ。 */
 export const SIZEOF_VERTEX = 64;
-// Layout: posX,posY,posZ(f32x3,0) normX,normY,normZ(f32x3,12)
+// レイアウト: posX,posY,posZ(f32x3,0) normX,normY,normZ(f32x3,12)
 //         u,v(f32x2,24) colorR,G,B,A(f32x4,32) tanX,Y,Z,W(f32x4,48)
 
-/** Byte size of `LNSubMesh` in wasm memory. */
+/** wasm メモリ上の `LNSubMesh` のバイトサイズ。 */
 export const SIZEOF_SUBMESH = 12;
-// Layout: indexOffset(u32,0) indexCount(u32,4) materialIndex(u32,8)
+// レイアウト: indexOffset(u32,0) indexCount(u32,4) materialIndex(u32,8)
 
-/** Byte size of `LNTransform` in wasm memory. */
+/** wasm メモリ上の `LNTransform` のバイトサイズ。 */
 export const SIZEOF_TRANSFORM = 40;
-// Layout: posX,posY,posZ(f32x3,0) rotX,rotY,rotZ,rotW(f32x4,12)
+// レイアウト: posX,posY,posZ(f32x3,0) rotX,rotY,rotZ,rotW(f32x4,12)
 //         scaleX,scaleY,scaleZ(f32x3,28)
 
-/** Byte size of `LNMatrix` in wasm memory (列優先 4x4, float[16])。 */
+/** wasm メモリ上の `LNMatrix` のバイトサイズ (列優先 4x4, float[16])。 */
 export const SIZEOF_MATRIX = 64;
 
-/** Byte size of `LNGraphicsProfiler` in wasm memory. */
+/** wasm メモリ上の `LNGraphicsProfiler` のバイトサイズ。 */
 export const SIZEOF_GRAPHICS_PROFILER = 20;
-// Layout: drawCallCount(i32,0) fps(f32,4) lastFrameTimeMs(f32,8)
+// レイアウト: drawCallCount(i32,0) fps(f32,4) lastFrameTimeMs(f32,8)
 //         shaderPassCount(i32,12) materialCacheCount(i32,16)
 
 /**
- * Vertex data matching C `LNVertex` (64 bytes).
- * 標準頂点データ (64 bytes)。
+ * 標準頂点データ (C の `LNVertex` に対応、64 bytes)。
  */
 export interface Vertex {
     position: [number, number, number];
@@ -307,8 +301,7 @@ export interface Vertex {
 }
 
 /**
- * Sub-mesh descriptor matching C `LNSubMesh` (12 bytes).
- * サブメッシュ (インデックスバッファの部分範囲とマテリアルインデックス)。
+ * サブメッシュ (インデックスバッファの部分範囲とマテリアルインデックス)。C の `LNSubMesh` に対応 (12 bytes)。
  */
 export interface SubMesh {
     indexOffset: number;
@@ -317,8 +310,8 @@ export interface SubMesh {
 }
 
 /**
- * Graphics profiling counters matching C `LNGraphicsProfiler` (20 bytes).
- * グラフィックスのプロファイリング情報。`GraphicsContext.getProfiler()` で取得します。
+ * グラフィックスのプロファイリング情報 (C の `LNGraphicsProfiler` に対応、20 bytes)。
+ * `GraphicsContext.getProfiler()` で取得します。
  */
 export interface GraphicsProfiler {
     /**
@@ -355,11 +348,10 @@ export interface GraphicsProfiler {
 }
 
 /**
- * TRS transform matching C `LNTransform` (40 bytes).
- * TRS トランスフォーム。
+ * TRS トランスフォーム (C の `LNTransform` に対応、40 bytes)。
  */
 export interface Transform {
     position: [number, number, number];
-    rotation: [number, number, number, number]; // quaternion (x, y, z, w)
+    rotation: [number, number, number, number]; // クォータニオン (x, y, z, w)
     scale: [number, number, number];
 }

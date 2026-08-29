@@ -124,7 +124,7 @@ TEST_F(Test_DeviceLost, SimulateThenAutoRecover) {
             LNRenderer_BeginRenderPass(renderer, graphicsContext, &rtDesc, LN_NULL_HANDLE));
 
         // 通常のパスを開始し、stale リソースの描画がスキップされること
-        // (クラッシュ・エラーにならないこと) を確認する
+        // (クラッシュやエラーにならないこと) を確認する
         LNRenderPassDesc rpDesc;
         LNRenderPassDesc_Init(&rpDesc);
         rpDesc.colorAttachments[0].clearColor[2] = 1.0f;

@@ -28,7 +28,7 @@ using namespace ln;
 using namespace ln::rhi;
 using namespace ln::platform;
 
-/// Generate a unit cube mesh (24 vertices, 36 indices).
+/// 単位キューブのメッシュを生成する (頂点 24 個、インデックス 36 個)。
 static Result<Ref<Mesh>> createCubeMesh(Device* device) {
     std::vector<Vertex> verts;
     std::vector<uint32_t> indices;
@@ -101,7 +101,7 @@ int main() {
         auto material = *MaterialFactory::createBasicLit(ctx);
         material->setColor(Color{0.8f, 0.5f, 0.2f, 1.0f});
 
-        // 4. Cube mesh
+        // 4. キューブメッシュ
         auto mesh = *createCubeMesh(ctx->device());
         mesh->materials() = {material};
 
@@ -111,17 +111,17 @@ int main() {
             static_cast<float>(ctx->width()) / static_cast<float>(ctx->height()),
             0.1f, 100.0f);
 
-        // 6. Light
+        // 6. ライト
         DirectionalLight light;
         light.direction = Vector3{0.3f, -1.0f, 0.5f};
         light.color = Color::white();
         light.ambient = Color{0.15f, 0.15f, 0.15f, 1.0f};
         renderer->setLight(light);
         
-        // 7. Main loop
+        // 7. メインループ
         float time = 0.0f;
         while (window->processEvents()) {
-            time += 0.016f; // ~60fps
+            time += 0.016f; // 約 60fps
 
             camera.setOrbit({0, 0, 0}, 3.0f, time * 0.5f, 0.35f);
 

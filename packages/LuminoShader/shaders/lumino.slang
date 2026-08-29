@@ -1,22 +1,22 @@
-// lumino.slang — Lumino standard shader library
+// lumino.slang - Lumino 標準シェーダライブラリ
 //
-// Common structures shared across Lumino shaders.
-// Usage: import lumino;
+// Lumino のシェーダ間で共有する共通の構造体。
+// 使い方: import lumino;
 
 struct ViewParams {
     float4x4 viewProj;
-    float4   cameraPos;    // xyz = position
-    float4x4 view;         // view matrix (world -> view)
-    float4x4 proj;         // projection matrix (view -> clip)
-    float4x4 invViewProj;  // inverse of viewProj (clip -> world)
-    float4x4 invProj;      // inverse of proj (clip -> view)
+    float4   cameraPos;    // xyz = 位置
+    float4x4 view;         // ビュー行列 (ワールド -> ビュー)
+    float4x4 proj;         // 射影行列 (ビュー -> クリップ)
+    float4x4 invViewProj;  // viewProj の逆行列 (クリップ -> ワールド)
+    float4x4 invProj;      // proj の逆行列 (クリップ -> ビュー)
     float4   screenSize;   // (width, height, 1/width, 1/height)
 };
 
 struct SceneParams {
-    float4 lightDir;       // xyz = direction (towards light)
-    float4 lightColor;     // xyz = color, w = intensity
-    float4 ambientColor;   // xyz = ambient color
+    float4 lightDir;       // xyz = 方向 (ライトへ向かう向き)
+    float4 lightColor;     // xyz = 色, w = 強度
+    float4 ambientColor;   // xyz = 環境光の色
 };
 
 struct ObjectParams {
@@ -33,14 +33,14 @@ struct VSInput {
 };
 
 //------------------------------------------------------------------------------
-// System ParameterBlocks (Sets 1–3)
+// システム ParameterBlock (Set 1-3)
 //------------------------------------------------------------------------------
 ParameterBlock<ViewParams>     viewData;
 ParameterBlock<SceneParams>    sceneData;
 ParameterBlock<ObjectParams>   objectData;
 
 //------------------------------------------------------------------------------
-// Convenience aliases (legacy-compatible ln_ prefix)
+// 便利エイリアス (旧版互換の ln_ プレフィックス)
 //------------------------------------------------------------------------------
 
 // View

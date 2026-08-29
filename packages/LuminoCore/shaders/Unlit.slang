@@ -1,14 +1,14 @@
-// Unlit.slang — テクスチャ × カラー、ライティングなし
+// Unlit.slang - テクスチャ × カラー、ライティングなし
 //
-// Set 0 ($Global / material): u_params, u_baseTexture, u_baseSampler
-// Set 1 (per-view):           viewData   — ViewParams
-// Set 2 (per-scene):          sceneData  — SceneParams (unused)
-// Set 3 (per-object):         objectData — ObjectParams
+// Set 0 ($Global / マテリアル):  u_params, u_baseTexture, u_baseSampler
+// Set 1 (ビュー単位):           viewData   - ViewParams
+// Set 2 (シーン単位):           sceneData  - SceneParams (未使用)
+// Set 3 (オブジェクト単位):     objectData - ObjectParams
 
 import lumino;
 
 //------------------------------------------------------------------------------
-// Material parameters (bare uniforms → $Global, Set 0)
+// マテリアルパラメータ (ベアな uniform -> $Global, Set 0)
 //------------------------------------------------------------------------------
 struct MaterialParams {
     float4 color;
@@ -70,7 +70,7 @@ LNGBufferOutput fsGBufferMain(VSOutputGB input) {
     float4 texColor = u_baseTexture.Sample(u_baseSampler, input.uv);
     float4 albedo = texColor * u_params.color * input.color;
     float viewDepth = -input.viewPos.z;
-    // Unlit マテリアルは金属度・粗さを持たないので 0 を出力。AO は 1.0 (遮蔽なし)。
+    // Unlit マテリアルは金属度や粗さを持たないので 0 を出力。AO は 1.0 (遮蔽なし)。
     return lnPackGBuffer(albedo.rgb, input.worldNormal, viewDepth, 0.0, 0.0, 1.0);
 }
 

@@ -1,12 +1,12 @@
 /**
  * SSR (Screen Space Reflection)
  *
- * Ground plane + rotating triangle rendered to G-Buffers,
- * then composited with screen-space reflections.
+ * 地面の平面と回転する三角形を G-Buffer に描画し、
+ * スクリーンスペース反射と合成する。
  *
- * Rendering pipeline:
- *   Pass 1: G-Buffer (albedo, world normal + depth, metallic/roughness/AO)
- *   Pass 2: SSR + composite (full-screen post-process)
+ * レンダリングパイプライン:
+ *   パス 1: G-Buffer (アルベド、ワールド法線 + 深度、メタリック/ラフネス/AO)
+ *   パス 2: SSR + 合成 (フルスクリーンのポストプロセス)
  */
 import {
     Runtime,
@@ -29,26 +29,26 @@ async function main() {
     const W = canvas.width;
     const H = canvas.height;
 
-    // Load WASM module and initialize Lumino instance (creates WebGPU device)
+    // WASM モジュールをロードし、Lumino インスタンスを初期化する (WebGPU デバイスが作成される)
     await Runtime.initialize({
         wasmPath: new URL("../../../luminojs/lib/LuminoC.wasm", import.meta.url).href,
     });
 
-    // Create GraphicsContext from canvas
+    // canvas から GraphicsContext を作成する
     const context = await GraphicsContext.createFromCanvas("#my_canvas");
 
-    // Render targets
+    // レンダーターゲット
     const gbufferA = Texture.createRenderTargetEx(context, W, H, TextureFormat.RGBA8_UNORM);
     const gbufferB = Texture.createRenderTargetEx(context, W, H, TextureFormat.RGBA32_FLOAT);
     const gbufferC = Texture.createRenderTargetEx(context, W, H, TextureFormat.RGBA8_UNORM);
     const sceneDepth = Texture.createDepthStencil(context, W, H);
 
-    // Materials
+    // マテリアル
     const gridTexture = await Texture.loadFromURL(
         new URL("../../public/CheckerGridGray1.png", import.meta.url).href,
     );
 
-    // Scene materials (Unlit)
+    // シーン用マテリアル (Unlit)
     const groundMaterial = Material.createUnlit();
     groundMaterial.setColor(0.4, 0.4, 0.4, 1.0);
     //groundMaterial.setMainTexture(gridTexture);
@@ -57,7 +57,7 @@ async function main() {
     triangleMaterial.setCullMode(CullMode.None);  // 両面描画
     triangleMaterial.setColor(1.0, 1.0, 1.0, 1.0);
 
-    // SSR material (from pre-compiled shader)
+    // SSR 用マテリアル (コンパイル済みシェーダから作成)
     const ssrResp = await fetch(new URL("../../public/SSR.lcsh", import.meta.url).href);
     const ssrData = new Uint8Array(await ssrResp.arrayBuffer());
     const matSSR = Material.createFromCompiledShader(ssrData);
@@ -66,7 +66,7 @@ async function main() {
     matSSR.setNamedTexture("u_gbufferB", gbufferB);
     matSSR.setNamedTexture("u_gbufferC", gbufferC);
 
-    // Ground plane: 4 vertices at Y=0
+    // 地面の平面: Y=0 に 4 頂点
     const groundMesh = Mesh.create(
         [
             { position: [-2, 0, -2], normal: [0, 1, 0], uv: [0, 0], color: [0.5, 0.5, 0.5, 1], tangent: [1, 0, 0, 0] },
@@ -79,7 +79,7 @@ async function main() {
     );
     groundMesh.setMaterial(0, groundMaterial);
 
-    // Rotating triangle: hovers above ground
+    // 回転する三角形: 地面の上に浮かせる
     const triMesh = Mesh.create(
         [
             { position: [ 0, 1, 0], normal: [0, 0, 1], uv: [0.5, 0], color: [1, 0, 0, 1], tangent: [1, 0, 0, 0] },
@@ -152,7 +152,7 @@ async function main() {
 
         const { renderer, colorBuffer, depthBuffer } = frameInfo;
 
-        // -- G-Buffer pass --
+        // -- G-Buffer パス --
         renderer.beginRenderPass(
             context,
             {
@@ -170,7 +170,7 @@ async function main() {
         renderer.drawMesh(triMesh, triTransform, 0);
         renderer.endRenderPass();
 
-        // -- SSR + Composite pass --
+        // -- SSR + 合成パス --
         renderer.beginRenderPass(
             context,
             {

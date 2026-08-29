@@ -7,7 +7,7 @@ class VulkanTexture final : public Texture {
 public:
     VulkanTexture();
     VoidResult init(VulkanDevice* device, VkPhysicalDevice physicalDevice, const TextureDesc& desc);
-    /** Wraps an externally-owned VkImage (e.g. swap chain image). */
+    /** 外部が所有する VkImage (スワップチェーンのイメージなど) をラップする。 */
     VoidResult initFromExternalImage(
         VulkanDevice* device,
         VkImage image,

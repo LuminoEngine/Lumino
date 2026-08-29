@@ -13,36 +13,36 @@ using BlobId2 = int16_t;
 
 class UnifiedShader2;
 
-// Info about a single member within a $Global constant buffer.
+// $Global 定数バッファ内の 1 メンバの情報。
 struct GlobalMemberInfo {
-    std::string name;       // e.g. "u_time"
-    int16_t offset;         // byte offset within the CB
-    int16_t size;           // byte size
+    std::string name;       // 例: "u_time"
+    int16_t offset;         // CB 内のバイトオフセット
+    int16_t size;           // バイトサイズ
 };
 
-// Single element within a ParameterBlock (ConstantBuffer, Texture, Sampler, etc.)
+// ParameterBlock 内の 1 要素 (ConstantBuffer, Texture, Sampler など)
 struct ParameterBlockElement2 {
-    std::string name;                    // "params", "baseTexture", "" (implicit CB)
+    std::string name;                    // "params", "baseTexture", "" (暗黙の CB)
     ParameterBlockElementKind kind;
-    int16_t constantBufferSize;          // Valid only for ConstantBuffer kind; -1 otherwise
+    int16_t constantBufferSize;          // kind が ConstantBuffer のときのみ有効。それ以外は -1
 };
 
-// ParameterBlock layout (target-independent)
+// ParameterBlock のレイアウト (ターゲット非依存)
 struct ParameterBlockLayout2 {
-    std::string name;                    // "viewData", "$Material", etc.
-    int16_t setIndex;                    // Descriptor set index
-    bool hasImplicitConstantBuffer;      // true when the struct contains only plain data fields
+    std::string name;                    // "viewData", "$Material" など
+    int16_t setIndex;                    // ディスクリプタセットのインデックス
+    bool hasImplicitConstantBuffer;      // 構造体が単純なデータフィールドのみを含む場合に true
     std::vector<ParameterBlockElement2> elements;
-    std::vector<GlobalMemberInfo> members; // $Global CB member info (empty for real ParameterBlocks)
+    std::vector<GlobalMemberInfo> members; // $Global CB のメンバ情報 (実際の ParameterBlock では空)
 };
 
-// Per-target binding information
+// ターゲットごとのバインディング情報
 struct TargetBinding2 {
     std::string name;
     ParameterBlockElementKind kind;
     int16_t setIndex;
     int16_t bindingIndex;
-    int16_t size;                        // CB: byte size, others: 0
+    int16_t size;                        // CB: バイトサイズ、それ以外: 0
     ShaderStageFlags used;
 };
 

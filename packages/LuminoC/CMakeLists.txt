@@ -1,11 +1,11 @@
 ﻿project(LuminoC)
 
 #-------------------------------------------------------------------------------
-# Emscripten - WebAssembly build
+# Emscripten - WebAssembly ビルド
 #-------------------------------------------------------------------------------
-# LuminoBase and LuminoCore are built as static libraries and linked via
-# target_link_libraries. WebGPU-distribution is configured in the root
-# CMakeLists.txt and provides a unified webgpu target.
+# LuminoBase と LuminoCore は静的ライブラリとしてビルドし、target_link_libraries で
+# リンクする。WebGPU-distribution はルートの CMakeLists.txt で設定され、
+# 統一された webgpu ターゲットを提供する。
 if(EMSCRIPTEN)
     set(LN_WEB_SOURCES
         src/LuminoAPI.cpp
@@ -18,15 +18,15 @@ if(EMSCRIPTEN)
     target_compile_features(${PROJECT_NAME} PRIVATE cxx_std_17)
     set_target_properties(${PROJECT_NAME} PROPERTIES SUFFIX ".mjs")
 
-    # LuminoCore transitively provides LuminoBase, tl::expected, and emdawnwebgpu_c.
+    # LuminoCore は LuminoBase, tl::expected, emdawnwebgpu_c を推移的に提供する。
     target_link_libraries(${PROJECT_NAME} PRIVATE LuminoCore)
 
-    # LuminoCore private headers (RHI) needed by LuminoAPI.cpp.
+    # LuminoAPI.cpp が必要とする LuminoCore のプライベートヘッダ (RHI)。
     target_include_directories(${PROJECT_NAME} PRIVATE
         ${CMAKE_SOURCE_DIR}/packages/LuminoCore/src
     )
 
-    # Emscripten link flags
+    # Emscripten のリンクフラグ
     set(LN_EM_LINK_FLAGS "")
     string(APPEND LN_EM_LINK_FLAGS " -sWASM=1")
     string(APPEND LN_EM_LINK_FLAGS " -sMODULARIZE=1")
@@ -46,8 +46,8 @@ if(EMSCRIPTEN)
     # ただし、ccall には string や array の変換ユーティリティがついている。特に理由が無ければ、 ccall または cwrap を利用するのが無難。
     string(APPEND LN_EM_LINK_FLAGS " -sEXPORTED_RUNTIME_METHODS=\"['ccall','cwrap','HEAPU8','HEAPU32','HEAPF32','UTF8ToString']\"")
     string(APPEND LN_EM_LINK_FLAGS " -sEXPORTED_FUNCTIONS=\"['_malloc','_free']\"")
-    # ASYNCIFY is required for WebGPU async operations (RequestAdapter,
-    # RequestDevice, etc.) to yield to the browser event loop.
+    # WebGPU の非同期処理 (RequestAdapter, RequestDevice 等) がブラウザの
+    # イベントループへ制御を戻せるようにするため、ASYNCIFY が必要。
     string(APPEND LN_EM_LINK_FLAGS " -sASYNCIFY=1")
     # 最適化レベルは CMAKE_BUILD_TYPE に連動させる。
     # Debug: ブラウザの開発者ツールでソースマップ付きデバッグができるよう最適化を無効化する。

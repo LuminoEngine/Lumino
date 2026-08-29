@@ -1,5 +1,5 @@
 ﻿//------------------------------------------------------------------------------
-// Environment: 初期化・終了処理
+// Environment: 初期化と終了処理
 //------------------------------------------------------------------------------
 class LuminoCoreEnvironment : public ::testing::Environment {
 public:
@@ -11,7 +11,7 @@ public:
 };
 
 //------------------------------------------------------------------------------
-// Graphics module tests (CPU-only, no GPU)
+// Graphics モジュールのテスト (CPU のみ。GPU は使わない)
 //------------------------------------------------------------------------------
 #include <LuminoCore/Graphics/Vertex.hpp>
 #include <LuminoCore/Graphics/Transform.hpp>
@@ -29,9 +29,9 @@ TEST(VertexTest, StandardLayout) {
     rhi::VertexBufferLayout layout = standardVertexLayout();
     EXPECT_EQ(layout.stride, 64u);
     EXPECT_EQ(layout.attributes.size(), 5u);
-    // position at offset 0
+    // position はオフセット 0
     EXPECT_EQ(layout.attributes[0].offset, 0u);
-    // normal at offset 12
+    // normal はオフセット 12
     EXPECT_EQ(layout.attributes[1].offset, 12u);
 }
 

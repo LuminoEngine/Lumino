@@ -4,7 +4,6 @@ import { API, Runtime } from "./Runtime";
 
 export class Camera extends LuminoObject {
     /**
-     * Create a camera with default settings.
      * デフォルト設定のカメラを作成します。
      */
     static create(): Camera {
@@ -16,7 +15,6 @@ export class Camera extends LuminoObject {
     }
 
     /**
-     * Set perspective projection parameters.
      * カメラに透視投影を設定します。
      * @param fovY   垂直視野角 (ラジアン)
      * @param aspect アスペクト比 (幅 / 高さ)
@@ -31,12 +29,11 @@ export class Camera extends LuminoObject {
     }
 
     /**
-     * Set a 2D orthographic projection (top-left origin, Y+ pointing down).
-     * カメラに 2D 用の正射影投影 (左上原点・Y軸下向き) を設定します。
+     * カメラに 2D 用の正射影投影 (左上原点、Y軸下向き) を設定します。
      *
      * 画面座標 (0, 0) が左上、(width, height) が右下に対応します。
      * ビュー行列は単位行列に設定されます。このカメラで `Renderer.drawSprite` を
-     * 行うと、スプライト頂点が左上原点・Y軸下向きのレイアウトで自動生成されます
+     * 行うと、スプライト頂点が左上原点、Y軸下向きのレイアウトで自動生成されます
      * (UV 反転やマテリアルのカリング設定変更は不要です)。
      *
      * 注意: このカメラで 3D メッシュ (`Renderer.drawMesh`) を描画する場合は、
@@ -65,8 +62,7 @@ export class Camera extends LuminoObject {
     }
 
     /**
-     * Set the view matrix via eye / target / up vectors.
-     * ビュー行列を視点・注視点・上方向ベクトルで設定します。
+     * ビュー行列を視点、注視点、上方向ベクトルで設定します。
      * @param eyeX    視点位置 X
      * @param eyeY    視点位置 Y
      * @param eyeZ    視点位置 Z
@@ -92,16 +88,15 @@ export class Camera extends LuminoObject {
     }
 
     /**
-     * Set view and projection matrices directly.
      * カメラのビュー行列とプロジェクション行列を直接設定します。
      * @param view ビュー行列 (列優先 float x 16)
      * @param proj プロジェクション行列 (列優先 float x 16)
-     * @param is2D 2D モードフラグ。`true` で 2D カメラ (スプライトが左上原点・Y軸下向き
+     * @param is2D 2D モードフラグ。`true` で 2D カメラ (スプライトが左上原点、Y軸下向き
      *             のレイアウトで自動生成される)。既定は `false`
      */
     setMatrices(view: Matrix4x4, proj: Matrix4x4, is2D = false): void {
         const m = Runtime.module;
-        const byteLen = 16 * 4; // 64 bytes per matrix
+        const byteLen = 16 * 4; // 行列 1 つあたり 64 バイト
         const ptr = m._malloc(byteLen * 2);
         try {
             const heap = new Float32Array(m.HEAPU8.buffer, ptr, 32);

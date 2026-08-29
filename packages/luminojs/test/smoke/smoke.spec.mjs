@@ -30,7 +30,7 @@ const packageRoot = path.resolve(fileURLToPath(new URL("../../", import.meta.url
 const COMPILED_SHADER = fs.readFileSync(
     path.resolve(packageRoot, "../LuminoC/test/Data/Unlit.lcsh"));
 
-// 既知のピクセル値を持つ 2x2 PNG。上から下・左から右の RGBA8。
+// 既知のピクセル値を持つ 2x2 PNG。上から下、左から右の順に並ぶ RGBA8。
 //   (0,0)=赤  (1,0)=緑
 //   (0,1)=青  (1,1)=白
 const TEST_PNG = makePng(
@@ -52,7 +52,7 @@ const TEST_PNG = makePng(
 const SKIP_INITIALIZE_WHEN_NO_WEBGPU =
     false || process.env.LUMINO_SMOKE_SKIP_NO_WEBGPU === "1";
 
-// beforeAll で WASM を一度だけロード・初期化し、各 API の結果をここに集約する。
+// beforeAll で WASM を一度だけロードして初期化し、各 API の結果をここに集約する。
 // こうすることで WASM ロード (-O0 -g3 のため数秒かかる) を 1 回に抑えつつ、
 // 各検証項目を独立した test() として明快に表現できる。
 let result;

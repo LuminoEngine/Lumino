@@ -2,15 +2,15 @@
 
 /**
  * @file DescriptorPoolManager.hpp
- * Growing pool of Vulkan descriptor pools.
- * 
- * A single fixed-size VkDescriptorPool will overflow if many BindGroups are
- * created (e.g., one per draw call, per material, etc.).  This manager
- * transparently adds new pools whenever VK_ERROR_OUT_OF_POOL_MEMORY is
- * returned, so callers never need to handle pool exhaustion manually.
- * 
- * The pools are created with VK_DESCRIPTOR_POOL_CREATE_FREE_DESCRIPTOR_SET_BIT
- * so that individual descriptor sets can be freed on BindGroup destruction.
+ * 拡張可能な Vulkan ディスクリプタプールの集合。
+ *
+ * 固定サイズの VkDescriptorPool が 1 つだけだと、BindGroup を多数作成した場合
+ * (ドローコールごと、マテリアルごとなど) に溢れてしまう。このマネージャは
+ * VK_ERROR_OUT_OF_POOL_MEMORY が返されるたびに新しいプールを透過的に追加するため、
+ * 呼び出し側がプールの枯渇を手動で処理する必要はない。
+ *
+ * BindGroup の破棄時に個々のディスクリプタセットを解放できるよう、プールは
+ * VK_DESCRIPTOR_POOL_CREATE_FREE_DESCRIPTOR_SET_BIT を付けて作成する。
  */
 
 #include <LuminoBase/Types.hpp>
@@ -24,9 +24,9 @@ namespace ln::rhi::vulkan {
 class DescriptorPoolManager {
 public:
     /**
-     * Number of descriptor sets per pool page.  Each page also allocates
-     * SETS_PER_POOL * 4 descriptors of each type to cover typical usage
-     * (1-4 descriptors per set).
+     * プールページあたりのディスクリプタセット数。典型的な使用量
+     * (セットあたり 1-4 個) をまかなうため、各ページは各タイプにつき
+     * SETS_PER_POOL * 4 個のディスクリプタも確保する。
      */
     static constexpr uint32_t SETS_PER_POOL = 64;
 
@@ -43,8 +43,8 @@ public:
     }
 
     /**
-     * Allocate one descriptor set from `layout`.
-     * Returns {pool, set}.  On failure both handles are VK_NULL_HANDLE.
+     * `layout` からディスクリプタセットを 1 つ確保する。
+     * {pool, set} を返す。失敗時は両方のハンドルが VK_NULL_HANDLE になる。
      */
     std::pair<VkDescriptorPool, VkDescriptorSet> allocate(VkDescriptorSetLayout layout) {
         for (;;) {
@@ -64,7 +64,7 @@ public:
                 allocateNewPool();
                 continue;
             }
-            // Unexpected error - return null handles.
+            // 想定外のエラー - null ハンドルを返す。
             return {VK_NULL_HANDLE, VK_NULL_HANDLE};
         }
     }
@@ -84,7 +84,7 @@ private:
 
         VkDescriptorPoolCreateInfo dpInfo{};
         dpInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
-        // FREE_DESCRIPTOR_SET_BIT allows individual set deallocation.
+        // FREE_DESCRIPTOR_SET_BIT により個々のセットを解放できる。
         dpInfo.flags = VK_DESCRIPTOR_POOL_CREATE_FREE_DESCRIPTOR_SET_BIT;
         dpInfo.maxSets = SETS_PER_POOL;
         dpInfo.poolSizeCount = 5;

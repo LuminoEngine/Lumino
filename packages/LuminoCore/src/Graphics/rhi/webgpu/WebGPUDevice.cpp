@@ -396,8 +396,8 @@ Result<Ref<TextureView>> WebGPUDevice::createTextureView(Texture* texture) {
     auto view = Ref<WebGPUTextureView>::adopt(new WebGPUTextureView());
     WGPUTextureFormat fmt = toWGPUTextureFormat(webgpuTex->format());
     WGPUTextureAspect aspect = WGPUTextureAspect_All;
-    // Depth/stencil textures need DepthOnly aspect for shader binding,
-    // but All is fine for render attachment usage.
+    // デプスステンシルテクスチャはシェーダバインディングには DepthOnly アスペクトが必要だが、
+    // レンダーアタッチメントとして使うだけなら All でよい。
     auto result = view->init(this, webgpuTex->handle(), fmt, aspect,
                              webgpuTex->width(), webgpuTex->height());
     if (!result) {

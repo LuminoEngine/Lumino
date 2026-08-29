@@ -48,11 +48,11 @@ int main() {
         // 2. ForwardRenderer
         auto renderer = *ForwardRenderer::create(ctx);
 
-        // 3. Unlit Material (white color so vertex colors show through)
+        // 3. Unlit マテリアル (頂点カラーがそのまま出るよう白にする)
         auto material = *MaterialFactory::createUnlit(ctx);
         //material->setCullMode(CullMode::None);
 
-        // 4. Triangle mesh with per-vertex colors
+        // 4. 頂点ごとに色を持つ三角形メッシュ
         // 反時計回り (CCW) が正面。右手座標系ということで。godot と同じ。
         Vertex v0{};
         v0.position = {0.0f, 0.5f, 0.0f};
@@ -74,7 +74,7 @@ int main() {
         auto mesh = *Mesh::create(ctx->device(), vertices, indices, {sub});
         mesh->materials() = {material};
 
-        // 5. Orthographic camera looking at the origin
+        // 5. 原点を見るカメラ
         Camera camera;
         camera.setPerspective(
             //0.3f,
@@ -84,7 +84,7 @@ int main() {
             100.0f);
         camera.setLookAt({0.0f, 0.0f, 5.f}, {0.0f, 0.0f, 0.0f});
 
-        // 6. Main loop
+        // 6. メインループ
         int frameCount = 0;
         while (window->processEvents()) {
             RenderObject obj;

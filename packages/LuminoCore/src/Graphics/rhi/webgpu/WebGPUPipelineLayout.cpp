@@ -29,9 +29,9 @@ VoidResult WebGPUBindGroupLayout::init(WebGPUDevice* device, const BindGroupLayo
     std::vector<WGPUBindGroupLayoutEntry> entries;
     entries.reserve(desc.entries.size());
     for (const auto& e : desc.entries) {
-        // WGPU_BIND_GROUP_LAYOUT_ENTRY_INIT zero-initializes all four resource sub-structs
-        // (buffer/sampler/texture/storageTexture). Their *_BindingNotUsed enum values are 0,
-        // so the unset sub-structs are correctly inert; only the active one needs to be filled.
+        // WGPU_BIND_GROUP_LAYOUT_ENTRY_INIT は 4 つのリソースサブ構造体 (buffer, sampler, texture,
+        // storageTexture) をすべてゼロ初期化する。各 *_BindingNotUsed 列挙子の値は 0 なので、
+        // 設定しないサブ構造体は正しく無効扱いになる。使うものだけ埋めればよい。
         WGPUBindGroupLayoutEntry entry = WGPU_BIND_GROUP_LAYOUT_ENTRY_INIT;
         entry.binding = e.binding;
         entry.visibility = toWGPUShaderStage(e.visibility);
@@ -141,8 +141,8 @@ WebGPUPipelineLayout::WebGPUPipelineLayout() = default;
 VoidResult WebGPUPipelineLayout::init(WebGPUDevice* device, const PipelineLayoutDesc& desc) {
     m_device = device;
 
-    // Create one WebGPUBindGroupLayout per descriptor set. Sparse/empty entries are still
-    // materialized so that set indices in the resulting pipeline layout match shader expectations.
+    // ディスクリプタセットごとに WebGPUBindGroupLayout を 1 つ作成する。歯抜けや空のエントリも
+    // 実体化し、生成されるパイプラインレイアウトのセットインデックスがシェーダの期待と一致するようにする。
     m_bindGroupLayouts.reserve(desc.setLayouts.size());
     std::vector<WGPUBindGroupLayout> wgpuLayouts;
     wgpuLayouts.reserve(desc.setLayouts.size());

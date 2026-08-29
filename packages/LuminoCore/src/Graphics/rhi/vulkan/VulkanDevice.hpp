@@ -49,8 +49,8 @@ public:
     FrameResourceManager& frameResources() { return m_frameResources; }
 
     /**
-     * Called at the start of each frame (after waiting for the in-flight fence)
-     * to execute deferred cleanups for that frame index.
+     * 各フレームの開始時 (in-flight フェンスを待った後) に呼び出し、
+     * そのフレームインデックスの遅延破棄を実行する。
      */
     void beginFrame(uint32_t frameIndex) { m_frameResources.beginFrame(frameIndex); }
 
@@ -87,7 +87,7 @@ private:
 
     VulkanSwapChain* m_activeSwapChain = nullptr;
 
-    // Caches (hides Vulkan complexity from RHI users)
+    // キャッシュ (RHI 利用者から Vulkan の複雑さを隠す)
     std::mutex m_cacheMutex;
     std::unordered_map<RenderPassKey, VkRenderPass, RenderPassKeyHash> m_renderPassCache;
     std::unordered_map<FramebufferKey, VkFramebuffer, FramebufferKeyHash> m_framebufferCache;

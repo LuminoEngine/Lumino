@@ -40,11 +40,11 @@ export function makePng(width, height, rgba) {
     const ihdr = Buffer.alloc(13);
     ihdr.writeUInt32BE(width, 0);
     ihdr.writeUInt32BE(height, 4);
-    ihdr[8] = 8; // bit depth
-    ihdr[9] = 6; // color type: RGBA
-    ihdr[10] = 0; // compression
-    ihdr[11] = 0; // filter
-    ihdr[12] = 0; // interlace
+    ihdr[8] = 8; // ビット深度
+    ihdr[9] = 6; // カラータイプ: RGBA
+    ihdr[10] = 0; // 圧縮方式
+    ihdr[11] = 0; // フィルタ方式
+    ihdr[12] = 0; // インターレース方式
 
     // 各スキャンラインの先頭にフィルタバイト 0 を付与する。
     const stride = width * 4;

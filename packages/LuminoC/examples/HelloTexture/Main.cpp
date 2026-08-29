@@ -6,22 +6,22 @@
 int main(void) {
     InitializeInstance();
 
-    // Window + GraphicsContext
+    // Window と GraphicsContext
     LNHandle window = LN_NULL_HANDLE;
     LNWindow_Create("LuminoC-HelloTexture", WINDOW_W, WINDOW_H, &window);
     LNHandle graphicsContext = LN_NULL_HANDLE;
     LNWindow_GetGraphicsContext(window, &graphicsContext);
 
-    // Texture
+    // テクスチャ
     LNHandle texture = LN_NULL_HANDLE;
     LNTexture2D_LoadFromFile(graphicsContext, ASSETS_DIR "/picture1.png", &texture);
 
-    // Unlit Material
+    // Unlit マテリアル
     LNHandle material = LN_NULL_HANDLE;
     LNMaterial_CreateFromBuiltinShader(graphicsContext, LN_BUILTIN_SHADER_UNLIT, &material);
     LNMaterial_SetMainTexture(material, texture);
 
-    // Quad mesh (4 vertices, 6 indices, CCW winding)
+    // 四角形メッシュ (頂点 4 つ、インデックス 6 つ、CCW ワインディング)
     //   v0(-0.5, 0.5) --- v1(0.5, 0.5)
     //      |           /      |
     //   v2(-0.5,-0.5) --- v3(0.5,-0.5)
@@ -32,14 +32,14 @@ int main(void) {
         { -0.5f, -0.5f,  0.0f,  0,0,1,  0.0f, 1.0f,  1,1,1,1,  1,0,0,0 }, // v2
         {  0.5f, -0.5f,  0.0f,  0,0,1,  1.0f, 1.0f,  1,1,1,1,  1,0,0,0 }, // v3
     };
-    uint32_t indices[6] = { 0, 2, 1,  1, 2, 3 };  // CCW: upper tri + lower tri
+    uint32_t indices[6] = { 0, 2, 1,  1, 2, 3 };  // CCW: 上の三角形 + 下の三角形
     LNSubMesh sub = { 0, 6, 0 };
 
     LNHandle mesh = LN_NULL_HANDLE;
     LNMesh_Create(graphicsContext, vertices, 4, indices, 6, &sub, 1, &mesh);
     LNMesh_SetMaterial(mesh, 0, material);
 
-    // Perspective camera
+    // 透視投影カメラ
     LNHandle camera = LN_NULL_HANDLE;
     LNCamera_Create(&camera);
     LNCamera_SetPerspective(camera,
@@ -47,11 +47,11 @@ int main(void) {
         (float)WINDOW_W / (float)WINDOW_H,
         0.1f, 100.0f);
     LNCamera_SetLookAt(camera,
-        0.0f, 0.0f, 3.0f,   // eye
-        0.0f, 0.0f, 0.0f,   // target
-        0.0f, 1.0f, 0.0f);  // up
+        0.0f, 0.0f, 3.0f,   // 視点
+        0.0f, 0.0f, 0.0f,   // 注視点
+        0.0f, 1.0f, 0.0f);  // 上方向
     
-    // Main loop
+    // メインループ
     LNGraphicsProfiler profilering = {};
     LNTransform identity = { 0,0,0,  0,0,0,1,  1,1,1 };
     LNBool quit = LN_FALSE;

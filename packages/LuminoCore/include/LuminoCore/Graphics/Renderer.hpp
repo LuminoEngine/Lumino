@@ -32,7 +32,7 @@ class GraphicsContext;
  * - Scene セット：シーン環境データ（ライティング等）- setPassBindGroup() を介してクライアントから提供
  * - Object セット：オブジェクトごとのデータ（動的UBO）- Rendererによって内部的に管理
  *
- * Usage:
+ * 使用例:
  * @code
  *   renderer->beginFrame();
  *
@@ -55,43 +55,43 @@ class GraphicsContext;
 class Renderer : public Object {
 public:
 
-    /** Color format this renderer was created with. */
+    /** このレンダラーの作成時に指定されたカラーフォーマット。 */
     rhi::TextureFormat colorFormat() const { return m_colorFormat; }
 
-    /** Depth format this renderer was created with. */
+    /** このレンダラーの作成時に指定されたデプスフォーマット。 */
     rhi::TextureFormat depthFormat() const { return m_depthFormat; }
 
-    // ---- Frame lifecycle ----
+    // ---- フレームのライフサイクル ----
 
     /**
-     * Begin a new frame. Resets per-frame allocators and acquires a command buffer.
-     * Must be called before any beginRenderPass().
+     * 新しいフレームを開始します。フレームごとのアロケータをリセットし、コマンドバッファを取得します。
+     * beginRenderPass() より前に呼び出す必要があります。
      */
     void beginFrame();
 
     /**
-     * End the current frame and submit all recorded commands to the GPU.
-     * Must be called after the last endRenderPass().
-     * @param presentTarget  If non-null, a barrier is recorded to transition
-     *                       the image from COLOR_ATTACHMENT_OPTIMAL to PRESENT_SRC_KHR.
+     * 現在のフレームを終了し、記録したすべてのコマンドを GPU へ送信します。
+     * 最後の endRenderPass() の後に呼び出す必要があります。
+     * @param presentTarget  非 null の場合、イメージを COLOR_ATTACHMENT_OPTIMAL から
+     *                       PRESENT_SRC_KHR へ遷移させるバリアを記録します。
      */
     void endFrame();
 
-    /** Current in-flight frame slot. Valid after beginFrame(). */
+    /** 現在のインフライトフレームスロット。beginFrame() の後に有効です。 */
     uint32_t currentFrameSlot() const { return m_currentFrameSlot; }
 
     /** マテリアル BindGroup キャッシュのエントリ数。リークの検出に使います。 */
     size_t materialCacheSize() const { return m_materialCache.size(); }
 
-    // ---- Pass lifecycle ----
+    // ---- パスのライフサイクル ----
 
     /**
-     * Begin a render pass targeting the given attachments.
-     * Camera data is uploaded to the internal View UBO and set=0 is bound automatically.
-     * @param colorTarget  Color attachment (required).
-     * @param depthTarget  Depth attachment (nullptr to skip depth, e.g. for post-effects).
-     * @param camera       Camera to upload to set=0 View UBO.
-     * @param clearColor   Clear color applied to the color attachment.
+     * 指定したアタッチメントを対象とするレンダーパスを開始します。
+     * カメラデータは内部の View UBO にアップロードされ、set=0 が自動的にバインドされます。
+     * @param colorTarget  カラーアタッチメント (必須)。
+     * @param depthTarget  デプスアタッチメント (ポストエフェクトなどでデプスを使わない場合は nullptr)。
+     * @param camera       set=0 の View UBO にアップロードするカメラ。
+     * @param clearColor   カラーアタッチメントに適用するクリアカラー。
      */
     void beginRenderPass(
         rhi::TextureView* colorTarget,
@@ -101,8 +101,8 @@ public:
         SortMode sortMode = SortMode::Stable);
 
     /**
-     * Begin a render pass without a camera (e.g. post-processing passes).
-     * set=0 is not automatically bound; use setPassBindGroup(0, ...) if needed.
+     * カメラ無しでレンダーパスを開始します (ポストプロセスパスなど)。
+     * set=0 は自動的にはバインドされません。必要なら setPassBindGroup(0, ...) を使ってください。
      */
     void beginRenderPass(
         rhi::TextureView* colorTarget,
@@ -110,10 +110,10 @@ public:
         const Color& clearColor = Color{0, 0, 0, 1});
 
     /**
-     * Begin a render pass with a fully specified RenderPassDesc.
-     * Camera data is uploaded to the internal View UBO and set=0 is bound automatically.
-     * @param rpDesc          RHI render pass descriptor.
-     * @param camera          Camera to upload to set=0 View UBO.
+     * 完全に指定された RenderPassDesc でレンダーパスを開始します。
+     * カメラデータは内部の View UBO にアップロードされ、set=0 が自動的にバインドされます。
+     * @param rpDesc          RHI のレンダーパス記述子。
+     * @param camera          set=0 の View UBO にアップロードするカメラ。
      * @param shaderPassName  描画時にマテリアルから優先的に選択する ShaderPass 名。
      *                        空文字列の場合 "Forward" が使用されます。
      *                        マテリアルがこの名前のパスを持たない場合、その描画はスキップされます。
@@ -123,42 +123,42 @@ public:
                          SortMode sortMode = SortMode::Stable);
 
     /**
-     * Begin a render pass with a fully specified RenderPassDesc, without a camera.
-     * set=0 is not automatically bound; use setPassBindGroup(0, ...) if needed.
-     * @param rpDesc          RHI render pass descriptor.
+     * 完全に指定された RenderPassDesc で、カメラ無しのレンダーパスを開始します。
+     * set=0 は自動的にはバインドされません。必要なら setPassBindGroup(0, ...) を使ってください。
+     * @param rpDesc          RHI のレンダーパス記述子。
      * @param shaderPassName  描画時にマテリアルから優先的に選択する ShaderPass 名 (空 = "Forward")。
      */
     void beginRenderPass(const rhi::RenderPassDesc& rpDesc,
                          const std::string& shaderPassName = {});
 
-    /** End the current render pass. */
+    /** 現在のレンダーパスを終了します。 */
     void endRenderPass();
 
     /**
-     * Begin an overlay render pass without clearing the color target (LoadOp::Load).
-     * Intended for HUD / debug overlays drawn on top of an already-rendered scene.
-     * No camera is bound; positions should be in NDC.
+     * カラーターゲットをクリアせずに (LoadOp::Load) オーバーレイ用のレンダーパスを開始します。
+     * 描画済みのシーンの上に重ねる HUD やデバッグ表示を想定しています。
+     * カメラはバインドされないため、位置は NDC で指定してください。
      */
     void beginOverlayRenderPass(rhi::TextureView* colorTarget);
 
     /**
-     * Bind a BindGroup to the given descriptor set for the current pass.
-     * Changes take effect lazily - they are flushed to the GPU after the
-     * next setPipeline call (inside drawMesh / drawScreenRect).
+     * 現在のパスに対して、指定したディスクリプタセットに BindGroup をバインドします。
+     * 変更は遅延して反映されます。次の setPipeline 呼び出し
+     * (drawMesh / drawScreenRect の内部) の後に GPU へフラッシュされます。
      *
-     * Typical use: setPassBindGroup(0, viewBindGroup) once per pass.
+     * 典型的な使い方: パスごとに一度 setPassBindGroup(0, viewBindGroup) を呼びます。
      *
-     * @param setIndex        Descriptor set index (0-3).
-     * @param bindGroup       BindGroup to bind. Pass nullptr to unbind.
-     * @param dynamicOffset   Dynamic offset for UBO bindings (0 if none).
-     * @param dynamicOffsetCount Number of dynamic offsets (0 or 1).
+     * @param setIndex        ディスクリプタセットのインデックス (0-3)。
+     * @param bindGroup       バインドする BindGroup。nullptr を渡すとバインドを解除します。
+     * @param dynamicOffset   UBO バインディングの動的オフセット (無ければ 0)。
+     * @param dynamicOffsetCount 動的オフセットの数 (0 または 1)。
      */
     void setPassBindGroup(uint32_t setIndex, rhi::BindGroup* bindGroup,
                           uint32_t dynamicOffset = 0, uint32_t dynamicOffsetCount = 0);
 
-    // ---- Statistics ----
+    // ---- 統計 ----
 
-    /** Draw call count for the current frame. Reset each beginFrame(). */
+    /** 現在のフレームのドローコール数。beginFrame() ごとにリセットされます。 */
     uint32_t drawCallCount() const { return m_drawCallCount; }
 
     /**
@@ -203,16 +203,16 @@ public:
     Result<void> drawMeshImmediate(Mesh* mesh, const Transform& transform, Material* material);
 
     /**
-     * Draw a single submesh with an explicit material and transform.
-     * Used by BatchProcessor for per-submesh drawing.
+     * 明示的なマテリアルとトランスフォームで単一のサブメッシュを描画します。
+     * BatchProcessor がサブメッシュ単位の描画に使用します。
      */
     Result<void> drawSingleSubMesh(Mesh* mesh, uint32_t submeshIndex,
                                    Material* material, const Transform& transform);
 
     /**
-     * Draw a fullscreen rectangle using the given material.
-     * Intended for post-processing passes. The quad covers NDC [-1,1]x[-1,1]
-     * with UV (0,0) at top-left and (1,1) at bottom-right.
+     * 指定したマテリアルで全画面の矩形を描画します。
+     * ポストプロセスパスを想定しています。矩形は NDC [-1,1]x[-1,1] を覆い、
+     * UV は左上が (0,0)、右下が (1,1) です。
      */
     Result<void> drawScreenRect(Material* material);
 
@@ -245,26 +245,26 @@ private:
 
     rhi::TextureFormat m_colorFormat = {};
     rhi::TextureFormat m_depthFormat = {};
-    // Reference PipelineLayout (from a builtin ShaderPass, used for dynamic UBO allocators)
+    // 参照用 PipelineLayout (組み込み ShaderPass 由来。動的 UBO アロケータに使用)
     rhi::PipelineLayout* m_referencePipelineLayout = nullptr;
     int16_t m_viewSetIndex = -1;
     int16_t m_sceneSetIndex = -1;
     int16_t m_objectSetIndex = -1;
     uint64_t m_objectUBOSize = 0;
 
-    // Per-frame view UBO allocator (camera data) - double-buffered via DynamicUniformAllocator
+    // フレームごとの View UBO アロケータ (カメラデータ) - DynamicUniformAllocator でダブルバッファリング
     std::unique_ptr<DynamicUniformAllocator> m_viewAllocator;
 
-    // Per-frame dynamic UBO allocator for scene-level data (lighting etc.)
+    // シーン単位のデータ (ライティング等) 用の、フレームごとの動的 UBO アロケータ
     std::unique_ptr<DynamicUniformAllocator> m_sceneAllocator;
 
-    // Per-frame dynamic UBO allocator for per-object data
+    // オブジェクト単位のデータ用の、フレームごとの動的 UBO アロケータ
     std::unique_ptr<DynamicUniformAllocator> m_objectAllocator;
 
-    // Fullscreen quad mesh (lazily created on first drawScreenRect call)
+    // 全画面クアッドのメッシュ (最初の drawScreenRect 呼び出し時に遅延生成)
     Ref<Mesh> m_screenRectMesh;
 
-    // Context (non-owning; provides device + pipelineCache)
+    // コンテキスト (非所有。device と pipelineCache を提供する)
     GraphicsContext* m_ctx = nullptr;
 
     uint32_t m_frameCounter = 0;
@@ -272,33 +272,33 @@ private:
     uint32_t m_framesInFlight = 2;
     uint32_t m_drawCallCount = 0;
 
-    // Per-frame command encoding state (valid between beginFrame / endFrame)
+    // フレームごとのコマンドエンコード状態 (beginFrame / endFrame の間で有効)
     rhi::CommandBuffer*     m_currentCmd  = nullptr;
     rhi::RenderPass* m_currentPass = nullptr;
     rhi::TextureView*       m_currentColorTarget = nullptr;
 
-    // Shader pass name to prefer when drawing materials in the current render pass.
-    // Materials lacking this pass will have their draws skipped.
-    // Default is "Forward".
+    // 現在のレンダーパスでマテリアルを描画する際に優先するシェーダパス名。
+    // このパスを持たないマテリアルの描画はスキップされる。
+    // 既定は "Forward"。
     std::string m_currentShaderPassName = "Forward";
 
-    // Deferred per-pass bind groups (set via setPassBindGroup, flushed after setPipeline)
+    // 遅延反映されるパス単位の BindGroup (setPassBindGroup で設定し、setPipeline の後にフラッシュ)
     static constexpr uint32_t kMaxBindGroupSets = 4;
     rhi::BindGroup* m_passBindGroups[kMaxBindGroupSets] = {};
     uint32_t             m_passBindGroupDynamicOffsets[kMaxBindGroupSets] = {};
     uint32_t             m_passBindGroupDynamicOffsetCounts[kMaxBindGroupSets] = {};
     bool            m_passBindGroupDirty[kMaxBindGroupSets] = {};
 
-    // Flush all dirty pass BindGroups to the current RenderPass.
-    // Called inside drawSubmesh after setPipeline.
+    // ダーティなパス BindGroup をすべて現在の RenderPass へフラッシュする。
+    // drawSubmesh 内で setPipeline の後に呼ばれる。
     void flushPassBindGroups();
 
     Result<void> drawSubmesh(Mesh* mesh, Material* mat, const Transform& transform, const SubMesh& sub);
     Result<Mesh*> getScreenRectMesh();
 
-    // ---- Stencil mask internal helpers ----
+    // ---- ステンシルマスクの内部ヘルパー ----
 
-    /** Draw a mesh for the purpose of stencil write only (no color output). */
+    /** ステンシル書き込みのためだけにメッシュを描画する (カラー出力なし)。 */
     Result<void> drawStencilMaskMesh(Mesh* mesh, const Transform& transform, Material* material,
                                      rhi::CompareFunction compare, uint32_t stencilRef, rhi::StencilOp passOp);
 
@@ -310,12 +310,12 @@ private:
     std::vector<StencilMaskEntry> m_stencilMaskStack;
     uint32_t m_stencilRef = 0;
 
-    // ---- Batch rendering (internal) ----
+    // ---- バッチレンダリング (内部) ----
 
     DrawCommandBuffer m_commandBuffer;
     std::unique_ptr<BatchProcessor> m_batchProcessor;
 
-    /** Set by beginRenderPass(camera, ...) based on Camera::is2D(). */
+    /** beginRenderPass(camera, ...) が Camera::is2D() に基づいて設定する。 */
     bool m_currentCamera2D = false;
 
     /** 現在のパスのビュー行列。深度ソート (SortMode::FrontToBack/BackToFront) で使用。
@@ -325,16 +325,16 @@ private:
     /** 現在のパスの二次ソート方法。beginRenderPass(camera, ...) で指定。既定は Stable。 */
     SortMode m_currentSortMode = SortMode::Stable;
 
-    /** Flush batched commands and clear the command buffer. */
+    /** 蓄積したコマンドをフラッシュし、コマンドバッファをクリアする。 */
     Result<void> flushBatch();
 
-    // ---- Per-material BindGroup cache (Renderer-owned) ----
+    // ---- マテリアル単位の BindGroup キャッシュ (Renderer が所有) ----
 
-    /** Cached GPU resources for a single Material, double-buffered per in-flight frame. */
+    /** 単一の Material に対するキャッシュ済み GPU リソース。インフライトフレームごとにダブルバッファリングする。 */
     struct CachedMaterialBind {
         // Material::bindingVersion() の追随値。ズレたらテクスチャ/サンプラーを解決し直す。
         uint64_t bindingVersion = 0;
-        // Per-binding texture tracking (binding index -> last texture pointer)
+        // バインディングごとのテクスチャ追跡 (binding index -> 最後のテクスチャポインタ)
         std::unordered_map<uint32_t, rhi::Texture*> lastTextures;
         std::unordered_map<uint32_t, Ref<rhi::TextureView>> textureViews;
         // Sampler バインディングごとのサンプラー (binding index -> Sampler)。
@@ -348,8 +348,8 @@ private:
         std::vector<uint64_t> writtenParamVersion;
     };
 
-    /** Composite key: Material's bind group depends on both the Material's parameters
-     *  and the ShaderPass's PipelineLayout / material set layout. */
+    /** 複合キー: Material の BindGroup は、Material のパラメータと
+     *  ShaderPass の PipelineLayout / マテリアルセットレイアウトの両方に依存する。 */
     struct MaterialBindKey {
         Material*   mat;
         ShaderPass* pass;
@@ -380,13 +380,13 @@ private:
      */
     std::shared_ptr<bool> m_alive = std::make_shared<bool>(true);
 
-    /** Get or create the BindGroup for (material, pass) and current frame slot. */
+    /** (material, pass) と現在のフレームスロットに対応する BindGroup を取得 (無ければ作成)。 */
     Result<rhi::BindGroup*> getOrCreateMaterialBindGroup(Material* mat, ShaderPass* pass);
 
     /** mat を参照する m_materialCache のエントリをすべて削除します。 */
     void evictMaterialCache(Material* mat);
 
-    // ---- Sampler pool (Renderer-owned) ----
+    // ---- サンプラープール (Renderer が所有) ----
     //
     // サンプラーは設定の組み合わせが少なく、マテリアル間で共有できる。
     // SamplerState をパックしたキーで引き当て、同じ設定なら GPU オブジェクトを共有する。

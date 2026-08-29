@@ -15,43 +15,42 @@ namespace ln {
 class GraphicsModule;
 class Texture;
 
-/** Descriptor for creating a GraphicsContext (swap chain + depth buffer). */
+/** GraphicsContext (スワップチェーン + 深度バッファ) を作成するための記述子。 */
 struct GraphicsContextDesc {
     //rhi::TextureFormat colorFormat = rhi::TextureFormat::BGRA8UnormSrgb;
     bool vsync = false;
 };
 
-/** Per-frame rendering targets returned by GraphicsContext::beginFrame(). */
+/** GraphicsContext::beginFrame() が返す、フレームごとの描画ターゲット。 */
 struct FramebufferInfo {
     Ref<Texture> colorTexture;
     Ref<Texture> depthTexture;
 };
 
 /**
- * Unified graphics context that encapsulates RHI device, swap chain,
- * and depth buffer management.
+ * RHI デバイス、スワップチェーン、深度バッファの管理をまとめたグラフィックスコンテキスト。
  *
- * Created by PlatformWindow and accessed via PlatformWindow::graphicsContext().
+ * PlatformWindow が作成し、PlatformWindow::graphicsContext() でアクセスします。
  *
- * Multiple creation paths are planned:
- *   - Desktop window:      createForWindow() builds device + swap chain for a window.
- *   - Browser WebGPU:      createFromCanvas() (future).
- *   - External embedding:  createExternal() (future).
+ * 複数の作成経路を予定しています:
+ *   - デスクトップウィンドウ: createForWindow() がウィンドウ用のデバイスとスワップチェーンを構築します。
+ *   - ブラウザ WebGPU:        createFromCanvas() (将来)。
+ *   - 外部への組み込み:       createExternal() (将来)。
  *
- * After creation, the rendering code is identical regardless of the creation path.
+ * 作成後は、作成経路にかかわらずレンダリングコードは同一です。
  */
 class GraphicsContext : public Object {
 public:
 
     ~GraphicsContext() override;
 
-    /** Create a graphics context for an existing window. */
+    /** 既存のウィンドウ用のグラフィックスコンテキストを作成します。 */
     static Result<Ref<GraphicsContext>> createForWindow(
         GraphicsModule* module,
         platform::PlatformWindow* window,
         const GraphicsContextDesc& desc);
 
-    /** Create a graphics context from an HTML canvas (web only). */
+    /** HTML canvas からグラフィックスコンテキストを作成します (Web のみ)。 */
     static Result<Ref<GraphicsContext>> createForCanvas(
         GraphicsModule* module,
         const std::string& canvasSelector,
@@ -59,10 +58,10 @@ public:
         uint32_t height,
         const GraphicsContextDesc& desc);
 
-    // Future creation paths
+    // 将来の作成経路
     // static Result<Ref<GraphicsContext>> createExternal(const ExternalContextDesc& desc);
 
-    /** Acquire the next back buffer and prepare frame targets.
+    /** 次のバックバッファを取得し、フレームのターゲットを準備します。
      * width/height で現在の描画先サイズを指定します。
      * 前フレームと異なる場合、SwapChain と深度バッファを自動的にリサイズします。
      */
@@ -82,7 +81,7 @@ public:
      */
     Result<void> rebuildAfterDeviceRecovery();
 
-    /** Present the current frame. */
+    /** 現在のフレームをプレゼントします。 */
     void endFrame();
 
     /**
@@ -106,58 +105,58 @@ public:
      */
     Result<void> captureBackbuffer();
 
-    /** Access the pixel data captured by the last captureBackbuffer() call. */
+    /** 最後の captureBackbuffer() 呼び出しでキャプチャしたピクセルデータにアクセスします。 */
     const std::vector<uint8_t>& captureBuffer() const { return m_captureBuffer; }
 
     void waitIdle();
 
-    /** The GraphicsModule that owns the RHI device. */
+    /** RHI デバイスを所有する GraphicsModule。 */
     GraphicsModule* module() const { return m_module; }
 
-    /** The underlying RHI device (owned by CoreInstance). */
+    /** 下層の RHI デバイス (CoreInstance が所有)。 */
     rhi::Device* device() const;
 
-    /** Pipeline cache for this context. */
+    /** このコンテキストのパイプラインキャッシュ。 */
     PipelineCache* pipelineCache() const { return m_pipelineCache.get(); }
 
-    /** Color format of the swap chain. */
+    /** スワップチェーンのカラーフォーマット。 */
     rhi::TextureFormat colorFormat() const { return m_colorFormat; }
 
-    /** Depth format managed by this context. */
+    /** このコンテキストが管理するデプスフォーマット。 */
     rhi::TextureFormat depthFormat() const { return m_depthFormat; }
 
-    /** Current framebuffer width in pixels. */
+    /** 現在のフレームバッファの幅 (ピクセル)。 */
     uint32_t width() const { return m_width; }
 
-    /** Current framebuffer height in pixels. */
+    /** 現在のフレームバッファの高さ (ピクセル)。 */
     uint32_t height() const { return m_height; }
 
-    /** Number of in-flight frames (from swap chain). */
+    /** インフライトフレーム数 (スワップチェーンから取得)。 */
     uint32_t maxFramesInFlight() const;
 
     rhi::CommandBuffer* currentCommandBuffer() const;
 
-    /** Renderer owned by this context. */
+    /** このコンテキストが所有する Renderer。 */
     Renderer* renderer() const { return m_renderer.get(); }
 
 #if !defined(__EMSCRIPTEN__)
-    /** Debug print helper owned by this context. Created lazily on first use. */
+    /** このコンテキストが所有するデバッグ表示ヘルパー。初回使用時に遅延生成されます。 */
     DebugPrint* debugPrint() { return m_debugPrint.get(); }
 #endif
 
     /**
-     * Queue a debug string for overlay rendering in the current frame.
-     * Safe to call before DebugPrint is initialized - ignored if unavailable.
+     * 現在のフレームのオーバーレイ描画用にデバッグ文字列をキューへ追加します。
+     * DebugPrint の初期化前に呼び出しても安全です - 利用できない場合は無視されます。
      */
     void debugPrintText(const char* str);
 
-    /** Initialize (or re-initialize) the DebugPrint subsystem. */
+    /** DebugPrint サブシステムを初期化 (または再初期化) します。 */
     Result<void> initDebugPrint();
 
-    /** Frame time of the last completed frame in milliseconds. */
+    /** 直前に完了したフレームのフレーム時間 (ミリ秒)。 */
     float lastFrameTimeMs() const { return m_lastFrameTimeMs; }
 
-    /** Frames per second (averaged over the last completed frame). */
+    /** 秒間フレーム数 (直前に完了したフレームから算出)。 */
     float fps() const { return m_fps; }
 
     // フレームスコープの一時状態 (BeginFrame~EndFrame 間有効)
@@ -172,7 +171,7 @@ private:
     Result<void> captureBackbufferInternal();
 
     GraphicsModule* m_module;
-    platform::PlatformWindow* m_window = nullptr; // non-owning
+    platform::PlatformWindow* m_window = nullptr; // 非所有
     Ref<rhi::SwapChain> m_swapChain;
     std::vector<FramebufferInfo> m_framebuffers; // SwapChain Image (InFlightFrame) ごとに1つ
 
@@ -180,7 +179,7 @@ private:
     Ref<DebugPrint> m_debugPrint;
 #endif
 
-    // Frame timing
+    // フレーム時間の計測
     using Clock = std::chrono::high_resolution_clock;
     Clock::time_point m_frameBeginTime = {};
     bool              m_firstFrame     = true;

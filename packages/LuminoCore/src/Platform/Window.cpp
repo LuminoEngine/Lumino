@@ -30,7 +30,7 @@ struct PlatformWindow::Impl {
 
 PlatformWindow::~PlatformWindow() {
     if (m_impl) {
-        // Graphics context must be torn down before the native window
+        // GraphicsContext はネイティブウィンドウより先に破棄しなければならない
         m_impl->graphicsContext.reset();
 #if !defined(__EMSCRIPTEN__)
         if (m_impl->window) glfwDestroyWindow(m_impl->window);
@@ -92,7 +92,7 @@ Result<Ref<PlatformWindow>> PlatformWindow::create(
     auto win = Ref<PlatformWindow>::adopt(new PlatformWindow());
     win->m_impl = new Impl();
 
-    // GLFW is already initialized by CoreInstance.
+    // GLFW は CoreInstance で初期化済み。
     glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
     glfwWindowHint(GLFW_RESIZABLE, desc.resizable ? GLFW_TRUE : GLFW_FALSE);
     win->m_impl->window = glfwCreateWindow(

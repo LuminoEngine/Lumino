@@ -23,7 +23,7 @@ VoidResult VulkanBuffer::init(VulkanDevice* device, VkPhysicalDevice physicalDev
     if (desc.usage & BufferUsage::Storage) bufInfo.usage |= VK_BUFFER_USAGE_STORAGE_BUFFER_BIT;
     if (desc.usage & BufferUsage::CopySrc) bufInfo.usage |= VK_BUFFER_USAGE_TRANSFER_SRC_BIT;
     if (desc.usage & BufferUsage::CopyDst) bufInfo.usage |= VK_BUFFER_USAGE_TRANSFER_DST_BIT;
-    // Device-local buffers need TRANSFER_DST so staging can copy into them.
+    // デバイスローカルなバッファはステージングからコピーできるよう TRANSFER_DST が必要。
     if (deviceLocal) bufInfo.usage |= VK_BUFFER_USAGE_TRANSFER_DST_BIT;
 
     bufInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
@@ -47,8 +47,8 @@ VoidResult VulkanBuffer::init(VulkanDevice* device, VkPhysicalDevice physicalDev
     }
     vkBindBufferMemory(dev, m_buffer, m_memory, 0);
 
-    // Device-local buffers: initialData is uploaded by the caller (via StagingBufferPool).
-    // Host-visible buffers: copy directly.
+    // デバイスローカルなバッファ: initialData は呼び出し側が (StagingBufferPool 経由で) アップロードする。
+    // ホスト可視なバッファ: 直接コピーする。
     if (!deviceLocal && desc.initialData) {
         void* mapped = mappedMemory();
         if (mapped) {
@@ -70,7 +70,7 @@ void VulkanBuffer::finalize() {
 }
 
 void* VulkanBuffer::mappedMemory() {
-    if (m_deviceLocal) return nullptr;  // device-local memory cannot be CPU-mapped
+    if (m_deviceLocal) return nullptr;  // デバイスローカルなメモリは CPU からマップできない
     // 永続マップ。一度マップしたらバッファの寿命が尽きるまで保持し続けるので、毎フレームの
     // vkMapMemory/vkUnmapMemory が不要になる。ホストビジブルなメモリは HOST_COHERENT で
     // 確保しているため flush も不要で、書き込みは memcpy のみで完結する。

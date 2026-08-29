@@ -2,16 +2,16 @@
 
 /**
  * @file FrameResourceManager.hpp
- * Per-frame deferred cleanup queue.
- * 
- * Usage:
- *   1. Call beginFrame(frameIndex) immediately after waiting for the frame's
- *      in-flight fence.  This executes every cleanup fn queued for that index.
- *   2. Call queueDelete(frameIndex, fn) to schedule a cleanup that must not
- *      run until the GPU has finished processing that frame.
- * 
- * Double-buffering (MAX_FRAMES = 2) means a deletion is safe to execute
- * only after the *same* frame index appears again in beginFrame().
+ * フレーム単位の遅延破棄キューです。
+ *
+ * 使い方:
+ *   1. フレームの in-flight フェンスを待った直後に beginFrame(frameIndex) を呼びます。
+ *      そのインデックスにキューされた破棄処理をすべて実行します。
+ *   2. GPU がそのフレームの処理を終えるまで実行してはならない破棄処理は
+ *      queueDelete(frameIndex, fn) でスケジュールします。
+ *
+ * ダブルバッファリング (MAX_FRAMES = 2) のため、破棄を安全に実行できるのは
+ * 同じフレームインデックスが再び beginFrame() に現れた後だけです。
  */
 
 #include <LuminoBase/Types.hpp>
@@ -36,9 +36,9 @@ public:
     static constexpr uint32_t MAX_FRAMES = 2;
 
     /**
-     * Execute all deferred deletions queued for `frameIndex`, then clear the
-     * queue.  Call this after the corresponding in-flight fence has been
-     * waited on (so the GPU is no longer using those resources).
+     * `frameIndex` にキューされた遅延破棄をすべて実行し、キューをクリアします。
+     * 対応する in-flight フェンスを待った後 (GPU がそれらのリソースを
+     * 使っていない状態) に呼び出してください。
      */
     void beginFrame(uint32_t frameIndex) {
         auto& q = m_deleteQueues[frameIndex % MAX_FRAMES];
@@ -47,16 +47,16 @@ public:
     }
 
     /**
-     * Queue `fn` to run the next time beginFrame() is called with the same
-     * frame index.  Ownership of the callable is transferred.
+     * 同じフレームインデックスで次に beginFrame() が呼ばれたときに実行されるよう
+     * `fn` をキューします。呼び出し可能オブジェクトの所有権は移動します。
      */
     void queueDelete(uint32_t frameIndex, std::function<void()> fn) {
         m_deleteQueues[frameIndex % MAX_FRAMES].push_back(std::move(fn));
     }
 
     /**
-     * Run every queued deletion immediately (used during device shutdown when
-     * the GPU is known to be idle and no more frames will be submitted).
+     * キューされた破棄処理をすべて即座に実行します (GPU がアイドルで、
+     * これ以上フレームが送信されないデバイス終了時に使います)。
      */
     void flushAll() {
         for (auto& q : m_deleteQueues) {

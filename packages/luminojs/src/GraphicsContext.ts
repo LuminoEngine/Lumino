@@ -7,8 +7,7 @@ import { Result, SIZEOF_GRAPHICS_PROFILER, type GraphicsProfiler, type Handle } 
 import type { Texture } from "./Texture";
 
 /**
- * Return value of `GraphicsContext.beginFrame()`.
- * `GraphicsContext.beginFrame()` の戳り値。
+ * `GraphicsContext.beginFrame()` の戻り値。
  */
 export interface FrameInfo {
     renderer: Renderer;
@@ -37,10 +36,10 @@ export class GraphicsContext extends LuminoObject {
      */
     onDeviceRestored?: () => void;
 
-    /** @internal Frame counter incremented at the start of each beginFrame(). */
+    /** @internal beginFrame() の先頭で加算されるフレームカウンタ。 */
     get currentFrame(): number { return this._currentFrame; }
 
-    /** @internal Resource residency tracker owned by this context. */
+    /** @internal このコンテキストが所有するリソースの常駐状態トラッカー。 */
     get residencyManager(): ResidencyManager { return this._residencyManager; }
 
     /** @internal RT / DS の復旧時再作成のための登録。Texture.createRenderTargetEx 等から呼ばれる。 */
@@ -58,7 +57,7 @@ export class GraphicsContext extends LuminoObject {
      * Web のみ対応。デスクトップビルドでは例外を投げます。
      * `width` / `height` を省略した場合は selector で見つけた canvas のサイズを使用する。
      * @param canvasSelector 描画先 canvas の CSS セレクタ (例: `"#my_canvas"`)
-     * @param options        幅・高さ (ピクセル) の上書き指定。省略時は canvas のサイズを使用。
+     * @param options        幅と高さ (ピクセル) の上書き指定。省略時は canvas のサイズを使用。
      */
     static async createFromCanvas(
         canvasSelector: string,
@@ -85,7 +84,7 @@ export class GraphicsContext extends LuminoObject {
     }
 
     /**
-     * Begin a new frame. Must be paired with `endFrame()`.
+     * 新しいフレームを開始します。`endFrame()` と対にして呼び出してください。
      *
      * Canvas の現在の width/height を自動取得し、サイズが変わっていれば
      * SwapChain と深度バッファを自動リサイズします。
@@ -96,8 +95,8 @@ export class GraphicsContext extends LuminoObject {
      * ロスト前のリソースの再アップロードが自動的に予約され、`onDeviceRestored`
      * フックが呼ばれます。
      *
-     * The returned `renderer`, `colorBuffer`, and `depthBuffer` handles are
-     * owned by the C-side GraphicsContext - do **not** call `dispose()` on them.
+     * 返される `renderer`, `colorBuffer`, `depthBuffer` の各ハンドルは
+     * C 側の GraphicsContext が所有するため、`dispose()` を呼んでは**いけません**。
      */
     beginFrame(): FrameInfo | null {
         const m = Runtime.module;
@@ -105,7 +104,7 @@ export class GraphicsContext extends LuminoObject {
         this._currentFrame++;
         this._residencyManager.gc(this._currentFrame);
 
-        // Get current canvas dimensions
+        // canvas の現在のサイズを取得する
         let width = 0;
         let height = 0;
         if (this._canvas) {
@@ -113,7 +112,7 @@ export class GraphicsContext extends LuminoObject {
             height = this._canvas.height;
         }
 
-        // We need 3 out-handles (12 bytes).
+        // out ハンドルが 3 つ必要 (12 バイト)。
         const outPtr = m._malloc(12);
         try {
             const rc = (API.LNGraphicsContext_BeginFrame as (
@@ -124,7 +123,7 @@ export class GraphicsContext extends LuminoObject {
                 outPtr, outPtr + 4, outPtr + 8);
 
             if (rc === Result.ERROR_DEVICE_LOST) {
-                // デバイスロスト検出・自動復旧待ち。BeginFrame の呼び出し自体が
+                // デバイスロストを検出し、自動復旧を待つ。BeginFrame の呼び出し自体が
                 // C++ 側の復旧ステートマシンを進めるため、アプリはフレームを
                 // スキップしてループを回し続けるだけでよい。
                 this._deviceLostPending = true;
@@ -143,7 +142,7 @@ export class GraphicsContext extends LuminoObject {
             const colorBuffer    = outView[1];
             const depthBuffer    = outView[2];
 
-            // Cache the Renderer instance across frames.
+            // Renderer インスタンスはフレームをまたいでキャッシュする。
             if (!this._renderer || this._renderer.handle !== rendererHandle) {
                 this._renderer = new Renderer();
                 this._renderer._setHandle(rendererHandle, false);
@@ -177,7 +176,7 @@ export class GraphicsContext extends LuminoObject {
         this.onDeviceRestored?.();
     }
 
-    /** Finish the current frame and present.
+    /**
      * フレームの描画を終了し、画面に表示します。
      * `beginFrame()` と対になるように呼び出してください。
      */
@@ -187,7 +186,6 @@ export class GraphicsContext extends LuminoObject {
     }
 
     /**
-     * Read the graphics profiling counters.
      * グラフィックスのプロファイリング情報 (ドローコール数 / FPS / フレーム時間) を取得します。
      *
      * **呼び出しタイミング**: `endFrame()` の後に呼び出してください。そうすると

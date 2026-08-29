@@ -109,16 +109,16 @@ TEST_F(Test_Graphics, ColorAttachmentCountOverLimitIsRejected) {
 }
 
 TEST_F(Test_Graphics, HelloTexture) {
-    // Load texture (Sprite.png)
+    // テクスチャを読み込む (Sprite.png)
     LNHandle texture = LN_NULL_HANDLE;
     ASSERT_EQ(LN_OK, LNTexture2D_LoadFromFile(graphicsContext, TEST_DATA_DIR "/Sprite.png", &texture));
 
-    // Create Unlit material with the texture
+    // テクスチャ付きの Unlit マテリアルを作成
     LNHandle material = LN_NULL_HANDLE;
     ASSERT_EQ(LN_OK, LNMaterial_CreateFromBuiltinShader(graphicsContext, LN_BUILTIN_SHADER_UNLIT, &material));
     ASSERT_EQ(LN_OK, LNMaterial_SetMainTexture(material, texture));
 
-    // Create quad mesh
+    // 四角形メッシュを作成
     LNVertex vertices[4] = {
         /* posX   posY   posZ   normX normY normZ  u    v    r    g    b    a    tanX tanY tanZ tanW */
         { -0.5f,  0.5f,  0.0f,  0,0,1,  0.0f, 0.0f,  1,1,1,1,  1,0,0,0 },
@@ -133,7 +133,7 @@ TEST_F(Test_Graphics, HelloTexture) {
     ASSERT_EQ(LN_OK, LNMesh_Create(graphicsContext, vertices, 4, indices, 6, &sub, 1, &mesh));
     ASSERT_EQ(LN_OK, LNMesh_SetMaterial(mesh, 0, material));
 
-    // Perspective camera
+    // 透視投影カメラ
     LNHandle camera = LN_NULL_HANDLE;
     ASSERT_EQ(LN_OK, LNCamera_Create(&camera));
     ASSERT_EQ(LN_OK, LNCamera_SetPerspective(camera,
@@ -158,7 +158,7 @@ TEST_F(Test_Graphics, HelloTexture) {
     ASSERT_EQ(LN_OK, LNRenderer_DrawMesh(renderer, mesh, &identity, 0));
     ASSERT_EQ(LN_OK, LNRenderer_EndRenderPass(renderer));
 
-    // Capture and compare
+    // キャプチャして比較
     const uint8_t* data = nullptr;
     int32_t w = 0, h = 0;
     endFrameAndCapture(&data, &w, &h);
@@ -166,7 +166,7 @@ TEST_F(Test_Graphics, HelloTexture) {
 
     ASSERT_TRUE(VisualTest::captureAndCompare("Test_Graphics.HelloTexture", data, w, h, TEST_DATA_DIR));
 
-    // Cleanup
+    // 解放
     LNObject_Release(camera);
     LNObject_Release(mesh);
     LNObject_Release(material);
@@ -219,24 +219,24 @@ TEST_F(Test_Graphics, SpriteOrder) {
     LNRenderer_DrawSprite(
         renderer, redMaterial, 0,
         &identity,
-        0.0f, 0.0f,         // offset (sprite position)
-        128.0f, 128.0f,     // size
-        0.5f, 0.5f,         // pivot (center)
+        0.0f, 0.0f,         // offset (スプライトの位置)
+        128.0f, 128.0f,     // サイズ
+        0.5f, 0.5f,         // pivot (中央)
         0.0f, 0.0f, 1.0f, 1.0f, // uv
-        1.0f, 1.0f, 1.0f, 1.0f); // color
+        1.0f, 1.0f, 1.0f, 1.0f); // 色
 
     LNRenderer_DrawSprite(
         renderer, greenMaterial, 0,
         &identity,
-        40.0f, 0.0f,         // offset (sprite position)
-        128.0f, 128.0f,     // size
-        0.5f, 0.5f,         // pivot (center)
+        40.0f, 0.0f,         // offset (スプライトの位置)
+        128.0f, 128.0f,     // サイズ
+        0.5f, 0.5f,         // pivot (中央)
         0.0f, 0.0f, 1.0f, 1.0f, // uv
-        1.0f, 1.0f, 1.0f, 1.0f); // color
+        1.0f, 1.0f, 1.0f, 1.0f); // 色
 
     ASSERT_EQ(LN_OK, LNRenderer_EndRenderPass(renderer));
 
-    // Capture and compare
+    // キャプチャして比較
     const uint8_t* data = nullptr;
     int32_t w = 0, h = 0;
     endFrameAndCapture(&data, &w, &h);
@@ -320,17 +320,17 @@ TEST_F(Test_Graphics, StencilMask1) {
     LNHandle spriteTex = LN_NULL_HANDLE;
     ASSERT_EQ(LN_OK, LNTexture2D_LoadFromFile(graphicsContext, TEST_DATA_DIR "/Sprite.png", &spriteTex));
 
-    // Create mask material
+    // マスク用マテリアルを作成
     LNHandle maskMat = LN_NULL_HANDLE;
     ASSERT_EQ(LN_OK, LNMaterial_CreateFromBuiltinShader(graphicsContext, LN_BUILTIN_SHADER_STENCIL_MASK, & maskMat));
     ASSERT_EQ(LN_OK, LNMaterial_SetMainTexture(maskMat, maskTex));
 
-    // Create mask quad mesh (covers left half of screen in NDC-like coords)
+    // マスク用の四角形メッシュを作成 (NDC 風の座標で画面の左半分を覆う)
     LNVertex maskVerts[4] = {
-        { -0.5f,  0.5f,  0.0f,  0,0,1,  0.0f, 0.0f,  1,1,1,1,  1,0,0,0 }, // top-left
-        {  0.5f,  0.5f,  0.0f,  0,0,1,  1.0f, 0.0f,  1,1,1,1,  1,0,0,0 }, // top-right
-        { -0.5f, -0.5f,  0.0f,  0,0,1,  0.0f, 1.0f,  1,1,1,1,  1,0,0,0 }, // bottom-left
-        {  0.5f, -0.5f,  0.0f,  0,0,1,  1.0f, 1.0f,  1,1,1,1,  1,0,0,0 }, // bottom-right
+        { -0.5f,  0.5f,  0.0f,  0,0,1,  0.0f, 0.0f,  1,1,1,1,  1,0,0,0 }, // 左上
+        {  0.5f,  0.5f,  0.0f,  0,0,1,  1.0f, 0.0f,  1,1,1,1,  1,0,0,0 }, // 右上
+        { -0.5f, -0.5f,  0.0f,  0,0,1,  0.0f, 1.0f,  1,1,1,1,  1,0,0,0 }, // 左下
+        {  0.5f, -0.5f,  0.0f,  0,0,1,  1.0f, 1.0f,  1,1,1,1,  1,0,0,0 }, // 右下
     };
     uint32_t maskIndices[6] = { 0, 2, 1, 1, 2, 3 };
     LNSubMesh maskSub = { 0, 6, 0 };
@@ -338,16 +338,16 @@ TEST_F(Test_Graphics, StencilMask1) {
     ASSERT_EQ(LN_OK, LNMesh_Create(graphicsContext, maskVerts, 4, maskIndices, 6, &maskSub, 1, &maskMesh));
     ASSERT_EQ(LN_OK, LNMesh_SetMaterial(maskMesh, 0, maskMat));
 
-    // Create a fullscreen green quad to be masked
+    // マスクされる側の全画面の緑の四角形を作成
     LNHandle greenMat = LN_NULL_HANDLE;
     ASSERT_EQ(LN_OK, LNMaterial_CreateFromBuiltinShader(graphicsContext, LN_BUILTIN_SHADER_UNLIT, &greenMat));
     ASSERT_EQ(LN_OK, LNMaterial_SetMainTexture(greenMat, spriteTex));
 
     LNVertex quadVerts[4] = {
-        { -0.8f,  0.8f,  0.0f,  0,0,1,  0.0f, 0.0f,  1,1,1,1,  1,0,0,0 }, // top-left
-        {  0.8f,  0.8f,  0.0f,  0,0,1,  1.0f, 0.0f,  1,1,1,1,  1,0,0,0 }, // top-right
-        { -0.8f, -0.8f,  0.0f,  0,0,1,  0.0f, 1.0f,  1,1,1,1,  1,0,0,0 }, // bottom-left
-        {  0.8f, -0.8f,  0.0f,  0,0,1,  1.0f, 1.0f,  1,1,1,1,  1,0,0,0 }, // bottom-right
+        { -0.8f,  0.8f,  0.0f,  0,0,1,  0.0f, 0.0f,  1,1,1,1,  1,0,0,0 }, // 左上
+        {  0.8f,  0.8f,  0.0f,  0,0,1,  1.0f, 0.0f,  1,1,1,1,  1,0,0,0 }, // 右上
+        { -0.8f, -0.8f,  0.0f,  0,0,1,  0.0f, 1.0f,  1,1,1,1,  1,0,0,0 }, // 左下
+        {  0.8f, -0.8f,  0.0f,  0,0,1,  1.0f, 1.0f,  1,1,1,1,  1,0,0,0 }, // 右下
     };
     uint32_t quadIndices[6] = { 0, 2, 1, 1, 2, 3 };
     LNSubMesh quadSub = { 0, 6, 0 };
@@ -355,7 +355,7 @@ TEST_F(Test_Graphics, StencilMask1) {
     ASSERT_EQ(LN_OK, LNMesh_Create(graphicsContext, quadVerts, 4, quadIndices, 6, &quadSub, 1, &quadMesh));
     ASSERT_EQ(LN_OK, LNMesh_SetMaterial(quadMesh, 0, greenMat));
 
-    // Camera
+    // カメラ
     LNHandle camera = LN_NULL_HANDLE;
     ASSERT_EQ(LN_OK, LNCamera_Create(&camera));
     ASSERT_EQ(LN_OK, LNCamera_SetPerspective(camera,
@@ -377,33 +377,33 @@ TEST_F(Test_Graphics, StencilMask1) {
     // Push mask - 左半分のみ描画を許可する (テクスチャが塗られている部分)
     ASSERT_EQ(LN_OK, LNRenderer_PushStencilMask(renderer, maskMesh, &identity, maskMat));
 
-    // Draw green quad - should only be visible in masked area
+    // 緑の四角形を描画 - マスク領域内にのみ表示されるはず
     ASSERT_EQ(LN_OK, LNRenderer_DrawMesh(renderer, quadMesh, &identity, 0));
 
-    // Pop mask
+    // マスクを解除
     ASSERT_EQ(LN_OK, LNRenderer_PopStencilMask(renderer));
 
     ASSERT_EQ(LN_OK, LNRenderer_EndRenderPass(renderer));
 
-    // Capture and compare
+    // キャプチャして比較
     const uint8_t* data = nullptr;
     int32_t w = 0, h = 0;
     endFrameAndCapture(&data, &w, &h);
     ASSERT_NE(nullptr, data);
 
-    // Verify the center-right area is background color (blue), not green.
-    // The mask covers x in [-0.5, 0.0] in world coords, so roughly the left-center area.
-    // Just verify the test runs without crashing. Detailed visual comparison requires reference images.
+    // 中央右の領域が緑ではなく背景色 (青) であることを確認する。
+    // マスクはワールド座標で x が [-0.5, 0.0] の範囲を覆うので、おおよそ左中央の領域になる。
+    // ここではクラッシュせずに実行できることだけを確認する。詳細な見た目の比較には参照画像が必要。
     EXPECT_EQ(TEST_W, w);
     EXPECT_EQ(TEST_H, h);
 
-    // Cleanup
+    // 解放
     LNObject_Release(camera);
     LNObject_Release(quadMesh);
     LNObject_Release(greenMat);
     LNObject_Release(maskMesh);
     LNObject_Release(maskMat);
-    LNObject_Release(maskTex); // discard the empty one
+    LNObject_Release(maskTex); // 空のテクスチャを破棄
     LNObject_Release(spriteTex);
 }
 
@@ -439,7 +439,7 @@ TEST_F(Test_Graphics, TwoSprites) {
     rpDesc.colorAttachments[0].clearColor[3] = 1.0f;
     ASSERT_EQ(LN_OK, LNRenderer_BeginRenderPass(renderer, graphicsContext, &rpDesc, camera));
 
-    // Left
+    // 左
     LNMatrix xfLeft = translationMatrix(-80.0f, 0.0f, 0.0f);
     ASSERT_EQ(LN_OK, LNRenderer_DrawSprite(
         renderer, mat1, 0,
@@ -450,7 +450,7 @@ TEST_F(Test_Graphics, TwoSprites) {
         0.0f, 0.0f, 1.0f, 1.0f,
         1.0f, 1.0f, 1.0f, 1.0f));
 
-    // Right
+    // 右
     LNMatrix xfRight = translationMatrix(80.0f, 0.0f, 0.0f);
     ASSERT_EQ(LN_OK, LNRenderer_DrawSprite(
         renderer, mat2, 0,
@@ -481,7 +481,7 @@ TEST_F(Test_Graphics, MaterialDepthTestEnabled) {
     uint32_t indices[6] = { 0, 2, 1, 1, 2, 3 };
     LNSubMesh sub = { 0, 6, 0 };
 
-    // 深度テスト有効の赤・手前の四角
+    // 深度テスト有効の赤い四角 (手前)
     LNHandle nearMat = LN_NULL_HANDLE;
     LNHandle nearMesh = LN_NULL_HANDLE;
     {
@@ -497,7 +497,7 @@ TEST_F(Test_Graphics, MaterialDepthTestEnabled) {
         ASSERT_EQ(LN_OK, LNMesh_SetMaterial(nearMesh, 0, nearMat));
     }
     
-    // 深度テスト無効の緑・奥の四角。手前の赤い四角が緑を覆い隠すはず。
+    // 深度テスト無効の緑の四角 (奥)。手前の赤い四角が緑を覆い隠すはず。
     LNHandle farMat = LN_NULL_HANDLE;
     LNHandle farMesh = LN_NULL_HANDLE;
     {
@@ -565,7 +565,7 @@ TEST_F(Test_Graphics, MaterialDepthWriteEnabled) {
     uint32_t indices[6] = { 0, 2, 1, 1, 2, 3 };
     LNSubMesh sub = { 0, 6, 0 };
 
-    // NearMesh (Red)
+    // NearMesh (赤)
     LNHandle nearMat = LN_NULL_HANDLE;
     LNHandle nearMesh = LN_NULL_HANDLE;
     {
@@ -583,7 +583,7 @@ TEST_F(Test_Graphics, MaterialDepthWriteEnabled) {
         ASSERT_EQ(LN_OK, LNMesh_SetMaterial(nearMesh, 0, nearMat));
     }
 
-    // FarMesh (Green). 
+    // FarMesh (緑)。
     LNHandle farMat = LN_NULL_HANDLE;
     LNHandle farMesh = LN_NULL_HANDLE;
     {
@@ -754,7 +754,7 @@ TEST_F(Test_Graphics, SpritesAcrossRenderPasses) {
 
 // コンパイル済みシェーダ (.lcsh) からマテリアルを作成し、赤い三角形を描画するテスト。
 TEST_F(Test_Graphics, CustomShaderMaterial) {
-    // Load compiled shader from file
+    // コンパイル済みシェーダをファイルから読み込む
     const char* shaderPath = TEST_DATA_DIR "/Data/Unlit.lcsh";
     FILE* fp = fopen(shaderPath, "rb");
     ASSERT_NE(nullptr, fp) << "Failed to open: " << shaderPath;
@@ -766,18 +766,18 @@ TEST_F(Test_Graphics, CustomShaderMaterial) {
     fclose(fp);
     ASSERT_GT(shaderData.size(), 0u);
 
-    // Create material from compiled shader
+    // コンパイル済みシェーダからマテリアルを作成
     LNHandle material = LN_NULL_HANDLE;
     ASSERT_EQ(LN_OK, LNMaterial_CreateFromCompiledShader(
         graphicsContext, shaderData.data(), (uint32_t)shaderData.size(), &material));
-    ASSERT_EQ(LN_OK, LNMaterial_SetColor(material, 1.0f, 0.0f, 0.0f, 1.0f)); // Red
+    ASSERT_EQ(LN_OK, LNMaterial_SetColor(material, 1.0f, 0.0f, 0.0f, 1.0f)); // 赤
 
-    // Triangle mesh
+    // 三角形メッシュ
     LNVertex vertices[3] = {
         /* posX   posY   posZ   normX normY normZ  u    v    r    g    b    a    tanX tanY tanZ tanW */
-        {  0.0f,  0.5f,  0.0f,  0,0,1,  0.5f, 0.0f,  1,1,1,1,  1,0,0,0 }, // top
-        { -0.5f, -0.5f,  0.0f,  0,0,1,  0.0f, 1.0f,  1,1,1,1,  1,0,0,0 }, // bottom-left
-        {  0.5f, -0.5f,  0.0f,  0,0,1,  1.0f, 1.0f,  1,1,1,1,  1,0,0,0 }, // bottom-right
+        {  0.0f,  0.5f,  0.0f,  0,0,1,  0.5f, 0.0f,  1,1,1,1,  1,0,0,0 }, // 上
+        { -0.5f, -0.5f,  0.0f,  0,0,1,  0.0f, 1.0f,  1,1,1,1,  1,0,0,0 }, // 左下
+        {  0.5f, -0.5f,  0.0f,  0,0,1,  1.0f, 1.0f,  1,1,1,1,  1,0,0,0 }, // 右下
     };
     uint32_t indices[3] = { 0, 1, 2 };
     LNSubMesh sub = { 0, 3, 0 };
@@ -786,7 +786,7 @@ TEST_F(Test_Graphics, CustomShaderMaterial) {
     ASSERT_EQ(LN_OK, LNMesh_Create(graphicsContext, vertices, 3, indices, 3, &sub, 1, &mesh));
     ASSERT_EQ(LN_OK, LNMesh_SetMaterial(mesh, 0, material));
 
-    // Camera
+    // カメラ
     LNHandle camera = LN_NULL_HANDLE;
     ASSERT_EQ(LN_OK, LNCamera_Create(&camera));
     ASSERT_EQ(LN_OK, LNCamera_SetPerspective(camera,
@@ -803,7 +803,7 @@ TEST_F(Test_Graphics, CustomShaderMaterial) {
     ASSERT_EQ(LN_OK, LNRenderer_DrawMesh(renderer, mesh, &identity, 0));
     ASSERT_EQ(LN_OK, LNRenderer_EndRenderPass(renderer));
 
-    // Capture and verify
+    // キャプチャして確認
     const uint8_t* data = nullptr;
     int32_t w = 0, h = 0;
     endFrameAndCapture(&data, &w, &h);
@@ -811,7 +811,7 @@ TEST_F(Test_Graphics, CustomShaderMaterial) {
     EXPECT_EQ(TEST_W, w);
     EXPECT_EQ(TEST_H, h);
 
-    // Cleanup
+    // 解放
     LNObject_Release(camera);
     LNObject_Release(mesh);
     LNObject_Release(material);
@@ -819,9 +819,9 @@ TEST_F(Test_Graphics, CustomShaderMaterial) {
 
 // [A案] カラーアタッチメントの LoadOp::Load 単体の検証。
 //
-// 色の Load 経路だけを切り分けて検証するため、デプス・ステンシルは
+// 色の Load 経路だけを切り分けて検証するため、デプスステンシルは
 // 既定の CLEAR のままにし、カラーのみ LoadOp::Load を指定します。
-// (デプス・ステンシルの Load は別バグがあるため、ここでは触らない)
+// (デプスステンシルの Load は別バグがあるため、ここでは触らない)
 //
 // 同一フレーム内で 2 つの RenderPass を実行します。
 //   Pass 1: 画面全体を青 (0,0,1) でクリア (LoadOp = Clear)
@@ -849,7 +849,7 @@ TEST_F(Test_Graphics, LoadOpLoadColor) {
     }
 
     // --- Pass 2: カラーのみ LoadOp = Load で開始 (何も描画しない) ---
-    // デプス・ステンシルは LNRenderPassDesc_Init 既定の CLEAR のままにする。
+    // デプスステンシルは LNRenderPassDesc_Init 既定の CLEAR のままにする。
     {
         LNRenderPassDesc rpDesc;
         LNRenderPassDesc_Init(&rpDesc);
@@ -901,7 +901,7 @@ TEST_F(Test_Graphics, LoadOpLoadColor) {
 // かつ Pass 1 の青が保持されることを検証する。
 //
 //   Pass 1: 画面全体を青 (0,0,1) でクリア (全アタッチメント Clear)
-//   Pass 2: カラー・デプス・ステンシルすべて Load で開始し、何も描画しない
+//   Pass 2: カラーとデプスステンシルのすべてを Load で開始し、何も描画しない
 TEST_F(Test_Graphics, LoadOpLoadDepthStencil) {
     LNHandle renderer, colorBuffer, depthBuffer;
     ASSERT_EQ(LN_OK, LNGraphicsContext_BeginFrame(graphicsContext, TEST_W, TEST_H, &renderer, &colorBuffer, &depthBuffer));
@@ -919,7 +919,7 @@ TEST_F(Test_Graphics, LoadOpLoadDepthStencil) {
         ASSERT_EQ(LN_OK, LNRenderer_EndRenderPass(renderer));
     }
 
-    // --- Pass 2: カラー・デプス・ステンシルすべて Load で開始 (何も描画しない) ---
+    // --- Pass 2: カラーとデプスステンシルのすべてを Load で開始 (何も描画しない) ---
     {
         LNRenderPassDesc rpDesc;
         LNRenderPassDesc_Init(&rpDesc);

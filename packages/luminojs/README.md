@@ -87,7 +87,7 @@ bloom.setNamedSamplerState("u_noiseTexture", TextureFilterMode.Nearest, TextureA
 
 ### プロファイリング
 
-`GraphicsContext.getProfiler()` で、ドローコール数・FPS・フレーム時間・シェーダパス数を
+`GraphicsContext.getProfiler()` で、ドローコール数、FPS、フレーム時間、シェーダパス数を
 取得できます (C-API の `LNGraphicsProfiler` に対応)。
 
 ```ts

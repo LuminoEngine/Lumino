@@ -10,15 +10,15 @@ class WebGPUTextureView final : public TextureView {
 public:
     WebGPUTextureView();
 
-    /** Create a view for a device-created texture. */
+    /** デバイスが作成したテクスチャに対するビューを作成する。 */
     VoidResult init(WebGPUDevice* device, WGPUTexture texture, WGPUTextureFormat format,
                     WGPUTextureAspect aspect, uint32_t width, uint32_t height);
 
-    /** Wrap an externally-owned WGPUTextureView (swap chain back-buffer). */
+    /** 外部が所有する WGPUTextureView (スワップチェーンのバックバッファ) をラップする。 */
     void initFromExternal(WGPUTextureView view, WGPUTextureFormat format, uint32_t width, uint32_t height);
 
     /**
-     * Replace the wrapped view (called each frame for swap chain textures).
+     * ラップしているビューを差し替える (スワップチェーンのテクスチャでは毎フレーム呼ばれる)。
      * sourceTexture は readbackTexture でのテクスチャ→バッファコピー元として使う
      * (非所有。SwapChain 等が所有権を持つ)。不要なら nullptr。
      */
