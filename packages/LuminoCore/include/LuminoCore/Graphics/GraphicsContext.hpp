@@ -119,7 +119,7 @@ public:
     /** このコンテキストのパイプラインキャッシュ。 */
     PipelineCache* pipelineCache() const { return m_pipelineCache.get(); }
 
-    /** スワップチェーンのカラーフォーマット。 */
+    /** スワップチェーンのカラーフォーマット。バックバッファと互換にしたいレンダーターゲットはこれで作る。 */
     rhi::TextureFormat colorFormat() const { return m_colorFormat; }
 
     /** このコンテキストが管理するデプスフォーマット。 */
@@ -188,7 +188,7 @@ private:
     bool                 m_captureRequested = false; // 今フレームのキャプチャ要求
     bool                 m_captureValid     = false; // m_captureBuffer に有効な内容があるか
     std::vector<uint8_t> m_captureBuffer;
-    rhi::TextureFormat m_colorFormat = rhi::TextureFormat::BGRA8Unorm;
+    rhi::TextureFormat m_colorFormat = rhi::TextureFormat::Undefined; // SwapChain 作成時に確定する
     rhi::TextureFormat m_depthFormat = rhi::TextureFormat::Depth24Stencil8;
     uint32_t m_width = 0;
     uint32_t m_height = 0;

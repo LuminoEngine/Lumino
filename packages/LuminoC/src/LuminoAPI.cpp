@@ -1754,7 +1754,7 @@ LNResult LNTexture2D_CreateRenderTarget(
     auto* ctx = resolveObject<ln::GraphicsContext>(graphicsContext);
     if (!ctx) return LN_ERROR_INVALID_HANDLE;
 
-    auto rtResult = ln::Texture::createRenderTarget(ctx->device(), width, height);
+    auto rtResult = ln::Texture::createRenderTarget(ctx->device(), width, height, ctx->colorFormat());
     if (!rtResult) return LN_ERROR_UNKNOWN;
 
     *outHandle = wrapObjectFromCreate(rtResult->get());

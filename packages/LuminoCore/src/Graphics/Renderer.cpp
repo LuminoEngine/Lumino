@@ -493,7 +493,7 @@ Result<void> Renderer::drawSubmesh(
         key.stencilWriteMask = 0x00;
     }
     key.topology            = mesh->topology();
-    key.renderPass          = m_currentPass;
+    key.renderPassLayout    = m_currentPass->layoutDesc();
 
     auto pipelineResult = pipelineCache->getOrCreate(key);
     if (!pipelineResult) return LN_FORWARD_ERROR(pipelineResult);
@@ -608,7 +608,7 @@ Result<void> Renderer::drawStencilMaskMesh(
         key.stencilReadMask  = 0xFF;
         key.stencilWriteMask = 0xFF;
         key.topology         = mesh->topology();
-        key.renderPass       = m_currentPass;
+        key.renderPassLayout = m_currentPass->layoutDesc();
 
         auto pipelineResult = pipelineCache->getOrCreate(key);
         if (!pipelineResult) return LN_FORWARD_ERROR(pipelineResult);

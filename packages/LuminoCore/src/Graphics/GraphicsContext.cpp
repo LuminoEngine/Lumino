@@ -71,6 +71,7 @@ Result<Ref<GraphicsContext>> GraphicsContext::createForWindow(
     auto swapChainResult = dev->createSwapChain(scDesc);
     if (!swapChainResult) return LN_FORWARD_ERROR(swapChainResult);
     ctx->m_swapChain = std::move(*swapChainResult);
+    ctx->m_colorFormat = ctx->m_swapChain->format();
 
     // InFlightFrame ごとにフレームバッファを1つずつ作成して管理する。
     // バックバッファは毎フレーム更新されるため、ここではダミーのテクスチャを作成しておく。
@@ -194,9 +195,13 @@ Result<void> GraphicsContext::captureBackbufferInternal() {
 
     m_captureBuffer = std::move(*result);
 
-    // BGRA -> RGBA のスウィズル (スワップチェーンのフォーマットは BGRA8Unorm)
-    for (size_t i = 0; i + 3 < m_captureBuffer.size(); i += 4) {
-        std::swap(m_captureBuffer[i], m_captureBuffer[i + 2]);
+    // キャプチャ結果は RGBA 順で返す。バックバッファが BGRA8 のときだけスウィズルする
+    // (スワップチェーンのフォーマットは環境依存で、WebGL2 や一部ブラウザでは RGBA8 になる)。
+    if (m_colorFormat == rhi::TextureFormat::BGRA8Unorm ||
+        m_colorFormat == rhi::TextureFormat::BGRA8UnormSrgb) {
+        for (size_t i = 0; i + 3 < m_captureBuffer.size(); i += 4) {
+            std::swap(m_captureBuffer[i], m_captureBuffer[i + 2]);
+        }
     }
 
     m_captureValid = true;
@@ -283,6 +288,7 @@ Result<Ref<GraphicsContext>> GraphicsContext::createForCanvas(
     auto swapChainResult = dev->createSwapChain(scDesc);
     if (!swapChainResult) return LN_FORWARD_ERROR(swapChainResult);
     ctx->m_swapChain = std::move(*swapChainResult);
+    ctx->m_colorFormat = ctx->m_swapChain->format();
 
     // InFlightFrame ごとのフレームバッファ
     const uint32_t inFlights = ctx->m_swapChain->maxFramesInFlight();
@@ -357,6 +363,7 @@ Result<void> GraphicsContext::rebuildAfterDeviceRecovery() {
     auto swapChainResult = dev->createSwapChain(scDesc);
     if (!swapChainResult) return LN_FORWARD_ERROR(swapChainResult);
     m_swapChain = std::move(*swapChainResult);
+    m_colorFormat = m_swapChain->format();
 
     // InFlightFrame ごとのフレームバッファを作り直す。深度バッファの内容は失われる。
     const uint32_t inFlights = m_swapChain->maxFramesInFlight();

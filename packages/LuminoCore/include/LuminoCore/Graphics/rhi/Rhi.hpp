@@ -326,6 +326,12 @@ struct RenderPassLayoutDesc {
     SmallVector<TextureFormat, kMaxMultiRenderTargets> colorFormats;
     TextureFormat depthStencilFormat = TextureFormat::Undefined;
     uint32_t sampleCount = 1;
+
+    bool operator==(const RenderPassLayoutDesc& o) const {
+        return sampleCount == o.sampleCount
+            && depthStencilFormat == o.depthStencilFormat
+            && colorFormats == o.colorFormats;
+    }
 };
 
 struct RenderPipelineDesc {
@@ -338,7 +344,13 @@ struct RenderPipelineDesc {
     PrimitiveTopology topology = PrimitiveTopology::TriangleList;
     CullMode cullMode = CullMode::None;
     FrontFace frontFace = FrontFace::CCW;
-    RenderPass* renderPass = nullptr;
+    /**
+     * 描画先アタッチメントのレイアウト (フォーマットとサンプル数)。RenderPass::layoutDesc() で取得できる。
+     * RenderPass オブジェクトではなく値で受け取る。パイプラインの互換性に必要なのはレイアウトだけで、
+     * オブジェクト参照にすると PipelineCache がポインタをキーにするために、バックエンドが
+     * フレームをまたいで同一の RenderPass インスタンスを返し続ける必要が生じるため。
+     */
+    RenderPassLayoutDesc renderPassLayout;
     std::vector<BlendState> blendStates;
     DepthStencilState depthStencil;
 
@@ -505,6 +517,12 @@ public:
     virtual uint32_t width() const = 0;
     virtual uint32_t height() const = 0;
 
+    /**
+     * バックバッファのフォーマット。プラットフォームやブラウザによって BGRA8 / RGBA8 の
+     * どちらにもなりうるため、上位層はこれを参照し、決め打ちしないこと。
+     */
+    virtual TextureFormat format() const = 0;
+
     /** サーフェスを新しいサイズで再設定します。サイズが同一の場合は何もしません。 */
     virtual VoidResult resize(uint32_t width, uint32_t height) = 0;
 
@@ -567,13 +585,31 @@ public:
     virtual Result<Ref<PipelineLayout>> createPipelineLayout(const PipelineLayoutDesc& desc) = 0;
     virtual Result<Ref<RenderPipeline>> createRenderPipeline(const RenderPipelineDesc& desc) = 0;
 
-    /** バッファへデータを書き込む。map/unmap をサポートしないものを含む全バックエンドで動作する。 */
+    /**
+     * バッファへデータを書き込む。map/unmap をサポートしないものを含む全バックエンドで動作する。
+     *
+     * 順序の契約:
+     *   - 現在フレームの CommandBuffer::submit() より前に呼べば、それ以前にエンコード済みの
+     *     コマンドからも書き込んだ内容が見える (Vulkan: 常時マップしたメモリへの memcpy、
+     *     WebGPU: queue.writeBuffer は後続の submit より前に実行される)。
+     *     上位層はこれに依存している (DynamicUniformAllocator は全 draw のエンコード後、
+     *     submit 直前にページ単位でフラッシュする)。
+     *   - 即時実行の API (WebGL2 等) を使うバックエンドは、コマンドを記録して submit() 時に
+     *     再生することでこの契約を満たすこと。draw を即時に発行してはならない。
+     *   - 裏返すと、同一フレーム内で同じ領域に複数回書くと、そのフレームの全コマンドが
+     *     最後の内容を読む。draw ごとに異なる内容が必要な場合は領域を分ける
+     *     (DynamicUniformAllocator や BatchProcessor のメッシュプールがこの方式)。
+     */
     virtual VoidResult writeBuffer(Buffer* dst, uint64_t dstOffset, const void* data, uint64_t size) = 0;
 
     /**
      * テクスチャビューの内容をCPU側のピクセルバッファに読み戻します。
      * この関数は主にテストで使用するもので、実行速度は速くありません。
      * 通常のゲームループで使用することは想定されていません。
+     *
+     * 返すバイト列はビューのフォーマットのまま (BGRA8 なら BGRA 順) で、行は上から下
+     * (先頭が最上段) に並びます。glReadPixels のように下から上で読む API を使うバックエンドは
+     * 反転してから返すこと。
      */
     virtual Result<std::vector<uint8_t>> readbackTexture(TextureView* view) = 0;
 

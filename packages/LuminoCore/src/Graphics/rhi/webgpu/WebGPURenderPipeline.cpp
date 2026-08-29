@@ -16,9 +16,6 @@ VoidResult WebGPURenderPipeline::init(WebGPUDevice* device, const RenderPipeline
     if (!desc.vertexShader || !desc.fragmentShader) {
         return LN_MAKE_ERROR("RenderPipelineDesc requires vertex and fragment shaders.");
     }
-    if (!desc.renderPass) {
-        return LN_MAKE_ERROR("RenderPipelineDesc requires a renderPass for format info.");
-    }
 
     // ラベルは WebGPU のエラーメッセージ (`[Invalid RenderPipeline "..."]`) に現れるため、
     // どのシェーダのどのパスなのかが分かる名前を入れる。
@@ -72,7 +69,7 @@ VoidResult WebGPURenderPipeline::init(WebGPUDevice* device, const RenderPipeline
     pipelineDesc.primitive.unclippedDepth = false;
 
     // ---- Fragment state ----
-    const auto& renderPassLayout = desc.renderPass->layoutDesc();
+    const auto& renderPassLayout = desc.renderPassLayout;
 
     std::vector<WGPUBlendState> blendStates(renderPassLayout.colorFormats.size());
     std::vector<WGPUColorTargetState> colorTargets(renderPassLayout.colorFormats.size());

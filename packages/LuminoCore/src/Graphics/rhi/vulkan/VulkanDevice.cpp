@@ -448,8 +448,17 @@ Result<Ref<PipelineLayout>> VulkanDevice::createPipelineLayout(const PipelineLay
 }
 
 Result<Ref<RenderPipeline>> VulkanDevice::createRenderPipeline(const RenderPipelineDesc& desc) {
-    auto* vulkanRP = static_cast<vulkan::VulkanRenderPass*>(desc.renderPass);
-    VkRenderPass renderPass = vulkanRP->handle();
+    // パイプラインの互換性はアタッチメントのフォーマットとサンプル数だけで決まる
+    // (load op や初期レイアウトは影響しない) ため、レイアウトから互換なレンダーパスを引く。
+    RenderPassKey rpKey;
+    for (auto fmt : desc.renderPassLayout.colorFormats) {
+        RenderPassKey::ColorAttachment attachment = {};
+        attachment.format = VulkanHelpers::toVkFormat(fmt);
+        attachment.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
+        rpKey.colorAttachments.push_back(attachment);
+    }
+    rpKey.depthFormat = VulkanHelpers::toVkFormat(desc.renderPassLayout.depthStencilFormat);
+    VkRenderPass renderPass = getOrCreateRenderPass(rpKey);
 
     auto rp = Ref<VulkanRenderPipeline>::adopt(new VulkanRenderPipeline());
     if (!rp->init(this, renderPass, desc)) {

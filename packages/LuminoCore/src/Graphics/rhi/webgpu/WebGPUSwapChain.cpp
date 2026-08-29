@@ -219,6 +219,10 @@ CommandBuffer* WebGPUSwapChain::getCurrentCommandBuffer() {
     return m_commandBuffers[m_currentFrame].get();
 }
 
+TextureFormat WebGPUSwapChain::format() const {
+    return fromWGPUTextureFormat(m_surfaceFormat);
+}
+
 VoidResult WebGPUSwapChain::resize(uint32_t width, uint32_t height) {
     if (width == m_width && height == m_height) {
         return LN_MAKE_SUCCESS();

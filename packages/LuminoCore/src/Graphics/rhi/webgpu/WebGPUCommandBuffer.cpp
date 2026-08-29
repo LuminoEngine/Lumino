@@ -163,23 +163,12 @@ RenderPass* WebGPUCommandBuffer::beginRenderPass(const RenderPassDesc& desc) {
         return nullptr;
     }
 
-    // このアタッチメントレイアウトに対応する WebGPURenderPass ラッパーを検索する (なければ確保する)。
-    // フレームをまたいで同じラッパーインスタンスを再利用することで、PipelineCacheKey の一部である
-    // rhi::RenderPass* ポインタが安定し、上位の PipelineCache がドローごとに再コンパイルせず
-    // キャッシュにヒットする。
-    WebGPURenderPassLayoutKey key;
-    key.colorFormats = layoutDesc.colorFormats;
-    key.depthStencilFormat = layoutDesc.depthStencilFormat;
-    key.sampleCount = layoutDesc.sampleCount;
-
-    auto it = m_renderPassCache.find(key);
-    if (it == m_renderPassCache.end()) {
-        auto rp = Ref<WebGPURenderPass>::adopt(new WebGPURenderPass());
-        it = m_renderPassCache.emplace(std::move(key), std::move(rp)).first;
+    // ラッパーは 1 つを使い回し、パスごとに一時的なエンコーダを結び直す
+    // (パイプラインはレイアウトを値で受け取るため、RenderPass の同一性を保つ必要はない)。
+    if (!m_currentRenderPass) {
+        m_currentRenderPass = Ref<WebGPURenderPass>::adopt(new WebGPURenderPass());
     }
-    // 毎フレーム、一時的なエンコーダをキャッシュ済みのラッパーへ結び直す。
-    it->second->init(rpEncoder, layoutDesc);
-    m_currentRenderPass = it->second;
+    m_currentRenderPass->init(rpEncoder, layoutDesc);
     return m_currentRenderPass.get();
 }
 
@@ -195,12 +184,10 @@ void WebGPUCommandBuffer::submit() {
 
     wgpuCommandEncoderRelease(m_encoder);
     m_encoder = nullptr;
-    m_currentRenderPass = nullptr;
 }
 
 void WebGPUCommandBuffer::finalize() {
     m_currentRenderPass = nullptr;
-    m_renderPassCache.clear();
     if (m_encoder) {
         wgpuCommandEncoderRelease(m_encoder);
         m_encoder = nullptr;

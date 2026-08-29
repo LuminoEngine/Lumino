@@ -48,26 +48,6 @@ Result<Ref<Texture>> Texture::createDepthStencil(
     return tex;
 }
 
-Result<Ref<Texture>> Texture::createRenderTarget(rhi::Device* device, uint32_t width, uint32_t height) {
-    // カラーテクスチャ (BGRA8Unorm - パイプラインの互換性のためスワップチェーンと一致させる)
-    rhi::TextureDesc colorDesc;
-    colorDesc.width = width;
-    colorDesc.height = height;
-    colorDesc.format = rhi::TextureFormat::BGRA8Unorm;
-    colorDesc.usage = rhi::TextureUsage::Sampled | rhi::TextureUsage::RenderTarget;
-    auto colorResult = device->createTexture(colorDesc);
-    if (!colorResult) return LN_FORWARD_ERROR(colorResult);
-
-    auto colorViewResult = device->createTextureView(colorResult->get());
-    if (!colorViewResult) return LN_FORWARD_ERROR(colorViewResult);
-
-    auto tex = Ref<Texture>::adopt(new Texture(width, height, rhi::TextureFormat::BGRA8Unorm));
-    tex->m_isRenderTarget = true;
-    tex->m_rhiTexture = std::move(*colorResult);
-    tex->m_rhiTextureView = std::move(*colorViewResult);
-    return tex;
-}
-
 Result<Ref<Texture>> Texture::createRenderTarget(
     rhi::Device* device, uint32_t width, uint32_t height, rhi::TextureFormat format) {
     rhi::TextureDesc colorDesc;

@@ -359,7 +359,8 @@ extern LUMINO_API LNResult LNTexture2D_Create(
 
 /**
  * レンダーターゲットテクスチャ (カラーのみ) を作成します。
- * BGRA8Unorm カラーテクスチャを生成します。
+ * フォーマットはバックバッファ (スワップチェーン) と同じになります。環境によって BGRA8 / RGBA8 の
+ * どちらにもなるため、特定のフォーマットが必要な場合は LNTexture2D_CreateRenderTargetEx を使ってください。
  * 深度バッファは LNTexture2D_CreateDepthStencil で別途作成し、
  * LNDepthStencilAttachmentDesc の depthBuffer に設定してください。
  * 作成されたテクスチャは LNRenderPassDesc の renderTarget に指定して描画先として使用でき、

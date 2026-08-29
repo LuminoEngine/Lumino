@@ -1,42 +1,10 @@
 ﻿#pragma once
 #include <LuminoCore/Graphics/rhi/Rhi.hpp>
 #include <webgpu/webgpu.h>
-#include <functional>
-#include <unordered_map>
-#include <vector>
 
 namespace ln::rhi::webgpu {
 
 class WebGPUDevice;
-
-//------------------------------------------------------------------------------
-// WebGPURenderPass オブジェクトをキャッシュするためのキー。パイプライン互換性に関わる
-// フィールド (フォーマットとサンプル数) だけを含める。load/store op やクリア値は
-// パイプライン互換性に影響しない。
-struct WebGPURenderPassLayoutKey {
-    SmallVector<TextureFormat, kMaxMultiRenderTargets> colorFormats;
-    TextureFormat depthStencilFormat = TextureFormat::Undefined;
-    uint32_t sampleCount = 1;
-
-    bool operator==(const WebGPURenderPassLayoutKey& other) const {
-        return depthStencilFormat == other.depthStencilFormat
-            && sampleCount == other.sampleCount
-            && colorFormats == other.colorFormats;
-    }
-};
-
-struct WebGPURenderPassLayoutKeyHash {
-    size_t operator()(const WebGPURenderPassLayoutKey& k) const {
-        size_t h = std::hash<uint32_t>{}(k.sampleCount);
-        h ^= std::hash<int>{}(static_cast<int>(k.depthStencilFormat))
-             + 0x9e3779b9 + (h << 6) + (h >> 2);
-        for (auto f : k.colorFormats) {
-            h ^= std::hash<int>{}(static_cast<int>(f))
-                 + 0x9e3779b9 + (h << 6) + (h >> 2);
-        }
-        return h;
-    }
-};
 
 //------------------------------------------------------------------------------
 class WebGPURenderPass final : public RenderPass {
@@ -83,11 +51,8 @@ protected:
 private:
     WebGPUDevice* m_device = nullptr;
     WGPUCommandEncoder m_encoder = nullptr;
+    // RenderPass ラッパー。1 つを使い回し、パスごとに一時的なエンコーダを結び直す。
     Ref<WebGPURenderPass> m_currentRenderPass;
-    // アタッチメントレイアウトをキーとする WebGPURenderPass ラッパーのキャッシュ。
-    // 下流の PipelineCache (rhi::RenderPass* でハッシュする) が安定してヒットするよう、
-    // ラッパーの同一性はフレームをまたいで保たれなければならない。
-    std::unordered_map<WebGPURenderPassLayoutKey, Ref<WebGPURenderPass>, WebGPURenderPassLayoutKeyHash> m_renderPassCache;
 };
 
 } // namespace ln::rhi::webgpu

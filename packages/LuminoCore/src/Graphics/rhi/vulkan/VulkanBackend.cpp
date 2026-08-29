@@ -425,7 +425,7 @@ VoidResult VulkanRenderPipeline::init(VulkanDevice* device, VkRenderPass renderP
     // NOTE: independentBlend は必須機能ではないため、全アタッチメントを同一にする必要がある。
     // マテリアルが指定した数を超えるアタッチメントは blendStates[0] にフォールバックする。
     std::vector<VkPipelineColorBlendAttachmentState> blendAttachments;
-    const auto& colorFormats = desc.renderPass->layoutDesc().colorFormats;
+    const auto& colorFormats = desc.renderPassLayout.colorFormats;
     const bool hasBs = !desc.blendStates.empty();
     for (size_t i = 0; i < colorFormats.size(); ++i) {
         // アタッチメントごとのステートがあればそれを使い、なければ先頭のエントリを複製する。

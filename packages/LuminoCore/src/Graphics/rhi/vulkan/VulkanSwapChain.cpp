@@ -12,9 +12,7 @@
 namespace ln::rhi::vulkan {
 
 VulkanSwapChain::VulkanSwapChain()
-    : m_device(nullptr)
-//, m_format(TextureFormat::BGRA8Unorm)
-{
+    : m_device(nullptr) {
 }
 
 VoidResult VulkanSwapChain::init(VulkanDevice* device, const SwapChainDesc& desc) {
@@ -35,7 +33,7 @@ VoidResult VulkanSwapChain::init(VulkanDevice* device, const SwapChainDesc& desc
         m_surface);
 
     VkSurfaceFormatKHR surfaceFormat = chooseSwapSurfaceFormat(swapChainSupport.formats);
-    //m_format = toTextureFormat(surfaceFormat.format);
+    m_format = VulkanHelpers::fromVkFormat(surfaceFormat.format);
 
     m_extent = caps.currentExtent;
     if (m_extent.width == UINT32_MAX) {

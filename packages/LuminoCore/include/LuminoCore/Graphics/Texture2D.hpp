@@ -35,15 +35,11 @@ public:
         uint32_t height);
 
     /**
-     * レンダーターゲットテクスチャ (カラーのみ) を作成します。
-     * BGRA8Unorm, Sampled|RenderTarget のカラーテクスチャを生成します。
-     * 深度バッファは createDepthStencil() で別途作成してください。
-     */
-    static Result<Ref<Texture>> createRenderTarget(rhi::Device* device, uint32_t width, uint32_t height);
-
-    /**
-     * 指定フォーマットのレンダーターゲットテクスチャを作成します。
+     * 指定フォーマットのレンダーターゲットテクスチャ (カラーのみ) を作成します。
      * Sampled|RenderTarget のカラーテクスチャを生成します。
+     * バックバッファと互換にする場合は GraphicsContext::colorFormat() を渡してください
+     * (スワップチェーンのフォーマットは環境依存で、BGRA8 とは限りません)。
+     * 深度バッファは createDepthStencil() で別途作成してください。
      */
     static Result<Ref<Texture>> createRenderTarget(
         rhi::Device* device, uint32_t width, uint32_t height, rhi::TextureFormat format);

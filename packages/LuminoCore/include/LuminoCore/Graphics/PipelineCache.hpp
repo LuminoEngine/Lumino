@@ -30,7 +30,7 @@ struct PipelineCacheKey {
     bool colorWriteEnabled = true;
     // 描画コンテキスト由来
     rhi::PrimitiveTopology topology = rhi::PrimitiveTopology::TriangleList;
-    rhi::RenderPass* renderPass = nullptr;
+    rhi::RenderPassLayoutDesc renderPassLayout;
 
     bool operator==(const PipelineCacheKey& o) const;
 };

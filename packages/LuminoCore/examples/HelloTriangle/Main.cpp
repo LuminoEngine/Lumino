@@ -161,7 +161,7 @@ int main() {
             auto* pass = cmd->beginRenderPass(passDesc);
 
             if (!pipeline) {
-                rpDesc.renderPass = pass;
+                rpDesc.renderPassLayout = pass->layoutDesc();
                 pipeline = *device->createRenderPipeline(rpDesc);
             }
 

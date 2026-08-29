@@ -47,7 +47,7 @@ bool PipelineCacheKey::operator==(const PipelineCacheKey& o) const {
     }
     if (colorWriteEnabled != o.colorWriteEnabled) return false;
     if (topology          != o.topology)          return false;
-    if (renderPass        != o.renderPass)        return false;
+    if (!(renderPassLayout == o.renderPassLayout)) return false;
     return true;
 }
 
@@ -81,7 +81,11 @@ size_t PipelineCacheKeyHash::operator()(const PipelineCacheKey& key) const {
     }
     hash_combine(seed, key.colorWriteEnabled);
     hash_combine(seed, static_cast<uint32_t>(key.topology));
-    hash_combine(seed, reinterpret_cast<uintptr_t>(key.renderPass));
+    hash_combine(seed, key.renderPassLayout.sampleCount);
+    hash_combine(seed, static_cast<uint32_t>(key.renderPassLayout.depthStencilFormat));
+    for (auto fmt : key.renderPassLayout.colorFormats) {
+        hash_combine(seed, static_cast<uint32_t>(fmt));
+    }
     return seed;
 }
 
@@ -119,7 +123,7 @@ Result<rhi::RenderPipeline*> PipelineCache::getOrCreate(const PipelineCacheKey& 
     rpDesc.vertexBuffers   = {standardVertexLayout()};
     rpDesc.topology        = key.topology;
     rpDesc.cullMode        = key.cullMode;
-    rpDesc.renderPass      = key.renderPass;
+    rpDesc.renderPassLayout = key.renderPassLayout;
     rpDesc.depthStencil.depthTestEnable    = key.depthTestEnabled;
     rpDesc.depthStencil.depthWriteEnable   = key.depthWriteEnabled;
     rpDesc.depthStencil.stencilTestEnable  = key.stencilTestEnabled;
@@ -153,7 +157,6 @@ Result<rhi::RenderPipeline*> PipelineCache::getOrCreate(const PipelineCacheKey& 
         trackObject(key.shaderPass->vertexShader());
         trackObject(key.shaderPass->fragmentShader());
         trackObject(key.shaderPass->pipelineLayout());
-        trackObject(key.renderPass);
     }
     return it2->second.get();
 }
@@ -180,8 +183,8 @@ void PipelineCache::trackObject(rhi::RHIObject* obj) {
 void PipelineCache::evictByObject(rhi::RHIObject* obj) {
     for (auto it = m_cache.begin(); it != m_cache.end(); ) {
         const auto& k = it->first;
-        bool match = (k.renderPass == obj);
-        if (!match && k.shaderPass) {
+        bool match = false;
+        if (k.shaderPass) {
             match = (k.shaderPass->vertexShader() == obj ||
                      k.shaderPass->fragmentShader() == obj ||
                      k.shaderPass->pipelineLayout() == obj);
