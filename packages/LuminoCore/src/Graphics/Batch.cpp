@@ -128,9 +128,14 @@ Result<std::unique_ptr<BatchProcessor>> BatchProcessor::create(GraphicsContext* 
 }
 
 void BatchProcessor::sortCommands(std::vector<DrawCommand>& commands, SortMode mode) {
+    // std::stable_sort ではなく std::sort を使う。stable_sort は要素数の半分の一時バッファを
+    // ヒープに確保するため、毎フレーム 1 回の malloc/free になる。下の 2 つの比較関数は
+    // どちらも最後に投入順 (sequence) で決着する全順序なので、等価な要素が存在せず、
+    // std::sort でも stable_sort と同じ並びになる。sequence をキーから外す場合は
+    // stable_sort に戻すこと。
     if (mode == SortMode::Stable) {
         // zIndex 主 + type + 投入順。sortKey() に畳み込んだ単調キーで比較する。
-        std::stable_sort(commands.begin(), commands.end(),
+        std::sort(commands.begin(), commands.end(),
             [](const DrawCommand& a, const DrawCommand& b) {
                 return a.sortKey() < b.sortKey();
             });
@@ -141,7 +146,7 @@ void BatchProcessor::sortCommands(std::vector<DrawCommand>& commands, SortMode m
     // type ビットは使わない (スプライトとサブメッシュを深度順に混在させる必要があるため)。
     // 距離が等しい場合は投入順 (sequence) で安定化する。
     const bool frontToBack = (mode == SortMode::FrontToBack);
-    std::stable_sort(commands.begin(), commands.end(),
+    std::sort(commands.begin(), commands.end(),
         [frontToBack](const DrawCommand& a, const DrawCommand& b) {
             if (a.zIndex != b.zIndex) return a.zIndex < b.zIndex;
             if (a.viewDepth != b.viewDepth) {
