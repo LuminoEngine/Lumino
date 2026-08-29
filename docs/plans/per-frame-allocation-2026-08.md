@@ -25,7 +25,7 @@ wasm32 では 32bit アドレス空間かつメモリ上限が環境依存で小
 | B-1 | B | マテリアルパラメータ変更で BindGroup を毎フレーム再生成 | 変更のあるマテリアル数 x フレーム | 最高 | 中 | 半日 | 済 (6dabd6a01) |
 | A-1 | A | `RenderPassDesc::colorAttachments` 等が `std::vector` | 4 回 x パス数 x フレーム | 高 | 低 | 2-3h | 済 |
 | B-2 | B | `Renderer::m_materialCache` にエビクションが無い | Material 生成数に比例して単調増加 | 高 | 中 | 半日 | 済 |
-| A-2 | A | `DebugPrint::render()` のローカル vector | 3 回 x フレーム (デスクトップのみ) | 中 | 低 | 30分 | A |
+| A-2 | A | `DebugPrint::render()` のローカル vector | 3 回 x フレーム (デスクトップのみ) | 中 | 低 | 30分 | 済 |
 | D-1 | D | Vulkan の `vkMapMemory`/`vkUnmapMemory` が毎フレーム | バッファ数 x フレーム | 中 | 低 | 1h | A |
 | D-2 | D | `WebGPUBuffer::m_shadow` が未使用のまま常駐リスクを持つ | 常駐 | 中 | 低 | 1h | A |
 | D-3 | D | `Material::findPass()` がドローコールごとに文字列ハッシュ | ドローコール数 x フレーム | 低 | 低 | 1-2h | B |
@@ -65,6 +65,8 @@ wasm32 では 32bit アドレス空間かつメモリ上限が環境依存で小
 - 優先度: S
 
 ### A-2. DebugPrint のステージングバッファをメンバへ移す
+
+**実装済み**。`DebugPrint` に `m_vertexStaging` / `m_indexStaging` / `m_submeshStaging` を追加し、`create()` で最大文字数分を `reserve()` (submesh は 1 要素に `resize()`) しておく。`render()` は `clear()` + `push_back` で使い回すだけになり、`setSubmeshes` へ渡す一時 vector も無くなった。フレームをまたいだ使い回しの検証は `Test_Graphics.DebugPrintDoesNotLeakPreviousFrameGlyphs` (1 フレーム目に 12 文字、2 フレーム目に 1 文字を出し、2 フレーム目に前フレームのグリフが残らないことを確認)。
 
 - 解決する課題: `DebugPrint.cpp:89-92` でローカルの `std::vector<Vertex> verts` / `std::vector<uint32_t> idxs` を作って `reserve()` し、`DebugPrint.cpp:146` の `setSubmeshes({{0, ..., 0}})` で一時 `std::vector<SubMesh>` をもう 1 つ作っている。デバッグ文字列を出しているフレームは必ず 3 回の malloc/free が発生する
 - 期待効果: FPS オーバーレイを常時表示する開発時の計測ノイズが消える。`BatchProcessor` がステージングバッファをメンバに持っている方針と揃う
@@ -163,7 +165,7 @@ wasm32 では 32bit アドレス空間かつメモリ上限が環境依存で小
 1. ~~**B-1 (dirty 分割のみ)**~~: 実装済み (6dabd6a01)
 2. ~~**A-1**~~: 実装済み
 3. **D-1, D-2**: どちらも局所的で独立している。A-1 の途中に挟んでもよい
-4. **A-2**: 独立。いつでも入れられる
+4. ~~**A-2**~~: 実装済み
 5. ~~**B-2**~~: 実装済み
 6. **D-3, D-4**: 効果測定の結果を見てから
 

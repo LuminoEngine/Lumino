@@ -346,7 +346,7 @@ Result<void> BatchProcessor::flushSpriteGroup(
         return ir;
     }
 
-    spriteMesh->setSubmeshes(m_submeshStaging);
+    spriteMesh->setSubmeshes(m_submeshStaging.data(), static_cast<uint32_t>(m_submeshStaging.size()));
 
     // Assign materials to mesh slots
     auto& meshMaterials = spriteMesh->materials();

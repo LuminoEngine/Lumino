@@ -1318,7 +1318,7 @@ LNResult LNMesh_SetSubMeshes(
         subs[i].indexCount    = submeshes[i].indexCount;
         subs[i].materialIndex = submeshes[i].materialIndex;
     }
-    mesh->setSubmeshes(subs);
+    mesh->setSubmeshes(subs.data(), submeshCount);
     return LN_OK;
 }
 

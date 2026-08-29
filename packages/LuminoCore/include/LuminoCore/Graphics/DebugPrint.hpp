@@ -41,11 +41,16 @@ private:
     // 最大文字数 (改行含む)
     static constexpr uint32_t kMaxChars = 512;
     // 1 文字あたりの頂点数 (2三角形 = 6頂点)
-    static constexpr uint32_t kVertsPerChar = 6;
+    static constexpr uint32_t kVertsPerChar = 4;
+    static constexpr uint32_t kIndicesPerChar = 6;
 
     Ref<rhi::Texture>  m_fontTexture;
     Ref<Material>      m_material;
     Ref<Mesh>          m_mesh;
+
+    // CPU staging buffers
+    std::vector<Vertex>   m_vertexStaging;
+    std::vector<uint32_t> m_indexStaging;
 
     std::array<char, kMaxChars> m_textBuffer = {};
     uint32_t m_textBufferUsed = 0;

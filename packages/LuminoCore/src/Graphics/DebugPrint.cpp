@@ -41,14 +41,16 @@ Result<Ref<DebugPrint>> DebugPrint::create(GraphicsContext* ctx) {
     dp->m_material->setDepthTestEnabled(false);
     dp->m_material->setDepthWriteEnabled(false);
 
-    // Dynamic mesh: worst-case kMaxChars glyphs × 6 verts each.
     auto meshResult = Mesh::createDynamic(
-        ctx->device(), kMaxChars * kVertsPerChar, kMaxChars * kVertsPerChar);
+        ctx->device(), kMaxChars * kVertsPerChar, kMaxChars * kIndicesPerChar);
     if (!meshResult) {
         return LN_FORWARD_ERROR(meshResult);
     }
     dp->m_mesh = std::move(*meshResult);
     dp->m_mesh->materials().push_back(dp->m_material);
+
+    dp->m_vertexStaging.reserve(kMaxChars * kVertsPerChar);
+    dp->m_indexStaging.reserve(kMaxChars * kIndicesPerChar);
 
     return dp;
 }
@@ -86,10 +88,8 @@ Result<void> DebugPrint::render(GraphicsContext* ctx) {
         return vtx;
     };
 
-    std::vector<Vertex> verts;
-    std::vector<uint32_t> idxs;
-    verts.reserve(m_textBufferUsed * kVertsPerChar);
-    idxs.reserve(m_textBufferUsed * kVertsPerChar);
+    m_vertexStaging.clear();
+    m_indexStaging.clear();
 
     float textX = 0.0f, textY = 0.0f;
     for (uint32_t i = 0; i < m_textBufferUsed; ++i) {
@@ -119,31 +119,32 @@ Result<void> DebugPrint::render(GraphicsContext* ctx) {
         const float nx0 = ndcX(sx0), ny0 = ndcY(sy0);
         const float nx1 = ndcX(sx1), ny1 = ndcY(sy1);
 
-        uint32_t base = static_cast<uint32_t>(verts.size());
-        verts.push_back(makeVertex(nx0, ny0, u0, v0)); // top-left
-        verts.push_back(makeVertex(nx0, ny1, u0, v1)); // bottom-left
-        verts.push_back(makeVertex(nx1, ny0, u1, v0)); // top-right
-        verts.push_back(makeVertex(nx1, ny1, u1, v1)); // bottom-right
-        idxs.insert(idxs.end(), {base+0, base+1, base+2, base+2, base+1, base+3});
+        uint32_t base = static_cast<uint32_t>(m_vertexStaging.size());
+        m_vertexStaging.push_back(makeVertex(nx0, ny0, u0, v0)); // top-left
+        m_vertexStaging.push_back(makeVertex(nx0, ny1, u0, v1)); // bottom-left
+        m_vertexStaging.push_back(makeVertex(nx1, ny0, u1, v0)); // top-right
+        m_vertexStaging.push_back(makeVertex(nx1, ny1, u1, v1)); // bottom-right
+        m_indexStaging.insert(m_indexStaging.end(), {base+0, base+1, base+2, base+2, base+1, base+3});
 
         textX += kGlyphW;
     }
     m_textBufferUsed = 0;
 
-    if (verts.empty()) {
+    if (m_vertexStaging.empty()) {
         return {};
     }
 
     // Upload geometry.
-    auto r1 = m_mesh->updateVertices(0, verts.data(), static_cast<uint32_t>(verts.size()));
+    auto r1 = m_mesh->updateVertices(0, m_vertexStaging.data(), static_cast<uint32_t>(m_vertexStaging.size()));
     if (!r1) {
         return r1;
     }
-    auto r2 = m_mesh->updateIndices(0, idxs.data(), static_cast<uint32_t>(idxs.size()));
+    auto r2 = m_mesh->updateIndices(0, m_indexStaging.data(), static_cast<uint32_t>(m_indexStaging.size()));
     if (!r2) {
         return r2;
     }
-    m_mesh->setSubmeshes({{0, static_cast<uint32_t>(idxs.size()), 0}});
+    const SubMesh submesh{0, static_cast<uint32_t>(m_indexStaging.size()), 0};
+    m_mesh->setSubmeshes(&submesh, 1);
 
     // Render as overlay (LoadOp::Load - preserves the scene).
     Renderer* renderer = ctx->renderer();

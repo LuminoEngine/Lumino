@@ -39,7 +39,7 @@ public:
     Result<void> updateIndices(uint32_t firstIndex, const uint32_t* indices, uint32_t count);
 
     /** Replace the submesh array and resize material slots accordingly. */
-    void setSubmeshes(const std::vector<SubMesh>& submeshes);
+    void setSubmeshes(const SubMesh* submeshes, uint32_t count);
 
     rhi::Buffer* vertexBuffer() const { return m_vertexBuffer.get(); }
     rhi::Buffer* indexBuffer() const { return m_indexBuffer.get(); }

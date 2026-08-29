@@ -102,12 +102,12 @@ Result<void> Mesh::updateIndices(uint32_t firstIndex, const uint32_t* indices, u
         static_cast<uint64_t>(count) * sizeof(uint32_t));
 }
 
-void Mesh::setSubmeshes(const std::vector<SubMesh>& submeshes) {
-    m_submeshes = submeshes;
+void Mesh::setSubmeshes(const SubMesh* submeshes, uint32_t count) {
+    m_submeshes.assign(submeshes, submeshes + count);
 
     // Resize material slots to accommodate new submeshes.
     uint32_t maxMaterialIndex = 0;
-    for (auto& sub : submeshes) {
+    for (auto& sub : m_submeshes) {
         if (sub.materialIndex > maxMaterialIndex) maxMaterialIndex = sub.materialIndex;
     }
     if (maxMaterialIndex + 1 > static_cast<uint32_t>(m_materials.size())) {

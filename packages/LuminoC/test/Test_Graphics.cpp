@@ -37,6 +37,13 @@ protected:
             *outCamera, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f));
     }
 
+    /** フレームを閉じてバックバッファをキャプチャする。呼び出し側は data の非 null を確認すること。 */
+    void endFrameAndCapture(const uint8_t** outData, int32_t* outW, int32_t* outH) {
+        ASSERT_EQ(LN_OK, LNGraphicsContext_RequestCaptureBackbuffer(graphicsContext));
+        ASSERT_EQ(LN_OK, LNGraphicsContext_EndFrame(graphicsContext));
+        ASSERT_EQ(LN_OK, LNGraphicsContext_CaptureBackbuffer(graphicsContext, outData, outW, outH));
+    }
+
     /** material を全画面スプライト 1 枚として黒背景に描画し、(x, y) の RGB を返す。 */
     void drawFullscreenSpriteAndSample(LNHandle material, LNHandle camera, int x, int y, uint8_t* outRgb) {
         LNHandle renderer, colorBuffer, depthBuffer;
@@ -58,12 +65,10 @@ protected:
             1.0f, 1.0f, 1.0f, 1.0f));
 
         ASSERT_EQ(LN_OK, LNRenderer_EndRenderPass(renderer));
-        ASSERT_EQ(LN_OK, LNGraphicsContext_RequestCaptureBackbuffer(graphicsContext));
-        ASSERT_EQ(LN_OK, LNGraphicsContext_EndFrame(graphicsContext));
 
         const uint8_t* data = nullptr;
         int32_t w = 0, h = 0;
-        ASSERT_EQ(LN_OK, LNGraphicsContext_CaptureBackbuffer(graphicsContext, &data, &w, &h));
+        endFrameAndCapture(&data, &w, &h);
         ASSERT_NE(nullptr, data);
         const uint8_t* p = data + (static_cast<size_t>(y) * w + x) * 4;
         outRgb[0] = p[0]; outRgb[1] = p[1]; outRgb[2] = p[2];
@@ -81,12 +86,10 @@ TEST_F(Test_Graphics, ClearScreen) {
     rpDesc.colorAttachments[0].clearColor[3] = 1.0f;
     ASSERT_EQ(LN_OK, LNRenderer_BeginRenderPass(renderer, graphicsContext, &rpDesc, LN_NULL_HANDLE));
     ASSERT_EQ(LN_OK, LNRenderer_EndRenderPass(renderer));
-    ASSERT_EQ(LN_OK, LNGraphicsContext_RequestCaptureBackbuffer(graphicsContext));
-    ASSERT_EQ(LN_OK, LNGraphicsContext_EndFrame(graphicsContext));
 
     const uint8_t* data = nullptr;
     int32_t w = 0, h = 0;
-    ASSERT_EQ(LN_OK, LNGraphicsContext_CaptureBackbuffer(graphicsContext, &data, &w, &h));
+    endFrameAndCapture(&data, &w, &h);
     ASSERT_NE(nullptr, data);
     ASSERT_EQ(TEST_W, w);
     ASSERT_EQ(TEST_H, h);
@@ -154,13 +157,11 @@ TEST_F(Test_Graphics, HelloTexture) {
     ASSERT_EQ(LN_OK, LNRenderer_BeginRenderPass(renderer, graphicsContext, &rpDesc, camera));
     ASSERT_EQ(LN_OK, LNRenderer_DrawMesh(renderer, mesh, &identity, 0));
     ASSERT_EQ(LN_OK, LNRenderer_EndRenderPass(renderer));
-    ASSERT_EQ(LN_OK, LNGraphicsContext_RequestCaptureBackbuffer(graphicsContext));
-    ASSERT_EQ(LN_OK, LNGraphicsContext_EndFrame(graphicsContext));
 
     // Capture and compare
     const uint8_t* data = nullptr;
     int32_t w = 0, h = 0;
-    ASSERT_EQ(LN_OK, LNGraphicsContext_CaptureBackbuffer(graphicsContext, &data, &w, &h));
+    endFrameAndCapture(&data, &w, &h);
     ASSERT_NE(nullptr, data);
 
     ASSERT_TRUE(VisualTest::captureAndCompare("Test_Graphics.HelloTexture", data, w, h, TEST_DATA_DIR));
@@ -234,13 +235,11 @@ TEST_F(Test_Graphics, SpriteOrder) {
         1.0f, 1.0f, 1.0f, 1.0f); // color
 
     ASSERT_EQ(LN_OK, LNRenderer_EndRenderPass(renderer));
-    ASSERT_EQ(LN_OK, LNGraphicsContext_RequestCaptureBackbuffer(graphicsContext));
-    ASSERT_EQ(LN_OK, LNGraphicsContext_EndFrame(graphicsContext));
 
     // Capture and compare
     const uint8_t* data = nullptr;
     int32_t w = 0, h = 0;
-    ASSERT_EQ(LN_OK, LNGraphicsContext_CaptureBackbuffer(graphicsContext, &data, &w, &h));
+    endFrameAndCapture(&data, &w, &h);
     ASSERT_NE(nullptr, data);
 
     ASSERT_TRUE(VisualTest::captureAndCompare("Test_Graphics.SpriteOrder", data, w, h, TEST_DATA_DIR));
@@ -290,12 +289,10 @@ TEST_F(Test_Graphics, SpriteDepthSortBackToFront) {
         0.0f, 0.0f, 1.0f, 1.0f, 1.0f, 0.0f, 0.0f, 1.0f));
 
     ASSERT_EQ(LN_OK, LNRenderer_EndRenderPass(renderer));
-    ASSERT_EQ(LN_OK, LNGraphicsContext_RequestCaptureBackbuffer(graphicsContext));
-    ASSERT_EQ(LN_OK, LNGraphicsContext_EndFrame(graphicsContext));
 
     const uint8_t* data = nullptr;
     int32_t w = 0, h = 0;
-    ASSERT_EQ(LN_OK, LNGraphicsContext_CaptureBackbuffer(graphicsContext, &data, &w, &h));
+    endFrameAndCapture(&data, &w, &h);
     ASSERT_NE(nullptr, data);
     const uint8_t* px = data + (static_cast<size_t>(h / 2) * w + w / 2) * 4;
     // 手前の緑が前面に並べ替えられている → 中央は緑 (G 高, R 低)。
@@ -387,13 +384,11 @@ TEST_F(Test_Graphics, StencilMask1) {
     ASSERT_EQ(LN_OK, LNRenderer_PopStencilMask(renderer));
 
     ASSERT_EQ(LN_OK, LNRenderer_EndRenderPass(renderer));
-    ASSERT_EQ(LN_OK, LNGraphicsContext_RequestCaptureBackbuffer(graphicsContext));
-    ASSERT_EQ(LN_OK, LNGraphicsContext_EndFrame(graphicsContext));
 
     // Capture and compare
     const uint8_t* data = nullptr;
     int32_t w = 0, h = 0;
-    ASSERT_EQ(LN_OK, LNGraphicsContext_CaptureBackbuffer(graphicsContext, &data, &w, &h));
+    endFrameAndCapture(&data, &w, &h);
     ASSERT_NE(nullptr, data);
 
     // Verify the center-right area is background color (blue), not green.
@@ -467,12 +462,10 @@ TEST_F(Test_Graphics, TwoSprites) {
         1.0f, 1.0f, 1.0f, 1.0f));
 
     ASSERT_EQ(LN_OK, LNRenderer_EndRenderPass(renderer));
-    ASSERT_EQ(LN_OK, LNGraphicsContext_RequestCaptureBackbuffer(graphicsContext));
-    ASSERT_EQ(LN_OK, LNGraphicsContext_EndFrame(graphicsContext));
 
     const uint8_t* data = nullptr;
     int32_t w = 0, h = 0;
-    ASSERT_EQ(LN_OK, LNGraphicsContext_CaptureBackbuffer(graphicsContext, &data, &w, &h));
+    endFrameAndCapture(&data, &w, &h);
     ASSERT_NE(nullptr, data);
 
     ASSERT_TRUE(VisualTest::captureAndCompare("Test_Graphics.TwoSprites", data, w, h, TEST_DATA_DIR));
@@ -548,13 +541,11 @@ TEST_F(Test_Graphics, MaterialDepthTestEnabled) {
     ASSERT_EQ(LN_OK, LNRenderer_DrawMesh(renderer, nearMesh, &identity, 0));
     ASSERT_EQ(LN_OK, LNRenderer_DrawMesh(renderer, farMesh, &identity, 0));
     ASSERT_EQ(LN_OK, LNRenderer_EndRenderPass(renderer));
-    ASSERT_EQ(LN_OK, LNGraphicsContext_RequestCaptureBackbuffer(graphicsContext));
-    ASSERT_EQ(LN_OK, LNGraphicsContext_EndFrame(graphicsContext));
 
     // DepthTest が OFF なので、後から描かれた緑い四角が、赤い四角に隠されずに、描画されるはず。
     const uint8_t* data = nullptr;
     int32_t w = 0, h = 0;
-    ASSERT_EQ(LN_OK, LNGraphicsContext_CaptureBackbuffer(graphicsContext, &data, &w, &h));
+    endFrameAndCapture(&data, &w, &h);
     ASSERT_NE(nullptr, data);
     const int cx = w / 2;
     const int cy = h / 2;
@@ -634,12 +625,10 @@ TEST_F(Test_Graphics, MaterialDepthWriteEnabled) {
     ASSERT_EQ(LN_OK, LNRenderer_DrawMesh(renderer, nearMesh, &identity, 0));
     ASSERT_EQ(LN_OK, LNRenderer_DrawMesh(renderer, farMesh, &identity, 0));
     ASSERT_EQ(LN_OK, LNRenderer_EndRenderPass(renderer));
-    ASSERT_EQ(LN_OK, LNGraphicsContext_RequestCaptureBackbuffer(graphicsContext));
-    ASSERT_EQ(LN_OK, LNGraphicsContext_EndFrame(graphicsContext));
 
     const uint8_t* data = nullptr;
     int32_t w = 0, h = 0;
-    ASSERT_EQ(LN_OK, LNGraphicsContext_CaptureBackbuffer(graphicsContext, &data, &w, &h));
+    endFrameAndCapture(&data, &w, &h);
     ASSERT_NE(nullptr, data);
     const int cx = w / 2;
     const int cy = h / 2;
@@ -733,12 +722,10 @@ TEST_F(Test_Graphics, SpritesAcrossRenderPasses) {
         ASSERT_EQ(LN_OK, LNRenderer_EndRenderPass(renderer));
     }
 
-    ASSERT_EQ(LN_OK, LNGraphicsContext_RequestCaptureBackbuffer(graphicsContext));
-    ASSERT_EQ(LN_OK, LNGraphicsContext_EndFrame(graphicsContext));
 
     const uint8_t* data = nullptr;
     int32_t w = 0, h = 0;
-    ASSERT_EQ(LN_OK, LNGraphicsContext_CaptureBackbuffer(graphicsContext, &data, &w, &h));
+    endFrameAndCapture(&data, &w, &h);
     ASSERT_NE(nullptr, data);
     ASSERT_EQ(TEST_W, w);
     ASSERT_EQ(TEST_H, h);
@@ -815,13 +802,11 @@ TEST_F(Test_Graphics, CustomShaderMaterial) {
     ASSERT_EQ(LN_OK, LNRenderer_BeginRenderPass(renderer, graphicsContext, &rpDesc, camera));
     ASSERT_EQ(LN_OK, LNRenderer_DrawMesh(renderer, mesh, &identity, 0));
     ASSERT_EQ(LN_OK, LNRenderer_EndRenderPass(renderer));
-    ASSERT_EQ(LN_OK, LNGraphicsContext_RequestCaptureBackbuffer(graphicsContext));
-    ASSERT_EQ(LN_OK, LNGraphicsContext_EndFrame(graphicsContext));
 
     // Capture and verify
     const uint8_t* data = nullptr;
     int32_t w = 0, h = 0;
-    ASSERT_EQ(LN_OK, LNGraphicsContext_CaptureBackbuffer(graphicsContext, &data, &w, &h));
+    endFrameAndCapture(&data, &w, &h);
     ASSERT_NE(nullptr, data);
     EXPECT_EQ(TEST_W, w);
     EXPECT_EQ(TEST_H, h);
@@ -878,12 +863,10 @@ TEST_F(Test_Graphics, LoadOpLoadColor) {
         ASSERT_EQ(LN_OK, LNRenderer_EndRenderPass(renderer));
     }
 
-    ASSERT_EQ(LN_OK, LNGraphicsContext_RequestCaptureBackbuffer(graphicsContext));
-    ASSERT_EQ(LN_OK, LNGraphicsContext_EndFrame(graphicsContext));
 
     const uint8_t* data = nullptr;
     int32_t w = 0, h = 0;
-    ASSERT_EQ(LN_OK, LNGraphicsContext_CaptureBackbuffer(graphicsContext, &data, &w, &h));
+    endFrameAndCapture(&data, &w, &h);
     ASSERT_NE(nullptr, data);
     ASSERT_EQ(TEST_W, w);
     ASSERT_EQ(TEST_H, h);
@@ -952,12 +935,10 @@ TEST_F(Test_Graphics, LoadOpLoadDepthStencil) {
         ASSERT_EQ(LN_OK, LNRenderer_EndRenderPass(renderer));
     }
 
-    ASSERT_EQ(LN_OK, LNGraphicsContext_RequestCaptureBackbuffer(graphicsContext));
-    ASSERT_EQ(LN_OK, LNGraphicsContext_EndFrame(graphicsContext));
 
     const uint8_t* data = nullptr;
     int32_t w = 0, h = 0;
-    ASSERT_EQ(LN_OK, LNGraphicsContext_CaptureBackbuffer(graphicsContext, &data, &w, &h));
+    endFrameAndCapture(&data, &w, &h);
     ASSERT_NE(nullptr, data);
     ASSERT_EQ(TEST_W, w);
     ASSERT_EQ(TEST_H, h);
@@ -1028,12 +1009,10 @@ TEST_F(Test_Graphics, Orthographic2DPivotCenter) {
         1.0f, 0.0f, 0.0f, 1.0f)); // 赤
 
     ASSERT_EQ(LN_OK, LNRenderer_EndRenderPass(renderer));
-    ASSERT_EQ(LN_OK, LNGraphicsContext_RequestCaptureBackbuffer(graphicsContext));
-    ASSERT_EQ(LN_OK, LNGraphicsContext_EndFrame(graphicsContext));
 
     const uint8_t* data = nullptr;
     int32_t w = 0, h = 0;
-    ASSERT_EQ(LN_OK, LNGraphicsContext_CaptureBackbuffer(graphicsContext, &data, &w, &h));
+    endFrameAndCapture(&data, &w, &h);
     ASSERT_NE(nullptr, data);
     ASSERT_EQ(TEST_W, w);
     ASSERT_EQ(TEST_H, h);
@@ -1137,12 +1116,10 @@ TEST_F(Test_Graphics, SamplerFilterAndAddressMode) {
         1.0f, 1.0f, 1.0f, 1.0f));
 
     ASSERT_EQ(LN_OK, LNRenderer_EndRenderPass(renderer));
-    ASSERT_EQ(LN_OK, LNGraphicsContext_RequestCaptureBackbuffer(graphicsContext));
-    ASSERT_EQ(LN_OK, LNGraphicsContext_EndFrame(graphicsContext));
 
     const uint8_t* data = nullptr;
     int32_t w = 0, h = 0;
-    ASSERT_EQ(LN_OK, LNGraphicsContext_CaptureBackbuffer(graphicsContext, &data, &w, &h));
+    endFrameAndCapture(&data, &w, &h);
     ASSERT_NE(nullptr, data);
     ASSERT_EQ(TEST_W, w);
     ASSERT_EQ(TEST_H, h);
@@ -1252,12 +1229,10 @@ TEST_F(Test_Graphics, SamplerDefaultIsLinearClampToEdge) {
         1.0f, 1.0f, 1.0f, 1.0f));
 
     ASSERT_EQ(LN_OK, LNRenderer_EndRenderPass(renderer));
-    ASSERT_EQ(LN_OK, LNGraphicsContext_RequestCaptureBackbuffer(graphicsContext));
-    ASSERT_EQ(LN_OK, LNGraphicsContext_EndFrame(graphicsContext));
 
     const uint8_t* data = nullptr;
     int32_t w = 0, h = 0;
-    ASSERT_EQ(LN_OK, LNGraphicsContext_CaptureBackbuffer(graphicsContext, &data, &w, &h));
+    endFrameAndCapture(&data, &w, &h);
     ASSERT_NE(nullptr, data);
     ASSERT_EQ(TEST_W, w);
     ASSERT_EQ(TEST_H, h);
@@ -1553,4 +1528,45 @@ TEST_F(Test_Graphics, MaterialNamedSamplerStateChangeAcrossFrames) {
     LNObject_Release(camera);
     LNObject_Release(material);
     LNObject_Release(texture);
+}
+
+// ステージングバッファの clear 漏れ検出。
+TEST_F(Test_Graphics, DebugPrintDoesNotLeakPreviousFrameGlyphs) {
+    // text を 1 フレーム描画し、明るいピクセル数を outCount に返す。
+    auto countGlyphPixelsAfterPrint = [&](const char* text, int* outCount) {
+        LNHandle renderer, colorBuffer, depthBuffer;
+        ASSERT_EQ(LN_OK, LNGraphicsContext_BeginFrame(
+            graphicsContext, TEST_W, TEST_H, &renderer, &colorBuffer, &depthBuffer));
+
+        LNRenderPassDesc rpDesc;
+        LNRenderPassDesc_Init(&rpDesc);
+        rpDesc.colorAttachments[0].clearColor[3] = 1.0f;
+        ASSERT_EQ(LN_OK, LNRenderer_BeginRenderPass(renderer, graphicsContext, &rpDesc, LN_NULL_HANDLE));
+        ASSERT_EQ(LN_OK, LNRenderer_EndRenderPass(renderer));
+
+        ASSERT_EQ(LN_OK, LNDebug_Print(graphicsContext, text));
+
+        const uint8_t* data = nullptr;
+        int32_t w = 0, h = 0;
+        endFrameAndCapture(&data, &w, &h);
+        ASSERT_NE(nullptr, data);
+
+        int count = 0;
+        for (int y = 0; y < 40 && y < h; ++y) {
+            for (int x = 40; x < w; ++x) {
+                if (data[(static_cast<size_t>(y) * w + x) * 4] > 100) ++count;
+            }
+        }
+        *outCount = count;
+    };
+
+    int longCount = 0, shortCount = 0;
+
+    // 1 フレーム目: 12 文字。x >= 40 の領域にグリフが出る。
+    countGlyphPixelsAfterPrint("MMMMMMMMMMMM", &longCount);
+    ASSERT_GT(longCount, 0) << "DebugPrint のオーバーレイが描画されていません。";
+
+    // 2 フレーム目: 1 文字。x < 24 にしか出ないので、x >= 40 は背景のまま。
+    countGlyphPixelsAfterPrint("M", &shortCount);
+    EXPECT_EQ(0, shortCount) << "前フレームのグリフが残っています。";
 }
