@@ -63,6 +63,7 @@ cd packages/luminojs
 npm install
 npm run build
 npm run test
+npm run test:smoke
 
 # サンプルの実行
 cd packages/luminojs-examples

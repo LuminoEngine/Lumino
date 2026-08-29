@@ -467,9 +467,9 @@ test("LNDebug_GetGraphicsProfiler が WASM にエクスポートされている"
 
     // LNDebug_GetStructSize が LNGraphicsProfiler を認識する (LN_OK = 0)。
     expect(result.profilerExport.sizeRc).toBe(0);
-    // wasm32 での sizeof(LNGraphicsProfiler) = int32 + float + float + int32。
+    // wasm32 での sizeof(LNGraphicsProfiler) = int32 + float + float + int32 + int32。
     // types.ts の SIZEOF_GRAPHICS_PROFILER と一致していなければならない。
-    expect(result.profilerExport.wasmSize).toBe(16);
+    expect(result.profilerExport.wasmSize).toBe(20);
 
     // 無効ハンドルでの呼び出しが LN_ERROR_INVALID_HANDLE (-4) を返す
     // = 関数が実バイナリに存在し、ブラウザから呼び出せている。
@@ -487,7 +487,7 @@ test("getProfiler() が WASM (WebGPU) 経路で drawCallCount / fps / lastFrameT
 
     // LNGraphicsProfiler の全項目が公開されている (Object.keys().sort() で比較)。
     expect(result.profiler.keys).toEqual(
-        ["drawCallCount", "fps", "lastFrameTimeMs", "shaderPassCount"]);
+        ["drawCallCount", "fps", "lastFrameTimeMs", "materialCacheCount", "shaderPassCount"]);
 
     const { one, many } = result.profiler;
 
