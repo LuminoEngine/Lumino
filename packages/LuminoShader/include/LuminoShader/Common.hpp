@@ -21,6 +21,9 @@ enum ShaderTarget {
     ShaderTarget_DXIL = 2,
     ShaderTarget_WGSL = 3,
     ShaderTarget_METAL = 4,
+
+    // ターゲットを追加したらここも更新する。
+    ShaderTarget_Last = ShaderTarget_METAL,
 };
 
 enum DescriptorType {

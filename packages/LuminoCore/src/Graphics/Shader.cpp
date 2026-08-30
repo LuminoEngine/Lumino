@@ -3,6 +3,7 @@
 #include <LuminoCore/Graphics/GraphicsModule.hpp>
 #include <LuminoShader/UnifiedShader2.hpp>
 #include <LuminoShader/UnifiedShaderSerializer2.hpp>
+#include "ShaderUtils.hpp"
 
 #ifdef LUMINO_USE_SLANG
 #include <LuminoShader/ShaderCompiler2.hpp>
@@ -47,7 +48,8 @@ Result<Ref<Shader>> Shader::createFromCompiledShader(
     GraphicsModule* module, const void* data, size_t size,
     const std::string& shaderName) {
     // デシリアライズはパスの数に関係なく 1 回だけ行う。
-    auto loadResult = shader::UnifiedShaderSerializer2::loadFromData(data, size);
+    auto loadResult = shader::UnifiedShaderSerializer2::loadFromData(
+        data, size, detail::backendToShaderTarget(module->device()->backend()));
     if (!loadResult) return LN_FORWARD_ERROR(loadResult);
     auto unifiedShader = std::move(*loadResult);
 

@@ -6,6 +6,7 @@
 #include <LuminoCore/Graphics/TextureLoader.hpp>
 #include <LuminoShader/UnifiedShader2.hpp>
 #include <LuminoShader/UnifiedShaderSerializer2.hpp>
+#include "ShaderUtils.hpp"
 
 // プリコンパイル済みシェーダデータ (ビルド時に luminosc が生成する)。
 static const unsigned char s_unlitShaderData[] = {
@@ -72,7 +73,8 @@ VoidResult GraphicsModule::initDeviceResources() {
 
 VoidResult GraphicsModule::initBuiltinShader(BuiltinShader id, const unsigned char* data, size_t size) {
     // シェーダが持つパス数を調べるために一度デシリアライズする。
-    auto loadResult = shader::UnifiedShaderSerializer2::loadFromData(data, size);
+    auto loadResult = shader::UnifiedShaderSerializer2::loadFromData(
+        data, size, detail::backendToShaderTarget(m_device->backend()));
     if (!loadResult) {
         return LN_FORWARD_ERROR(loadResult);
     }

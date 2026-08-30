@@ -850,7 +850,7 @@ VoidResult ShaderCompiler2::buildTargetShaderPass(
     ShaderTarget target, int targetIndex, GlobalShaderPass2* globalShaderPass) {
 
     TargetShaderPass2* targetShaderPass = m_shader->createTargetShaderPass();
-    globalShaderPass->targetShaderPassIds[target - 1] = targetShaderPass->id;
+    globalShaderPass->setTargetShaderPassId(target, targetShaderPass->id);
 
     if (!globalShaderPass->vertexEntryPoint.empty()) {
         auto result = m_shader->getTargetEntryPoint(target, globalShaderPass->vertexEntryPoint);

@@ -21,7 +21,17 @@ public:
     static constexpr const char* FileExt = "lcsh";
 
     static VoidResult saveToFile(const UnifiedShader2* shader, const std::filesystem::path& filePath);
-    static Result<Ref<UnifiedShader2>> loadFromData(const void* data, size_t length);
+
+    /**
+     * .lcsh のバイナリから UnifiedShader2 を復元する。
+     *
+     * @param target 実体化するコード blob のターゲット。ShaderTarget_UNKNOWN なら全て読み込む。
+     *
+     * 指定外のターゲットのコード blob は空のまま残す。
+     * メタ情報 (エントリポイントやバインディングレイアウト) は ID の対応を保つため全て読み込む。
+     */
+    static Result<Ref<UnifiedShader2>> loadFromData(
+        const void* data, size_t length, ShaderTarget target = ShaderTarget_UNKNOWN);
 };
 
 } // namespace shader

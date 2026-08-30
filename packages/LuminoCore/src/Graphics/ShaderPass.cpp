@@ -16,14 +16,6 @@ ShaderPass::~ShaderPass() {
     --s_liveCount;
 }
 
-static shader::ShaderTarget backendToShaderTarget(rhi::Backend backend) {
-    switch (backend) {
-        case rhi::Backend::Vulkan: return shader::ShaderTarget_SPIRV;
-        case rhi::Backend::WebGPU: return shader::ShaderTarget_WGSL;
-    }
-    return shader::ShaderTarget_SPIRV;
-}
-
 static rhi::ShaderCodeFormat backendToCodeFormat(rhi::Backend backend) {
     switch (backend) {
         case rhi::Backend::Vulkan: return rhi::ShaderCodeFormat::SPIRV;
@@ -126,7 +118,7 @@ Result<Ref<ShaderPass>> ShaderPass::buildFromUnifiedShader(
             resolvedName.c_str(), static_cast<int>(passIndex), static_cast<int>(globalPasses.size()));
     }
 
-    auto shaderTarget = backendToShaderTarget(device->backend());
+    auto shaderTarget = detail::backendToShaderTarget(device->backend());
     auto codeFormat = backendToCodeFormat(device->backend());
 
     auto* globalPass = globalPasses[passIndex].get();
@@ -314,7 +306,8 @@ Result<Ref<ShaderPass>> ShaderPass::createFromCompiledShader(
     const std::string& shaderName) {
 
     // バイナリ blob から UnifiedShader をデシリアライズする。
-    auto loadResult = shader::UnifiedShaderSerializer2::loadFromData(data, size);
+    auto loadResult = shader::UnifiedShaderSerializer2::loadFromData(
+        data, size, detail::backendToShaderTarget(device->backend()));
     if (!loadResult) {
         return LN_FORWARD_ERROR(loadResult);
     }

@@ -16,6 +16,24 @@ static std::unique_ptr<ShaderCompiler2> compileParameterBlock1() {
     return compiler;
 }
 
+// .lcsh に保存し、そのバイト列を読み戻す。一時ファイルは削除する。
+static std::vector<uint8_t> saveAndRead(const UnifiedShader2* shader, const char* fileName) {
+    auto tempPath = std::filesystem::temp_directory_path() / fileName;
+    auto saveResult = UnifiedShaderSerializer2::saveToFile(shader, tempPath);
+    EXPECT_TRUE(saveResult.has_value()) << saveResult.error().message;
+
+    std::vector<uint8_t> fileData;
+    std::ifstream ifs(tempPath, std::ios::binary | std::ios::ate);
+    EXPECT_TRUE(ifs.is_open());
+    size_t fileSize = ifs.tellg();
+    fileData.resize(fileSize);
+    ifs.seekg(0);
+    ifs.read(reinterpret_cast<char*>(fileData.data()), fileSize);
+    ifs.close();
+    std::filesystem::remove(tempPath);
+    return fileData;
+}
+
 TEST(Test_ParameterBlock2, ReflectParameterBlockLayout) {
     auto compiler = compileParameterBlock1();
     UnifiedShader2* shader = compiler->shader();
@@ -123,21 +141,7 @@ TEST(Test_ParameterBlock2, SerializeRoundTrip) {
     auto compiler = compileParameterBlock1();
     UnifiedShader2* shader = compiler->shader();
 
-    // 保存
-    auto tempPath = std::filesystem::temp_directory_path() / "test_paramblock2.lcsh";
-    auto saveResult = UnifiedShaderSerializer2::saveToFile(shader, tempPath);
-    ASSERT_TRUE(saveResult.has_value()) << saveResult.error().message;
-
-    // 読み込み
-    std::vector<uint8_t> fileData;
-    {
-        std::ifstream ifs(tempPath, std::ios::binary | std::ios::ate);
-        ASSERT_TRUE(ifs.is_open());
-        size_t fileSize = ifs.tellg();
-        fileData.resize(fileSize);
-        ifs.seekg(0);
-        ifs.read(reinterpret_cast<char*>(fileData.data()), fileSize);
-    }
+    auto fileData = saveAndRead(shader, "test_paramblock2.lcsh");
     auto loadResult = UnifiedShaderSerializer2::loadFromData(fileData.data(), fileData.size());
     ASSERT_TRUE(loadResult.has_value()) << loadResult.error().message;
     UnifiedShader2* loaded = loadResult.value().get();
@@ -174,7 +178,38 @@ TEST(Test_ParameterBlock2, SerializeRoundTrip) {
 
     // ターゲットシェーダパスの数を検証する
     EXPECT_EQ(shader->targetShaderPasses().size(), loaded->targetShaderPasses().size());
+}
 
-    // 後始末
-    std::filesystem::remove(tempPath);
+// 指定ターゲット以外のコード blob を読み飛ばすことを確認する。
+TEST(Test_ParameterBlock2, LoadWithTargetFilter) {
+    auto compiler = compileParameterBlock1();
+    auto fileData = saveAndRead(compiler->shader(), "test_target_filter.lcsh");
+
+    auto loadResult = UnifiedShaderSerializer2::loadFromData(
+        fileData.data(), fileData.size(), ShaderTarget_SPIRV);
+    ASSERT_TRUE(loadResult.has_value()) << loadResult.error().message;
+    UnifiedShader2* spirvOnly = loadResult.value().get();
+
+    // SPIRV のエントリポイントの blob だけが実体化され、他は空のまま。
+    // メタ情報は全ターゲット分あるため、skippedCount は 0 にならない。
+    size_t loadedCount = 0;
+    size_t skippedCount = 0;
+    for (const auto& ep : spirvOnly->targetEntryPoints()) {
+        const size_t size = spirvOnly->blob(ep->codeBlobId)->data.size();
+        if (ep->target == ShaderTarget_SPIRV) {
+            EXPECT_GT(size, 0u);
+            loadedCount++;
+        }
+        else {
+            EXPECT_EQ(size, 0u) << "blob of target " << ep->target << " should be skipped";
+            skippedCount++;
+        }
+    }
+    EXPECT_GT(loadedCount, 0u);
+    EXPECT_GT(skippedCount, 0u);
+
+    // 未知のターゲットを引いても範囲外アクセスにならない。
+    auto* pass = spirvOnly->globalShaderPasses()[0].get();
+    EXPECT_EQ(pass->getTargetShaderPassId(static_cast<ShaderTarget>(ShaderTarget_Last + 1)), -1);
+    EXPECT_EQ(pass->getTargetShaderPassId(ShaderTarget_UNKNOWN), -1);
 }

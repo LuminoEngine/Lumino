@@ -82,10 +82,18 @@ struct GlobalShaderPass2 {
     GlobalShaderPass2(UnifiedShader2* owner)
         : m_owner(owner)
         , id(-1)
-        , targetShaderPassIds{-1, -1, -1, -1} {}
+        , targetShaderPassIds(ShaderTarget_Last, -1) {}
 
+    // .lcsh 由来で配列が短いことがあるため範囲を検査し、対応するパスが無ければ -1 を返す。
     TargetShaderPassId2 getTargetShaderPassId(ShaderTarget target) const {
-        return targetShaderPassIds[target - 1];
+        if (target <= ShaderTarget_UNKNOWN) return -1;
+        const size_t index = static_cast<size_t>(target) - 1;
+        if (index >= targetShaderPassIds.size()) return -1;
+        return targetShaderPassIds[index];
+    }
+
+    void setTargetShaderPassId(ShaderTarget target, TargetShaderPassId2 id) {
+        targetShaderPassIds[target - 1] = id;
     }
 };
 

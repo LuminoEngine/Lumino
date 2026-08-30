@@ -1,6 +1,7 @@
 ﻿// Copyright (c) 2019+ lriki. Distributed under the MIT license.
 #include "pch.hpp"
 #include <fstream>
+#include <utility>
 #include <LuminoShader/UnifiedShader2.hpp>
 #include <LuminoShader/UnifiedShaderSerializer2.hpp>
 
@@ -44,6 +45,9 @@ public:
     int16_t readInt16()  { int16_t v; read(&v, 2); return v; }
     uint32_t readUInt32(){ uint32_t v; read(&v, 4); return v; }
 
+    size_t pos() const { return m_pos; }
+    void skip(size_t size) { m_pos = std::min(m_pos + size, m_length); }
+
 private:
     const uint8_t* m_data;
     size_t m_length;
@@ -78,13 +82,6 @@ std::string readString(BinaryReader2& r) {
         r.read(buf.data(), len);
         return std::string(buf.begin(), buf.end());
     }
-}
-
-std::vector<uint8_t> readByteArray(BinaryReader2& r) {
-    uint32_t len = r.readUInt32();
-    std::vector<uint8_t> buf(len);
-    r.read(buf.data(), len);
-    return buf;
 }
 
 VoidResult checkSignature(BinaryReader2& r, const char* sig, size_t len) {
@@ -238,7 +235,8 @@ VoidResult UnifiedShaderSerializer2::saveToFile(const UnifiedShader2* shader, co
     return LNSHADER_OK();
 }
 
-Result<Ref<UnifiedShader2>> UnifiedShaderSerializer2::loadFromData(const void* data, size_t length) {
+Result<Ref<UnifiedShader2>> UnifiedShaderSerializer2::loadFromData(
+    const void* data, size_t length, ShaderTarget target) {
     BinaryReader2 reader(static_cast<const uint8_t*>(data), length);
     Ref<UnifiedShader2> shader = Ref<UnifiedShader2>::adopt(new UnifiedShader2());
     int fileVersion = 0;
@@ -259,14 +257,22 @@ Result<Ref<UnifiedShader2>> UnifiedShaderSerializer2::loadFromData(const void* d
     }
 
     // Blob
+    // どの blob がどのターゲットのものかは TargetEntryPoint を読むまで分からないため、
+    // ここでは位置と長さだけを控えて読み飛ばし、実体化はエントリポイントを読んだあとで行う。
+    std::vector<std::pair<size_t, uint32_t>> blobRanges;
     {
         auto r1 = checkSignature(reader, "lcs2.bl.", 8);
         if (!r1) return tl::make_unexpected(r1.error());
 
         int16_t count = reader.readInt16();
         for (int16_t i = 0; i < count; i++) {
-            Blob* blob = shader->createBlob();
-            blob->data = readByteArray(reader);
+            shader->createBlob();
+            uint32_t blobLength = reader.readUInt32();
+            if (reader.pos() + blobLength > length) {
+                return LNSHADER_MAKE_ERROR("Blob range is out of bounds");
+            }
+            blobRanges.emplace_back(reader.pos(), blobLength);
+            reader.skip(blobLength);
         }
     }
 
@@ -325,6 +331,26 @@ Result<Ref<UnifiedShader2>> UnifiedShaderSerializer2::loadFromData(const void* d
                     attr.index = reader.readInt16();
                     attr.layoutLocation = reader.readInt16();
                     ep->inputAttributes.push_back(attr);
+                }
+            }
+        }
+    }
+
+    // 必要なコード blob だけを実体化する。
+    {
+        const uint8_t* base = static_cast<const uint8_t*>(data);
+        auto materialize = [&](size_t i) {
+            const auto& [offset, size] = blobRanges[i];
+            shader->m_blobs[i]->data.assign(base + offset, base + offset + size);
+        };
+        if (target == ShaderTarget_UNKNOWN) {
+            for (size_t i = 0; i < blobRanges.size(); i++) materialize(i);
+        }
+        else {
+            for (const auto& ep : shader->m_targetEntryPoints) {
+                if (ep->target == target && ep->codeBlobId >= 0 &&
+                    static_cast<size_t>(ep->codeBlobId) < blobRanges.size()) {
+                    materialize(ep->codeBlobId);
                 }
             }
         }

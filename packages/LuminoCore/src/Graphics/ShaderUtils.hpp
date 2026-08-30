@@ -6,6 +6,14 @@
 namespace ln {
 namespace detail {
 
+inline shader::ShaderTarget backendToShaderTarget(rhi::Backend backend) {
+    switch (backend) {
+    case rhi::Backend::Vulkan: return shader::ShaderTarget_SPIRV;
+    case rhi::Backend::WebGPU: return shader::ShaderTarget_WGSL;
+    }
+    return shader::ShaderTarget_SPIRV;
+}
+
 inline rhi::BindingType mapElementKind(shader::ParameterBlockElementKind kind) {
     switch (kind) {
     case shader::ParameterBlockElementKind_ConstantBuffer: return rhi::BindingType::UniformBuffer;
