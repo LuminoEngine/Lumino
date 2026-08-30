@@ -32,6 +32,10 @@
       "platform": "windows | linux | osx"
     },
     {
+      "name": "spirv-cross",
+      "platform": "windows | linux | osx"
+    },
+    {
       "name": "cli11",
       "platform": "windows | linux | osx"
     }

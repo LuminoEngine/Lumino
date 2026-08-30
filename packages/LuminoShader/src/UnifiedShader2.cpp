@@ -1,4 +1,4 @@
-// Copyright (c) 2019+ lriki. Distributed under the MIT license.
+﻿// Copyright (c) 2019+ lriki. Distributed under the MIT license.
 #include "pch.hpp"
 #include <LuminoShader/UnifiedShader2.hpp>
 
@@ -87,6 +87,7 @@ VoidResult UnifiedShader2::mergeTargetBindingLayout(
     TargetBindingLayout2& target, const TargetBindingLayout2& other, bool reset) {
     if (reset) {
         target.bindings.clear();
+        target.combinedSamplers.clear();
     }
     for (const TargetBinding2& otherBinding : other.bindings) {
         auto itr = std::find_if(
@@ -113,6 +114,19 @@ VoidResult UnifiedShader2::mergeTargetBindingLayout(
         }
         else {
             target.bindings.push_back(otherBinding);
+        }
+    }
+
+    // combined sampler は同じ (テクスチャ, サンプラー) の組が頂点とフラグメントの両方に
+    // 現れるため、名前で重複を除きながら結合する。GL のテクスチャユニットはプログラム単位で
+    // 共有されるので、ここで確定した添字がそのままユニット番号になる。
+    for (const CombinedSamplerBinding2& otherCombined : other.combinedSamplers) {
+        auto itr = std::find_if(
+            target.combinedSamplers.begin(),
+            target.combinedSamplers.end(),
+            [&otherCombined](const CombinedSamplerBinding2& c) { return c.name == otherCombined.name; });
+        if (itr == target.combinedSamplers.end()) {
+            target.combinedSamplers.push_back(otherCombined);
         }
     }
 

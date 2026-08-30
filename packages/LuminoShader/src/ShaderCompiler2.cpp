@@ -8,6 +8,8 @@
 
 #ifdef LUMINO_USE_SLANG
 
+#include <spirv_glsl.hpp>
+
 #ifdef _WIN32
 #include <Windows.h>
 #endif
@@ -51,6 +53,7 @@ static const char* getTargetName(ShaderTarget target) {
         case ShaderTarget_DXIL:   return "DXIL";
         case ShaderTarget_WGSL:   return "WGSL";
         case ShaderTarget_METAL:  return "METAL";
+        case ShaderTarget_GLSL_ES300: return "GLSL_ES300";
         default:                  return "?";
     }
 }
@@ -61,6 +64,7 @@ static const char* getExt(ShaderTarget target) {
         case ShaderTarget_DXIL:   return ".dxil";
         case ShaderTarget_WGSL:   return ".wgsl";
         case ShaderTarget_METAL:  return ".msl";
+        case ShaderTarget_GLSL_ES300: return ".glsl";
         default:                  return "?";
     }
 }
@@ -268,6 +272,12 @@ VoidResult ShaderCompiler2::buildModule() {
         if (!result1) return result1;
         auto r = buildTarget(target.target, i);
         if (!r) return r;
+    }
+
+    // GLSL ES 300 は Slang のターゲットではなく、SPIRV ターゲットからの変換で作る。
+    {
+        auto r1 = buildGlslEs300Target();
+        if (!r1) return r1;
     }
 
     {
@@ -539,7 +549,7 @@ VoidResult ShaderCompiler2::buildTarget(ShaderTarget target, int targetIndex) {
 
     // シェーダパスをリンクする。
     for (auto& globalShaderPass : m_shader->globalShaderPasses()) {
-        auto result = buildTargetShaderPass(target, targetIndex, globalShaderPass.get());
+        auto result = buildTargetShaderPass(target, globalShaderPass.get());
         if (!result) return result;
     }
 
@@ -847,7 +857,7 @@ VoidResult ShaderCompiler2::buildEntryPoint(
 }
 
 VoidResult ShaderCompiler2::buildTargetShaderPass(
-    ShaderTarget target, int targetIndex, GlobalShaderPass2* globalShaderPass) {
+    ShaderTarget target, GlobalShaderPass2* globalShaderPass) {
 
     TargetShaderPass2* targetShaderPass = m_shader->createTargetShaderPass();
     globalShaderPass->setTargetShaderPassId(target, targetShaderPass->id);
@@ -869,6 +879,127 @@ VoidResult ShaderCompiler2::buildTargetShaderPass(
         if (!result) return tl::make_unexpected(result.error());
         targetShaderPass->compEntryPointId = result.value()->id;
     }
+
+    return LNSHADER_OK();
+}
+
+//------------------------------------------------------------------------------
+VoidResult ShaderCompiler2::buildGlslEs300Target() {
+    // 変換元は SPIRV ターゲットのエントリポイント。ここで新しいエントリポイントを追加するため、
+    // 先に対象を控えてから変換する。TargetEntryPoint2 は unique_ptr で保持されているので
+    // 追加によってポインタが無効化されることはない。
+    std::vector<const TargetEntryPoint2*> sources;
+    for (const auto& ep : m_shader->targetEntryPoints()) {
+        if (ep->target == ShaderTarget_SPIRV) sources.push_back(ep.get());
+    }
+
+    for (const TargetEntryPoint2* src : sources) {
+        auto r = buildGlslEs300EntryPoint(src);
+        if (!r) return r;
+    }
+
+    for (auto& globalShaderPass : m_shader->globalShaderPasses()) {
+        auto r = buildTargetShaderPass(ShaderTarget_GLSL_ES300, globalShaderPass.get());
+        if (!r) return r;
+    }
+
+    return LNSHADER_OK();
+}
+
+//------------------------------------------------------------------------------
+VoidResult ShaderCompiler2::buildGlslEs300EntryPoint(const TargetEntryPoint2* spirvEntryPoint) {
+    const Blob* srcBlob = m_shader->blob(spirvEntryPoint->codeBlobId);
+    if (srcBlob->data.empty() || (srcBlob->data.size() % sizeof(uint32_t)) != 0) {
+        return LNSHADER_MAKE_ERROR("Invalid SPIR-V blob. (" + spirvEntryPoint->name + ")");
+    }
+    std::vector<uint32_t> spirv(srcBlob->data.size() / sizeof(uint32_t));
+    memcpy(spirv.data(), srcBlob->data.data(), srcBlob->data.size());
+
+    std::string source;
+    std::vector<CombinedSamplerBinding2> combinedSamplers;
+    try {
+        spirv_cross::CompilerGLSL compiler(std::move(spirv));
+
+        auto options = compiler.get_common_options();
+        options.version = 300;
+        options.es = true;
+        // NDC Z の規約差 (Lumino は 0..1、GL は -1..1) と、レンダーターゲットの上下の差を
+        // 頂点シェーダ側で吸収する。実行時のコストを他のバックエンドに持ち込まないための選択。
+        options.vertex.fixup_clipspace = true;
+        options.vertex.flip_vert_y = true;
+        compiler.set_common_options(options);
+
+        // ESSL 300 は sampler2D しか持たないため、テクスチャとサンプラーを結合する。
+        // サンプラーを伴わないテクスチャ読み出し (texelFetch など) は現状のシェーダに無いため
+        // ダミーサンプラーは生成しない。必要になったら build_dummy_sampler_for_combined_images()
+        // をここより先に呼ぶ。
+        compiler.build_combined_image_samplers();
+        std::vector<spirv_cross::VariableID> combinedIds;
+        for (const auto& remap : compiler.get_combined_image_samplers()) {
+            const uint32_t imageId = static_cast<uint32_t>(remap.image_id);
+            const uint32_t samplerId = static_cast<uint32_t>(remap.sampler_id);
+            const std::string imageName = compiler.get_name(remap.image_id);
+            const std::string samplerName = (samplerId != 0) ? compiler.get_name(remap.sampler_id) : std::string();
+
+            // 名前が落ちた SPIR-V でも一意になるよう、空なら ID で代用する。
+            compiler.set_name(
+                remap.combined_id,
+                "SPIRV_Cross_Combined" +
+                    (imageName.empty() ? "_" + std::to_string(imageId) : imageName) +
+                    (samplerName.empty() ? "_" + std::to_string(samplerId) : samplerName));
+
+            CombinedSamplerBinding2 c;
+            c.textureSetIndex = static_cast<int16_t>(
+                compiler.get_decoration(remap.image_id, spv::DecorationDescriptorSet));
+            c.textureBindingIndex = static_cast<int16_t>(
+                compiler.get_decoration(remap.image_id, spv::DecorationBinding));
+            c.samplerSetIndex = (samplerId != 0)
+                ? static_cast<int16_t>(compiler.get_decoration(remap.sampler_id, spv::DecorationDescriptorSet))
+                : static_cast<int16_t>(-1);
+            c.samplerBindingIndex = (samplerId != 0)
+                ? static_cast<int16_t>(compiler.get_decoration(remap.sampler_id, spv::DecorationBinding))
+                : static_cast<int16_t>(-1);
+
+            combinedSamplers.push_back(std::move(c));
+            combinedIds.push_back(remap.combined_id);
+        }
+
+        source = compiler.compile();
+
+        // Slang が付ける "materialData.baseTexture" のような名前には識別子として使えない
+        // 文字が含まれ、SPIRV-Cross が compile() の中で置き換える。glGetUniformLocation で
+        // 引くのは置き換え後の名前なので、ここで読み直す。
+        for (size_t i = 0; i < combinedSamplers.size(); i++) {
+            combinedSamplers[i].name = compiler.get_name(combinedIds[i]);
+        }
+    }
+    catch (const spirv_cross::CompilerError& e) {
+        return LNSHADER_MAKE_ERROR(
+            "SPIRV-Cross failed. (" + spirvEntryPoint->name + ") " + e.what());
+    }
+
+    // コードをダンプする。
+    if (m_dump) {
+        fs::path filePath = m_dumpDirPath /
+            (std::string(getTargetName(ShaderTarget_GLSL_ES300)) + "." + spirvEntryPoint->name +
+             getExt(ShaderTarget_GLSL_ES300));
+        std::ofstream dumpStream(filePath, std::ios::binary);
+        if (dumpStream) {
+            dumpStream.write(source.data(), static_cast<std::streamsize>(source.size()));
+        }
+    }
+
+    Blob* codeBlob = m_shader->createBlob();
+    codeBlob->data.assign(source.begin(), source.end());
+
+    // バインディングと頂点属性はターゲット間で変わらないため SPIRV から引き継ぐ。
+    TargetEntryPoint2* entryPoint = m_shader->createEntryPoint();
+    entryPoint->target = ShaderTarget_GLSL_ES300;
+    entryPoint->name = spirvEntryPoint->name;
+    entryPoint->codeBlobId = codeBlob->id;
+    entryPoint->bindingLayout.bindings = spirvEntryPoint->bindingLayout.bindings;
+    entryPoint->bindingLayout.combinedSamplers = std::move(combinedSamplers);
+    entryPoint->inputAttributes = spirvEntryPoint->inputAttributes;
 
     return LNSHADER_OK();
 }

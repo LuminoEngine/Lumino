@@ -107,9 +107,18 @@ void writeBindingLayout2(BinaryWriter2& writer, const TargetBindingLayout2& layo
         writer.writeInt16(b.size);
         writer.writeInt8(static_cast<int8_t>(b.used));
     }
+    // v4: GLSL ターゲット専用。他のターゲットでは要素数 0 なので 2 バイトしか増えない。
+    writer.writeInt16(static_cast<int16_t>(layout.combinedSamplers.size()));
+    for (const auto& c : layout.combinedSamplers) {
+        writeString(writer, c.name);
+        writer.writeInt16(c.textureSetIndex);
+        writer.writeInt16(c.textureBindingIndex);
+        writer.writeInt16(c.samplerSetIndex);
+        writer.writeInt16(c.samplerBindingIndex);
+    }
 }
 
-void readBindingLayout2(BinaryReader2& reader, TargetBindingLayout2& layout) {
+void readBindingLayout2(BinaryReader2& reader, TargetBindingLayout2& layout, int fileVersion) {
     int16_t count = reader.readInt16();
     for (int16_t i = 0; i < count; i++) {
         TargetBinding2 b;
@@ -120,6 +129,19 @@ void readBindingLayout2(BinaryReader2& reader, TargetBindingLayout2& layout) {
         b.size = reader.readInt16();
         b.used = static_cast<ShaderStageFlags>(reader.readInt8());
         layout.bindings.push_back(std::move(b));
+    }
+    // v4: CombinedSamplerBinding2
+    if (fileVersion >= UnifiedShaderSerializer2::FileVersion_4) {
+        int16_t combinedCount = reader.readInt16();
+        for (int16_t i = 0; i < combinedCount; i++) {
+            CombinedSamplerBinding2 c;
+            c.name = readString(reader);
+            c.textureSetIndex = reader.readInt16();
+            c.textureBindingIndex = reader.readInt16();
+            c.samplerSetIndex = reader.readInt16();
+            c.samplerBindingIndex = reader.readInt16();
+            layout.combinedSamplers.push_back(std::move(c));
+        }
     }
 }
 
@@ -321,7 +343,7 @@ Result<Ref<UnifiedShader2>> UnifiedShaderSerializer2::loadFromData(
             ep->target = static_cast<ShaderTarget>(reader.readInt8());
             ep->name = readString(reader);
             ep->codeBlobId = reader.readInt16();
-            readBindingLayout2(reader, ep->bindingLayout);
+            readBindingLayout2(reader, ep->bindingLayout, fileVersion);
             // inputAttributes
             {
                 int16_t acount = reader.readInt16();
@@ -367,7 +389,7 @@ Result<Ref<UnifiedShader2>> UnifiedShaderSerializer2::loadFromData(
             pass->vertEntryPointId = reader.readInt16();
             pass->fragEntryPointId = reader.readInt16();
             pass->compEntryPointId = reader.readInt16();
-            readBindingLayout2(reader, pass->bindingLayout);
+            readBindingLayout2(reader, pass->bindingLayout, fileVersion);
         }
     }
 

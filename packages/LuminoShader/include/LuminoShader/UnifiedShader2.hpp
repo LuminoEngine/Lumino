@@ -46,8 +46,19 @@ struct TargetBinding2 {
     ShaderStageFlags used;
 };
 
+// GLSL ES 300 は sampler2D しか持たないため、(テクスチャ, サンプラー) の組ごとに
+// 結合後の変数が 1 つ生成される。その対応を保持する。GLSL 以外のターゲットでは空。
+struct CombinedSamplerBinding2 {
+    std::string name;             // 結合後の GLSL 変数名。glGetUniformLocation で引く
+    int16_t textureSetIndex;
+    int16_t textureBindingIndex;
+    int16_t samplerSetIndex;      // サンプラーを伴わない場合は -1
+    int16_t samplerBindingIndex;  // サンプラーを伴わない場合は -1
+};
+
 struct TargetBindingLayout2 {
     std::vector<TargetBinding2> bindings;
+    std::vector<CombinedSamplerBinding2> combinedSamplers; // 添字がテクスチャユニット番号
 };
 
 struct TargetEntryPoint2 {

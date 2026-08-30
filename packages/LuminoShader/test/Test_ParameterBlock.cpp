@@ -96,7 +96,7 @@ TEST(Test_ParameterBlock2, ShaderPassLinking) {
     EXPECT_EQ(passes[0]->fragmentEntryPoint, "fsMain");
 
     // 各ターゲットにリンク済みの TargetShaderPass があるはず
-    for (int t = ShaderTarget_SPIRV; t <= ShaderTarget_METAL; t++) {
+    for (int t = ShaderTarget_SPIRV; t <= ShaderTarget_Last; t++) {
         TargetShaderPassId2 tpId = passes[0]->getTargetShaderPassId(static_cast<ShaderTarget>(t));
         EXPECT_GE(tpId, 0);
 

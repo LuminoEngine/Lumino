@@ -53,7 +53,11 @@ target_link_libraries(${PROJECT_NAME} PUBLIC LuminoBase)
 target_link_libraries(${PROJECT_NAME} PRIVATE nlohmann_json::nlohmann_json)
 
 if(LUMINO_USE_SLANG)
-    target_link_libraries(${PROJECT_NAME} PRIVATE slang::slang)
+    # SPIRV-Cross は SPIR-V から GLSL ES 300 を生成するために使う。ビルド時ツール専用で、
+    # ランタイム (WASM を含む) には載らない。
+    find_package(spirv_cross_core CONFIG REQUIRED)
+    find_package(spirv_cross_glsl CONFIG REQUIRED)
+    target_link_libraries(${PROJECT_NAME} PRIVATE slang::slang spirv-cross-glsl)
     target_compile_definitions(${PROJECT_NAME} PUBLIC LUMINO_USE_SLANG)
 endif()
 

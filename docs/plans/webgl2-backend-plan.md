@@ -1,6 +1,6 @@
 # WebGL2 (OpenGL ES 3.0) バックエンド対応 計画書
 
-- ステータス: P0 / P1 完了。P2 (シェーダコンパイルパイプライン) 待ち
+- ステータス: P0 / P1 / P2 完了。P3 (WebGL2 バックエンド) 待ち
 - 作成日: 2026-08-30
 - 関連資料:
   - `AGENTS.md` "コアモジュールのメモリ使用の注意点" (WASM の 32bit メモリ制約)
@@ -286,15 +286,38 @@ struct TargetBindingLayout2 {
 - シリアライザは配列を 1 本足すだけ。GLSL 以外のターゲットでは要素数 0 なので、
   Vulkan / WebGPU の `.lcsh` の増加はカウントのフィールド分だけで済む。
 
-### P2: シェーダコンパイルパイプライン
+### P2: シェーダコンパイルパイプライン - 完了
 
-5. `vcpkg.json` に SPIRV-Cross を追加。
-6. `ShaderTarget_GLSL_ES300` と `rhi::ShaderCodeFormat::GLSL` を追加。
-7. `ShaderCompiler2` に SPIR-V から ESSL 300 への変換を追加
-   (`build_combined_image_samplers` / `fixup_clipspace` / `flip_vert_y`)。
-8. combined sampler の対応表を `TargetBindingLayout2` に載せ、シリアライザを拡張する。
+5. (完了) `vcpkg.json` に SPIRV-Cross を追加。`LuminoShader` が `LUMINO_USE_SLANG` のときだけ
+   `spirv-cross-glsl` をリンクするため、ランタイム (WASM を含む) には載らない。
+6. (完了) `ShaderTarget_GLSL_ES300` (= 5, `ShaderTarget_Last` を更新) と
+   `rhi::ShaderCodeFormat::GLSL` を追加。
+7. (完了) `ShaderCompiler2::buildGlslEs300Target()` を追加。GLSL ES 300 は Slang の
+   ターゲットではなく、ビルド済みの SPIRV ターゲットの blob を SPIRV-Cross に通して作る。
+   `build_combined_image_samplers` / `fixup_clipspace` / `flip_vert_y` を有効にし、
+   バインディングと頂点属性は SPIRV のエントリポイントから引き継ぐ。
+8. (完了) `CombinedSamplerBinding2` を `TargetBindingLayout2` に載せ、`.lcsh` を
+   `FileVersion_4` に上げた。GLSL 以外のターゲットでは要素数 0 なので、
+   Vulkan / WebGPU の `.lcsh` はカウントの 2 バイトしか増えない。
+
+**実装時に判明した点**: `Compiler::set_name()` は与えた名前をそのまま保持し、識別子として
+使えない文字 (Slang が付ける `materialData.baseTexture` の `.` など) の置き換えは
+`compile()` の中で行われる。`CombinedSamplerBinding2::name` は
+`glGetUniformLocation` で引く名前なので、`compile()` の**あと**に `get_name()` で
+読み直す必要がある。
 
 ### P3: WebGL2 バックエンド
+
+**P2 で判明した追加の課題**: ESSL 300 には `layout(binding = N)` が無いのは combined sampler
+だけでなくユニフォームブロックも同じで、こちらは `glGetUniformBlockIndex` に渡す
+**ブロック名**が要る。SPIRV-Cross が出すブロック名は `ViewParams_std140` のように
+Slang の**型名**由来であり、`TargetBinding2::name` (インスタンス名。暗黙の CB では空文字列)
+からは導けない。5 章の「シェーダバイナリのスキーマに追加が必要なのは combined sampler の
+対応表だけ」はこの点で不足している。P3 の着手時に、次のどちらかを選ぶ。
+
+- `ShaderCompiler2` 側で `set_name()` によりブロック名を (set, binding) から決まる名前へ
+  書き換える。スキーマの追加は不要になる。
+- `TargetBinding2` に GLSL 用のブロック名を足す。スキーマが 1 フィールド増える。
 
 9. `Backend` enum に WebGL2 を追加、`DeviceFactory_Web.cpp` の「WebGPU のみ」の
    ハードエラーを緩和、`ShaderPass.cpp:21-32` の `backendToShaderTarget` /

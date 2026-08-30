@@ -15,6 +15,7 @@ public:
         FileVersion_1 = 1,
         FileVersion_2 = 2,   // ParameterBlockLayout2 に GlobalMemberInfo を追加
         FileVersion_3 = 3,   // UnifiedShader2::sourceName を追加
+        FileVersion_4 = 4,   // TargetBindingLayout2 に CombinedSamplerBinding2 を追加
         FileVersion_Last,
         FileVersion_Current = FileVersion_Last - 1,
     };

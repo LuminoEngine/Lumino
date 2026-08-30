@@ -14,6 +14,7 @@ namespace fs = std::filesystem;
 class UnifiedShader2;
 class WgslValidator;
 struct GlobalShaderPass2;
+struct TargetEntryPoint2;
 
 class ShaderCompiler2 final {
 public:
@@ -44,8 +45,16 @@ private:
     VoidResult buildParameterBlocks(int targetIndex);
     VoidResult buildTarget(ShaderTarget target, int targetIndex);
     VoidResult buildEntryPoint(ShaderTarget target, int targetIndex, int entryPointIndex);
-    VoidResult buildTargetShaderPass(
-        ShaderTarget target, int targetIndex, GlobalShaderPass2* globalShaderPass);
+    VoidResult buildTargetShaderPass(ShaderTarget target, GlobalShaderPass2* globalShaderPass);
+
+    /**
+     * SPIR-V のエントリポイントを SPIRV-Cross に通して GLSL ES 300 のターゲットを作る。
+     *
+     * Slang の GLSL 出力は Vulkan 風 GLSL であり ESSL ではないため、Slang のターゲットとしては
+     * 扱わず、ビルド済みの SPIRV ターゲットからの変換として後段で構築する。
+     */
+    VoidResult buildGlslEs300Target();
+    VoidResult buildGlslEs300EntryPoint(const TargetEntryPoint2* spirvEntryPoint);
 
     void traverseVariableSemantic(
         slang::VariableLayoutReflection* var,
