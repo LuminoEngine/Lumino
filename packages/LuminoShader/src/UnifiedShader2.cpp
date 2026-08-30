@@ -117,9 +117,8 @@ VoidResult UnifiedShader2::mergeTargetBindingLayout(
         }
     }
 
-    // combined sampler は同じ (テクスチャ, サンプラー) の組が頂点とフラグメントの両方に
-    // 現れるため、名前で重複を除きながら結合する。GL のテクスチャユニットはプログラム単位で
-    // 共有されるので、ここで確定した添字がそのままユニット番号になる。
+    // GL のテクスチャユニットはプログラム単位で共有されるため、名前で重複を除いた
+    // ここでの添字がそのままユニット番号になる。
     for (const CombinedSamplerBinding2& otherCombined : other.combinedSamplers) {
         auto itr = std::find_if(
             target.combinedSamplers.begin(),

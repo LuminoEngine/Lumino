@@ -47,14 +47,12 @@ private:
     VoidResult buildEntryPoint(ShaderTarget target, int targetIndex, int entryPointIndex);
     VoidResult buildTargetShaderPass(ShaderTarget target, GlobalShaderPass2* globalShaderPass);
 
-    /**
-     * SPIR-V のエントリポイントを SPIRV-Cross に通して GLSL ES 300 のターゲットを作る。
-     *
-     * Slang の GLSL 出力は Vulkan 風 GLSL であり ESSL ではないため、Slang のターゲットとしては
-     * 扱わず、ビルド済みの SPIRV ターゲットからの変換として後段で構築する。
-     */
+    // Slang の GLSL 出力は Vulkan 風 GLSL で ESSL ではないため、GLSL ES 300 は Slang の
+    // ターゲットとしては扱わず、ビルド済みの SPIRV ターゲットを SPIRV-Cross に通して作る。
     VoidResult buildGlslEs300Target();
     VoidResult buildGlslEs300EntryPoint(const TargetEntryPoint2* spirvEntryPoint);
+
+    void dumpCode(ShaderTarget target, const std::string& name, const void* data, size_t size);
 
     void traverseVariableSemantic(
         slang::VariableLayoutReflection* var,

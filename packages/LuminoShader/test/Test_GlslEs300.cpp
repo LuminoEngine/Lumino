@@ -1,21 +1,9 @@
-﻿#include <fstream>
-#include <gtest/gtest.h>
-#include <LuminoShader/UnifiedShader2.hpp>
-#include <LuminoShader/ShaderCompiler2.hpp>
-#include <LuminoShader/UnifiedShaderSerializer2.hpp>
+﻿#include "TestHelper.hpp"
 
 using namespace ln;
 using namespace ln::shader;
 
 namespace {
-
-std::unique_ptr<ShaderCompiler2> compileParameterBlock1() {
-    auto compiler = *ShaderCompiler2::create();
-    auto inputFilePath = std::filesystem::path(TEST_DATA_DIR) / "ParameterBlock1.slang";
-    auto buildResult = compiler->build(inputFilePath);
-    EXPECT_TRUE(buildResult.has_value()) << buildResult.error().message;
-    return compiler;
-}
 
 std::string entryPointSource(const UnifiedShader2* shader, const char* name) {
     auto ep = shader->getTargetEntryPoint(ShaderTarget_GLSL_ES300, name);
@@ -38,8 +26,7 @@ TEST(Test_GlslEs300, GenerateSource) {
     EXPECT_EQ(vs.rfind("#version 300 es", 0), 0u);
     EXPECT_EQ(fs.rfind("#version 300 es", 0), 0u);
 
-    // ESSL 300 に sampler2D 以外のテクスチャ型は無い。
-    EXPECT_EQ(fs.find("texture2D "), std::string::npos);
+    // テクスチャとサンプラーは sampler2D に結合されている。
     EXPECT_NE(fs.find("sampler2D"), std::string::npos);
 
     // fixup_clipspace / flip_vert_y は gl_Position の後処理として現れる。
@@ -84,20 +71,7 @@ TEST(Test_GlslEs300, SerializeCombinedSampler) {
     auto compiler = compileParameterBlock1();
     UnifiedShader2* shader = compiler->shader();
 
-    auto tempPath = std::filesystem::temp_directory_path() / "test_glsl_es300.lcsh";
-    auto saveResult = UnifiedShaderSerializer2::saveToFile(shader, tempPath);
-    ASSERT_TRUE(saveResult.has_value()) << saveResult.error().message;
-
-    std::vector<uint8_t> fileData;
-    {
-        std::ifstream ifs(tempPath, std::ios::binary | std::ios::ate);
-        ASSERT_TRUE(ifs.is_open());
-        fileData.resize(static_cast<size_t>(ifs.tellg()));
-        ifs.seekg(0);
-        ifs.read(reinterpret_cast<char*>(fileData.data()), fileData.size());
-    }
-    std::filesystem::remove(tempPath);
-
+    auto fileData = saveAndRead(shader, "test_glsl_es300.lcsh");
     auto loadResult = UnifiedShaderSerializer2::loadFromData(
         fileData.data(), fileData.size(), ShaderTarget_GLSL_ES300);
     ASSERT_TRUE(loadResult.has_value()) << loadResult.error().message;

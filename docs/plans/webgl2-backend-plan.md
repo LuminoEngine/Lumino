@@ -288,23 +288,16 @@ struct TargetBindingLayout2 {
 
 ### P2: シェーダコンパイルパイプライン - 完了
 
-5. (完了) `vcpkg.json` に SPIRV-Cross を追加。`LuminoShader` が `LUMINO_USE_SLANG` のときだけ
-   `spirv-cross-glsl` をリンクするため、ランタイム (WASM を含む) には載らない。
-6. (完了) `ShaderTarget_GLSL_ES300` (= 5, `ShaderTarget_Last` を更新) と
-   `rhi::ShaderCodeFormat::GLSL` を追加。
-7. (完了) `ShaderCompiler2::buildGlslEs300Target()` を追加。GLSL ES 300 は Slang の
-   ターゲットではなく、ビルド済みの SPIRV ターゲットの blob を SPIRV-Cross に通して作る。
-   `build_combined_image_samplers` / `fixup_clipspace` / `flip_vert_y` を有効にし、
-   バインディングと頂点属性は SPIRV のエントリポイントから引き継ぐ。
-8. (完了) `CombinedSamplerBinding2` を `TargetBindingLayout2` に載せ、`.lcsh` を
-   `FileVersion_4` に上げた。GLSL 以外のターゲットでは要素数 0 なので、
-   Vulkan / WebGPU の `.lcsh` はカウントの 2 バイトしか増えない。
+5. (完了) `vcpkg.json` に SPIRV-Cross を追加。`LUMINO_USE_SLANG` のときだけリンクするため、
+   ランタイム (WASM を含む) には載らない。
+6. (完了) `ShaderTarget_GLSL_ES300` と `rhi::ShaderCodeFormat::GLSL` を追加。
+7. (完了) `ShaderCompiler2::buildGlslEs300Target()` で SPIRV ターゲットの blob を
+   SPIRV-Cross に通す。
+8. (完了) `CombinedSamplerBinding2` を載せ、`.lcsh` を `FileVersion_4` に上げた。
 
-**実装時に判明した点**: `Compiler::set_name()` は与えた名前をそのまま保持し、識別子として
-使えない文字 (Slang が付ける `materialData.baseTexture` の `.` など) の置き換えは
-`compile()` の中で行われる。`CombinedSamplerBinding2::name` は
-`glGetUniformLocation` で引く名前なので、`compile()` の**あと**に `get_name()` で
-読み直す必要がある。
+**実装時に判明した点**: 識別子として使えない文字 (`materialData.baseTexture` の `.` など) の
+置き換えは `set_name()` ではなく `compile()` の中で行われる。`glGetUniformLocation` で引く
+名前は `compile()` の**あと**に `get_name()` で読み直す必要がある。
 
 ### P3: WebGL2 バックエンド
 

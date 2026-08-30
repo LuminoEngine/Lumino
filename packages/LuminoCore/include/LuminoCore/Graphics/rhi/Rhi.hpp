@@ -238,9 +238,8 @@ struct SamplerDesc {
 
 enum class ShaderCodeFormat {
     SPIRV,
-    WGSL,
-    // GLSL ES 300 (WebGL2 / OpenGL ES 3.0)。テキストであり、末尾の NUL は含まない。
-    GLSL,
+    WGSL, // テキストであり、末尾の NUL は含まない
+    GLSL, // GLSL ES 300 (WebGL2 / OpenGL ES 3.0)。テキストであり、末尾の NUL は含まない
 };
 
 struct ShaderModuleDesc {

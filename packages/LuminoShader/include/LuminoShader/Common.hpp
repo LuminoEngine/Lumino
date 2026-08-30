@@ -21,9 +21,7 @@ enum ShaderTarget {
     ShaderTarget_DXIL = 2,
     ShaderTarget_WGSL = 3,
     ShaderTarget_METAL = 4,
-    // WebGL2 / OpenGL ES 3.0 向けの GLSL ES 300。Slang からは直接出力せず、
-    // SPIR-V を SPIRV-Cross に通して生成する。
-    ShaderTarget_GLSL_ES300 = 5,
+    ShaderTarget_GLSL_ES300 = 5, // WebGL2 / OpenGL ES 3.0 向けの GLSL ES 300
 
     // ターゲットを追加したらここも更新する。
     ShaderTarget_Last = ShaderTarget_GLSL_ES300,

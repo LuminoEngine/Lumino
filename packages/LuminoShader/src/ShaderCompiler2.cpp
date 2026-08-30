@@ -274,11 +274,7 @@ VoidResult ShaderCompiler2::buildModule() {
         if (!r) return r;
     }
 
-    // GLSL ES 300 は Slang のターゲットではなく、SPIRV ターゲットからの変換で作る。
-    {
-        auto r1 = buildGlslEs300Target();
-        if (!r1) return r1;
-    }
+    if (auto r = buildGlslEs300Target(); !r) return r;
 
     {
         auto r1 = mergeTargetBindingLayouts();
@@ -623,16 +619,9 @@ VoidResult ShaderCompiler2::buildEntryPoint(
                                        (message.empty() ? "" : " " + message));
         }
 
-        // コードをダンプする。
-        if (m_dump) {
-            const char* name = entryPointReflection->getName();
-            fs::path filePath = m_dumpDirPath / (std::string(getTargetName(target)) + "." + name + getExt(target));
-            std::ofstream dumpStream(filePath, std::ios::binary);
-            if (dumpStream) {
-                dumpStream.write(
-                    reinterpret_cast<const char*>(kernelBlob->getBufferPointer()), kernelBlob->getBufferSize());
-            }
-        }
+        dumpCode(
+            target, entryPointReflection->getName(),
+            kernelBlob->getBufferPointer(), kernelBlob->getBufferSize());
 
         // WGSL を検証する。
         // Slang は WGSL 固有の制約を検査しないため、ここで実際の WebGPU 実装に通しておく。
@@ -884,16 +873,24 @@ VoidResult ShaderCompiler2::buildTargetShaderPass(
 }
 
 //------------------------------------------------------------------------------
-VoidResult ShaderCompiler2::buildGlslEs300Target() {
-    // 変換元は SPIRV ターゲットのエントリポイント。ここで新しいエントリポイントを追加するため、
-    // 先に対象を控えてから変換する。TargetEntryPoint2 は unique_ptr で保持されているので
-    // 追加によってポインタが無効化されることはない。
-    std::vector<const TargetEntryPoint2*> sources;
-    for (const auto& ep : m_shader->targetEntryPoints()) {
-        if (ep->target == ShaderTarget_SPIRV) sources.push_back(ep.get());
+void ShaderCompiler2::dumpCode(
+    ShaderTarget target, const std::string& name, const void* data, size_t size) {
+    if (!m_dump) return;
+    fs::path filePath = m_dumpDirPath / (std::string(getTargetName(target)) + "." + name + getExt(target));
+    std::ofstream dumpStream(filePath, std::ios::binary);
+    if (dumpStream) {
+        dumpStream.write(static_cast<const char*>(data), static_cast<std::streamsize>(size));
     }
+}
 
-    for (const TargetEntryPoint2* src : sources) {
+//------------------------------------------------------------------------------
+VoidResult ShaderCompiler2::buildGlslEs300Target() {
+    // 変換中にエントリポイントを追加するため、先に件数を控える。TargetEntryPoint2 は
+    // unique_ptr で保持されているので、追加によってポインタが無効化されることはない。
+    const size_t count = m_shader->targetEntryPoints().size();
+    for (size_t i = 0; i < count; i++) {
+        const TargetEntryPoint2* src = m_shader->targetEntryPoints()[i].get();
+        if (src->target != ShaderTarget_SPIRV) continue;
         auto r = buildGlslEs300EntryPoint(src);
         if (!r) return r;
     }
@@ -912,13 +909,13 @@ VoidResult ShaderCompiler2::buildGlslEs300EntryPoint(const TargetEntryPoint2* sp
     if (srcBlob->data.empty() || (srcBlob->data.size() % sizeof(uint32_t)) != 0) {
         return LNSHADER_MAKE_ERROR("Invalid SPIR-V blob. (" + spirvEntryPoint->name + ")");
     }
-    std::vector<uint32_t> spirv(srcBlob->data.size() / sizeof(uint32_t));
-    memcpy(spirv.data(), srcBlob->data.data(), srcBlob->data.size());
 
     std::string source;
     std::vector<CombinedSamplerBinding2> combinedSamplers;
     try {
-        spirv_cross::CompilerGLSL compiler(std::move(spirv));
+        spirv_cross::CompilerGLSL compiler(
+            reinterpret_cast<const uint32_t*>(srcBlob->data.data()),
+            srcBlob->data.size() / sizeof(uint32_t));
 
         auto options = compiler.get_common_options();
         options.version = 300;
@@ -930,38 +927,29 @@ VoidResult ShaderCompiler2::buildGlslEs300EntryPoint(const TargetEntryPoint2* sp
         compiler.set_common_options(options);
 
         // ESSL 300 は sampler2D しか持たないため、テクスチャとサンプラーを結合する。
-        // サンプラーを伴わないテクスチャ読み出し (texelFetch など) は現状のシェーダに無いため
-        // ダミーサンプラーは生成しない。必要になったら build_dummy_sampler_for_combined_images()
-        // をここより先に呼ぶ。
+        // サンプラーを伴わないテクスチャ読み出し (texelFetch など) が必要になったら、
+        // ここより先に build_dummy_sampler_for_combined_images() を呼ぶ。
         compiler.build_combined_image_samplers();
-        std::vector<spirv_cross::VariableID> combinedIds;
         for (const auto& remap : compiler.get_combined_image_samplers()) {
-            const uint32_t imageId = static_cast<uint32_t>(remap.image_id);
-            const uint32_t samplerId = static_cast<uint32_t>(remap.sampler_id);
-            const std::string imageName = compiler.get_name(remap.image_id);
-            const std::string samplerName = (samplerId != 0) ? compiler.get_name(remap.sampler_id) : std::string();
-
-            // 名前が落ちた SPIR-V でも一意になるよう、空なら ID で代用する。
+            if (remap.sampler_id == 0) {
+                return LNSHADER_MAKE_ERROR(
+                    "Texture without sampler is not supported. (" + compiler.get_name(remap.image_id) + ")");
+            }
             compiler.set_name(
                 remap.combined_id,
-                "SPIRV_Cross_Combined" +
-                    (imageName.empty() ? "_" + std::to_string(imageId) : imageName) +
-                    (samplerName.empty() ? "_" + std::to_string(samplerId) : samplerName));
+                "SPIRV_Cross_Combined" + compiler.get_name(remap.image_id) +
+                    compiler.get_name(remap.sampler_id));
 
             CombinedSamplerBinding2 c;
             c.textureSetIndex = static_cast<int16_t>(
                 compiler.get_decoration(remap.image_id, spv::DecorationDescriptorSet));
             c.textureBindingIndex = static_cast<int16_t>(
                 compiler.get_decoration(remap.image_id, spv::DecorationBinding));
-            c.samplerSetIndex = (samplerId != 0)
-                ? static_cast<int16_t>(compiler.get_decoration(remap.sampler_id, spv::DecorationDescriptorSet))
-                : static_cast<int16_t>(-1);
-            c.samplerBindingIndex = (samplerId != 0)
-                ? static_cast<int16_t>(compiler.get_decoration(remap.sampler_id, spv::DecorationBinding))
-                : static_cast<int16_t>(-1);
-
+            c.samplerSetIndex = static_cast<int16_t>(
+                compiler.get_decoration(remap.sampler_id, spv::DecorationDescriptorSet));
+            c.samplerBindingIndex = static_cast<int16_t>(
+                compiler.get_decoration(remap.sampler_id, spv::DecorationBinding));
             combinedSamplers.push_back(std::move(c));
-            combinedIds.push_back(remap.combined_id);
         }
 
         source = compiler.compile();
@@ -969,8 +957,9 @@ VoidResult ShaderCompiler2::buildGlslEs300EntryPoint(const TargetEntryPoint2* sp
         // Slang が付ける "materialData.baseTexture" のような名前には識別子として使えない
         // 文字が含まれ、SPIRV-Cross が compile() の中で置き換える。glGetUniformLocation で
         // 引くのは置き換え後の名前なので、ここで読み直す。
-        for (size_t i = 0; i < combinedSamplers.size(); i++) {
-            combinedSamplers[i].name = compiler.get_name(combinedIds[i]);
+        size_t i = 0;
+        for (const auto& remap : compiler.get_combined_image_samplers()) {
+            combinedSamplers[i++].name = compiler.get_name(remap.combined_id);
         }
     }
     catch (const spirv_cross::CompilerError& e) {
@@ -978,16 +967,7 @@ VoidResult ShaderCompiler2::buildGlslEs300EntryPoint(const TargetEntryPoint2* sp
             "SPIRV-Cross failed. (" + spirvEntryPoint->name + ") " + e.what());
     }
 
-    // コードをダンプする。
-    if (m_dump) {
-        fs::path filePath = m_dumpDirPath /
-            (std::string(getTargetName(ShaderTarget_GLSL_ES300)) + "." + spirvEntryPoint->name +
-             getExt(ShaderTarget_GLSL_ES300));
-        std::ofstream dumpStream(filePath, std::ios::binary);
-        if (dumpStream) {
-            dumpStream.write(source.data(), static_cast<std::streamsize>(source.size()));
-        }
-    }
+    dumpCode(ShaderTarget_GLSL_ES300, spirvEntryPoint->name, source.data(), source.size());
 
     Blob* codeBlob = m_shader->createBlob();
     codeBlob->data.assign(source.begin(), source.end());
