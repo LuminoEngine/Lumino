@@ -28,15 +28,15 @@ describe("types.ts SIZEOF_* layout constants", () => {
         expect(SIZEOF_DEPTH_STENCIL_ATTACHMENT_DESC).toBe(20);
     });
 
-    it("SIZEOF_RENDER_PASS_DESC = count(4) + colorAttachments[8]*24(192) + depthStencil(20) + shaderPassName ptr(4) + sortMode(4)", () => {
-        expect(LN_MAX_COLOR_ATTACHMENTS).toBe(8);
+    it("SIZEOF_RENDER_PASS_DESC = count(4) + colorAttachments[4]*24(96) + depthStencil(20) + shaderPassName ptr(4) + sortMode(4)", () => {
+        expect(LN_MAX_COLOR_ATTACHMENTS).toBe(4);
         const expected =
             4 +
             LN_MAX_COLOR_ATTACHMENTS * SIZEOF_COLOR_ATTACHMENT_DESC +
             SIZEOF_DEPTH_STENCIL_ATTACHMENT_DESC +
             4 + // shaderPassName (const char*)
             4;  // sortMode (uint32_t)
-        expect(expected).toBe(224);
+        expect(expected).toBe(128);
         expect(SIZEOF_RENDER_PASS_DESC).toBe(expected);
     });
 

@@ -1,6 +1,6 @@
 # WebGL2 (OpenGL ES 3.0) バックエンド対応 計画書
 
-- ステータス: 計画 (未着手)
+- ステータス: P0 / P1 完了。P2 (シェーダコンパイルパイプライン) 待ち
 - 作成日: 2026-08-30
 - 関連資料:
   - `AGENTS.md` "コアモジュールのメモリ使用の注意点" (WASM の 32bit メモリ制約)
@@ -118,7 +118,7 @@ SPIRV-Cross の `build_combined_image_samplers()` で結合できるが、実行
 
 **本計画で唯一、シェーダバイナリのスキーマに追加が必要な箇所。**
 GLSL ターゲット専用の `TargetBindingLayout2` に載せることで、Vulkan / WebGPU 側は
-完全に無変更かつ無コストにできる。
+完全に無変更かつ無コストにできる。具体的なスキーマは P1 で確定した (8 章を参照)。
 
 なお「ビルド時に一度だけ逆引き表を解決して保持する」仕組みは
 `ShaderPass::materialSamplerTextureNames()` に既にあるため、発想を流用できる。
@@ -202,9 +202,9 @@ blit すること。`acquireNextTexture()` が `TextureView*` を返す契約は
 
 | 定義 | 問題 | 対応案 |
 |---|---|---|
-| `LN_MAX_COLOR_ATTACHMENTS = 8` (`lumino.h:131`) | ES 3.0 の `MAX_DRAW_BUFFERS` 保証下限は 4 | 上限を 4 に下げる。`GBuffer.slang` は 3 本なので実害なし |
-| `LN_TEXTURE_FORMAT_BGRA8_UNORM` / `_SRGB` (`lumino_types.h:148-149`) | WebGL2 は内部フォーマットとして持たず、スウィズルも使えないためエミュレート不可 | 公開 enum から外すか deprecated にし、RGBA8 に寄せる |
-| `LN_TEXTURE_FORMAT_RGBA32_FLOAT` (`lumino_types.h:155`) | ES 3.0 では既定で renderable でも filterable でもない (`EXT_color_buffer_float` / `OES_texture_float_linear` 依存) | RGBA16_FLOAT を推奨フォーマットとして案内する |
+| `LN_MAX_COLOR_ATTACHMENTS = 8` | ES 3.0 の `MAX_DRAW_BUFFERS` 保証下限は 4 | (P1 で実施) 上限を 4 に下げた。`GBuffer.slang` は 3 本なので実害なし |
+| `LN_TEXTURE_FORMAT_BGRA8_UNORM` / `_SRGB` | WebGL2 は内部フォーマットとして持たず、スウィズルも使えないためエミュレート不可 | (P1 で実施) 列挙値は残したまま deprecated にし、RGBA8 に寄せた |
+| `LN_TEXTURE_FORMAT_RGBA32_FLOAT` | ES 3.0 では既定で renderable でも filterable でもない (`EXT_color_buffer_float` / `OES_texture_float_linear` 依存) | (P1 で実施) 注記を入れ、RGBA16_FLOAT を推奨とした |
 | sRGB のレンダーターゲット | ES 3.0 / WebGL2 に `GL_FRAMEBUFFER_SRGB` の制御が無い (`EXT_sRGB_write_control`)。SRGB8_ALPHA8 は常に変換が入る | Vulkan / WebGPU と挙動が一致するか実測で確認する |
 
 ## 6. シェーダバイナリのサイズとメモリ
@@ -248,11 +248,43 @@ Lumino をネイティブで ARM Windows に出す予定が生じた場合は、
    コンストラクタでその数だけ確保する。`getTargetShaderPassId()` は、古い `.lcsh` を
    読み込んで配列が短い場合に備えて範囲外なら -1 を返す。
 
-### P1: 設計判断の確定 (ADR 化)
+### P1: 設計判断の確定 - 完了
 
-3. WebGL2 を Web の既定にする方針、コンピュートとストレージバッファを使わない制約、
-   MRT 上限 4、BGRA8 の廃止。公開 API の互換性に関わるため先に決める。
-4. combined sampler の対応表のスキーマ、clipspace と Y 反転の方針。
+3. (完了) 公開 API の互換性に関わる決定 (WebGL2 を Web の既定とする、自動フォールバックを
+   実装しない、MRT 上限 4、BGRA8 の deprecated 化)。記録先は `lumino.h` / `lumino_types.h` /
+   `luminojs/src/types.ts` と `docs/graphics-conventions.md`「バックエンドと機能の制約」。
+4. (完了) combined sampler の対応表のスキーマ (下記)。clipspace と Y 反転はシェーダの
+   コンパイル時に補正する方針 (3.3 / 3.4) を確定し、シェーダ作者から見た影響を
+   `docs/shader-conventions.md`「WebGL2 (GLSL ES 300) の制約」に書いた。
+
+#### combined sampler の対応表のスキーマ
+
+`TargetBindingLayout2` に GLSL ターゲット専用の配列を 1 本追加する。
+
+```cpp
+// GLSL ES 300 は sampler2D しか持たないため、(テクスチャ, サンプラー) の組ごとに
+// 結合後の変数が 1 つ生成される。その対応を保持する。GLSL 以外のターゲットでは空。
+struct CombinedSamplerBinding2 {
+    std::string name;             // 結合後の GLSL 変数名。glGetUniformLocation で引く
+    int16_t textureSetIndex;
+    int16_t textureBindingIndex;
+    int16_t samplerSetIndex;
+    int16_t samplerBindingIndex;
+};
+
+struct TargetBindingLayout2 {
+    std::vector<TargetBinding2> bindings;
+    std::vector<CombinedSamplerBinding2> combinedSamplers; // 添字がテクスチャユニット番号
+};
+```
+
+- テクスチャユニット番号は配列の添字とする。専用のフィールドは持たない。
+- `TargetBinding2` 側にユニット番号を足す案は採らない。テクスチャとサンプラーの組み合わせは
+  N 対 M になりうるため、どちらか一方に 1 つの番号として持たせられない。
+- GLSL ES 300 には `layout(binding = N)` が無いため、名前からユニフォームロケーションを引いて
+  `glUniform1i` でユニット番号を設定する。そのため `name` が必要になる。
+- シリアライザは配列を 1 本足すだけ。GLSL 以外のターゲットでは要素数 0 なので、
+  Vulkan / WebGPU の `.lcsh` の増加はカウントのフィールド分だけで済む。
 
 ### P2: シェーダコンパイルパイプライン
 
@@ -286,13 +318,10 @@ Lumino をネイティブで ARM Windows に出す予定が生じた場合は、
 - GLSL ES の生成経路は SPIR-V から SPIRV-Cross。Slang の GLSL 出力は使わない。
 - Y 反転と clipspace の補正はシェーダのコンパイル時に行う (SPIRV-Cross のオプション)。
   実行時のコストを他バックエンドに持ち込まない。
+- 決定内容は ADR ではなく公開ヘッダと規約ドキュメントに書く。ここで決まる制約はクライアントが
+  日常的に踏むものなので、別ファイルの決定記録より目に入りやすい。
 
 ### 要判断事項
 
-- combined sampler の対応表を `TargetBindingLayout2` にどう載せるか (P1-4 で ADR 化)。
-- `LN_MAX_COLOR_ATTACHMENTS` を 4 に下げるか、8 のまま「4 超は WebGL2 非対応」と
-  ドキュメントに書くか。
-- `LN_TEXTURE_FORMAT_BGRA8_UNORM` を削除するか deprecated に留めるか。
-  既存クライアントへの影響を確認してから決める。
 - デスクトップの GL ローダの選定 (ANGLE 前提で glad / EGL のどちらを使うか)。
 - sRGB レンダーターゲットの挙動が Vulkan / WebGPU と一致するかの実測。

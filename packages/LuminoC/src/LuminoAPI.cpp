@@ -667,7 +667,7 @@ static_assert(sizeof(LNColorAttachmentDesc) == 24,
     "LNColorAttachmentDesc のレイアウトが変わりました。types.ts の SIZEOF_COLOR_ATTACHMENT_DESC を更新してください");
 static_assert(sizeof(LNDepthStencilAttachmentDesc) == 20,
     "LNDepthStencilAttachmentDesc のレイアウトが変わりました。types.ts の SIZEOF_DEPTH_STENCIL_ATTACHMENT_DESC を更新してください");
-static_assert(sizeof(LNRenderPassDesc) == 224,
+static_assert(sizeof(LNRenderPassDesc) == 128,
     "LNRenderPassDesc のレイアウトが変わりました。types.ts の SIZEOF_RENDER_PASS_DESC と Renderer.ts の _serializeDesc を更新してください");
 static_assert(sizeof(LNVertex) == 64,
     "LNVertex のレイアウトが変わりました。types.ts の SIZEOF_VERTEX を更新してください");

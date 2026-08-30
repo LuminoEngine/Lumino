@@ -135,16 +135,19 @@ export enum BuiltinShader {
     StencilMask = 2,
 }
 
-/** テクスチャフォーマット (C の LNTextureFormat に対応)。 */
+/** テクスチャフォーマット (C の LNTextureFormat に対応。各値の制約は同ヘッダを参照)。 */
 export enum TextureFormat {
     Undefined       = 0,
+    /** @deprecated WebGL2 でエミュレートできません。`RGBA8_UNORM` を使ってください。 */
     BGRA8_UNORM     = 1,
+    /** @deprecated WebGL2 でエミュレートできません。`RGBA8_UNORM_SRGB` を使ってください。 */
     BGRA8_UNORM_SRGB = 2,
     RGBA8_UNORM     = 3,
     RGBA8_UNORM_SRGB = 4,
     R8_UNORM        = 7,
     RG8_UNORM       = 8,
     RGBA16_FLOAT    = 9,
+    /** @note OpenGL ES 3.0 では拡張依存。HDR には `RGBA16_FLOAT` を使ってください。 */
     RGBA32_FLOAT    = 10,
 }
 
@@ -154,8 +157,8 @@ export type Handle = number;
 /** NULL ハンドルを表す番兵値。 */
 export const LN_NULL_HANDLE: Handle = 0;
 
-/** 同時に使用できるカラーアタッチメントの最大数。 */
-export const LN_MAX_COLOR_ATTACHMENTS = 8;
+/** 同時に使用できるカラーアタッチメントの最大数 (C の LN_MAX_COLOR_ATTACHMENTS に対応)。 */
+export const LN_MAX_COLOR_ATTACHMENTS = 4;
 
 /**
  * カラーアタッチメントの設定。
@@ -256,12 +259,8 @@ export const SIZEOF_DEPTH_STENCIL_ATTACHMENT_DESC = 20;
 //         depthLoadOp(u32,12) stencilLoadOp(u32,16)
 
 /** wasm メモリ上の `LNRenderPassDesc` のバイトサイズ。 */
-export const SIZEOF_RENDER_PASS_DESC = 224;
-// レイアウト: colorAttachmentCount(u32,0)
-//         colorAttachments[8](24*8=192, offset 4)
-//         depthStencil(20, offset 196)
-//         shaderPassName(ptr,216)
-//         sortMode(u32,220)
+export const SIZEOF_RENDER_PASS_DESC = 128;
+// レイアウトは serialize.ts の writeRenderPassDesc を参照。
 
 /** wasm メモリ上の `LNInstanceInitializeSettings` のバイトサイズ。 */
 export const SIZEOF_INSTANCE_INIT_SETTINGS = 8;

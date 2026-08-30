@@ -83,10 +83,10 @@ describe("writeRenderPassDesc", () => {
         writeRenderPassDesc(view, {}, 0);
 
         expect(view.getUint32(0, true)).toBe(0); // colorAttachmentCount
-        expect(view.getUint32(196, true)).toBe(0); // depthStencil.depthBuffer
-        expect(view.getFloat32(200, true)).toBe(1.0); // depthStencil.clearDepth デフォルト
-        expect(view.getUint32(216, true)).toBe(0); // shaderPassNamePtr
-        expect(view.getUint32(220, true)).toBe(0); // sortMode デフォルト = Stable
+        expect(view.getUint32(100, true)).toBe(0); // depthStencil.depthBuffer
+        expect(view.getFloat32(104, true)).toBe(1.0); // depthStencil.clearDepth デフォルト
+        expect(view.getUint32(120, true)).toBe(0); // shaderPassNamePtr
+        expect(view.getUint32(124, true)).toBe(0); // sortMode デフォルト = Stable
     });
 
     it("colorAttachments を offset 4 + i*24 に書き込む", () => {
@@ -118,16 +118,16 @@ describe("writeRenderPassDesc", () => {
         expect(view.getUint32(28 + 20, true)).toBe(LoadOp.Clear);
     });
 
-    it("colorAttachments は LN_MAX_COLOR_ATTACHMENTS (8件) で打ち切られる", () => {
+    it("colorAttachments は LN_MAX_COLOR_ATTACHMENTS (4件) で打ち切られる", () => {
         const view = makeView(SIZEOF_RENDER_PASS_DESC);
         const desc: RenderPassDesc = {
             colorAttachments: Array.from({ length: 10 }, (_, i) => ({ renderTarget: i + 1 })),
         };
         writeRenderPassDesc(view, desc, 0);
-        expect(view.getUint32(0, true)).toBe(8);
+        expect(view.getUint32(0, true)).toBe(4);
     });
 
-    it("depthStencil を offset 196 に書き込む", () => {
+    it("depthStencil を offset 100 に書き込む", () => {
         const view = makeView(SIZEOF_RENDER_PASS_DESC);
         const desc: RenderPassDesc = {
             depthStencil: {
@@ -140,7 +140,7 @@ describe("writeRenderPassDesc", () => {
         };
         writeRenderPassDesc(view, desc, 0);
 
-        const base = 196;
+        const base = 100;
         expect(view.getUint32(base + 0, true)).toBe(3);
         expect(view.getFloat32(base + 4, true)).toBeCloseTo(0.5, 6);
         expect(view.getUint32(base + 8, true)).toBe(2);
@@ -148,11 +148,11 @@ describe("writeRenderPassDesc", () => {
         expect(view.getUint32(base + 16, true)).toBe(LoadOp.Load);
     });
 
-    it("shaderPassNamePtr を offset 216、sortMode を offset 220 に書き込む", () => {
+    it("shaderPassNamePtr を offset 120、sortMode を offset 124 に書き込む", () => {
         const view = makeView(SIZEOF_RENDER_PASS_DESC);
         writeRenderPassDesc(view, { sortMode: SortMode.BackToFront }, 0x1234);
 
-        expect(view.getUint32(216, true)).toBe(0x1234);
-        expect(view.getUint32(220, true)).toBe(SortMode.BackToFront);
+        expect(view.getUint32(120, true)).toBe(0x1234);
+        expect(view.getUint32(124, true)).toBe(SortMode.BackToFront);
     });
 });

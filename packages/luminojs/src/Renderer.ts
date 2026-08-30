@@ -15,7 +15,7 @@ import {
 import { writeRenderPassDesc, writeTransform } from "./serialize";
 
 export class Renderer extends LuminoObject {
-    // LNRenderPassDesc 用の事前確保 WASM バッファ (224 バイト)。
+    // LNRenderPassDesc 用の事前確保 WASM バッファ。
     // 初回使用時に遅延生成し、Renderer が dispose されるときに解放する。
     private _descPtr = 0;
     private _descView: DataView | null = null;

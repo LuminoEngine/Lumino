@@ -5,6 +5,7 @@ import {
     LoadOp,
     SIZEOF_RENDER_PASS_DESC,
     SIZEOF_COLOR_ATTACHMENT_DESC,
+    SIZEOF_DEPTH_STENCIL_ATTACHMENT_DESC,
 } from "./types";
 
 //------------------------------------------------------------------------------
@@ -21,22 +22,22 @@ import {
 /**
  * `RenderPassDesc` を DataView に書き込む。
  *
- * C レイアウト (wasm32, 4 バイトアライン、合計 224 バイト):
+ * C レイアウト (wasm32, 4 バイトアライン、合計 128 バイト):
  * ```
  * offset 0:   uint32_t colorAttachmentCount
- * offset 4:   LNColorAttachmentDesc colorAttachments[8]  (各 24 バイト)
+ * offset 4:   LNColorAttachmentDesc colorAttachments[4]  (各 24 バイト)
  *   アタッチメントごと:
  *     +0  uint32_t renderTarget
  *     +4  float    clearColor[4]
  *     +20 uint32_t loadOp
- * offset 196: LNDepthStencilAttachmentDesc depthStencil  (20 バイト)
+ * offset 100: LNDepthStencilAttachmentDesc depthStencil  (20 バイト)
  *     +0  uint32_t depthBuffer
  *     +4  float    clearDepth
  *     +8  uint32_t clearStencil
  *     +12 uint32_t depthLoadOp
  *     +16 uint32_t stencilLoadOp
- * offset 216: const char* shaderPassName  (ポインタ, 4 バイト)
- * offset 220: LNSortMode sortMode         (uint32_t, 4 バイト)
+ * offset 120: const char* shaderPassName  (ポインタ, 4 バイト)
+ * offset 124: LNSortMode sortMode         (uint32_t, 4 バイト)
  * ```
  *
  * @param view              書き込み先 (少なくとも `SIZEOF_RENDER_PASS_DESC` バイト)。
@@ -68,7 +69,7 @@ export function writeRenderPassDesc(view: DataView, desc: RenderPassDesc, shader
     }
 
     // --- デプス/ステンシル ---
-    const dsBase = 4 + LN_MAX_COLOR_ATTACHMENTS * SIZEOF_COLOR_ATTACHMENT_DESC; // 196
+    const dsBase = 4 + LN_MAX_COLOR_ATTACHMENTS * SIZEOF_COLOR_ATTACHMENT_DESC;
     const ds = desc.depthStencil;
     view.setUint32(dsBase + 0,  ds?.depthBuffer   ?? LN_NULL_HANDLE, true);
     view.setFloat32(dsBase + 4, ds?.clearDepth     ?? 1.0, true);
@@ -76,11 +77,12 @@ export function writeRenderPassDesc(view: DataView, desc: RenderPassDesc, shader
     view.setUint32(dsBase + 12, ds?.depthLoadOp    ?? LoadOp.Clear, true);
     view.setUint32(dsBase + 16, ds?.stencilLoadOp  ?? LoadOp.Clear, true);
 
-    // --- shaderPassName (offset 216 の const char*) ---
-    view.setUint32(216, shaderPassNamePtr, true);
+    // --- shaderPassName (const char*) ---
+    const nameBase = dsBase + SIZEOF_DEPTH_STENCIL_ATTACHMENT_DESC;
+    view.setUint32(nameBase, shaderPassNamePtr, true);
 
-    // --- sortMode (offset 220) ---
-    view.setUint32(220, desc.sortMode ?? 0, true);
+    // --- sortMode ---
+    view.setUint32(nameBase + 4, desc.sortMode ?? 0, true);
 }
 
 /**

@@ -84,7 +84,15 @@ typedef enum LNLogLevel {
     LN_LOG_LEVEL_DISABLE = 7,
 } LNLogLevel;
 
-/** グラフィックスバックエンド。 */
+/**
+ * グラフィックスバックエンド。
+ *
+ * DEFAULT はプラットフォームごとの既定を選びます。指定したバックエンドが使えない環境で、
+ * 別のバックエンドへ自動的に切り替えることはしません。初期化がエラーになります。
+ *
+ * @note バックエンドごとの機能の上限は docs/graphics-conventions.md の
+ *       「バックエンドと機能の制約」を参照してください。
+ */
 typedef enum LNGraphicsBackend {
     LN_GRAPHICS_BACKEND_DEFAULT = 0,
     LN_GRAPHICS_BACKEND_VULKAN = 1,
@@ -142,16 +150,29 @@ typedef enum LNBuiltinShader {
 /**
  * テクスチャフォーマット。
  * 値は内部 rhi::TextureFormat と一致します。
+ *
+ * 移植性が必要な場合は RGBA8 系と RGBA16_FLOAT を使ってください。
+ * WebGL2 (OpenGL ES 3.0) で扱えないフォーマットには個別に注記しています。
  */
 typedef enum LNTextureFormat {
     LN_TEXTURE_FORMAT_UNDEFINED = 0,
+    /**
+     * @deprecated WebGL2 には BGRA8 の内部フォーマットが無く、テクスチャスウィズルも
+     * 使えないためエミュレートできません。新規のコードでは RGBA8_UNORM を使ってください。
+     * スワップチェーンのフォーマットとして返ることがあるため、列挙自体は残しています。
+     */
     LN_TEXTURE_FORMAT_BGRA8_UNORM      = 1,
+    /** @deprecated BGRA8_UNORM と同じ理由。RGBA8_UNORM_SRGB を使ってください。 */
     LN_TEXTURE_FORMAT_BGRA8_UNORM_SRGB = 2,
     LN_TEXTURE_FORMAT_RGBA8_UNORM      = 3,
     LN_TEXTURE_FORMAT_RGBA8_UNORM_SRGB = 4,
     LN_TEXTURE_FORMAT_R8_UNORM         = 7,
     LN_TEXTURE_FORMAT_RG8_UNORM        = 8,
     LN_TEXTURE_FORMAT_RGBA16_FLOAT     = 9,
+    /**
+     * @note OpenGL ES 3.0 では既定でレンダーターゲットにもフィルタリング対象にもできません
+     * (拡張依存)。HDR のレンダーターゲットには RGBA16_FLOAT を使ってください。
+     */
     LN_TEXTURE_FORMAT_RGBA32_FLOAT     = 10,
 } LNTextureFormat;
 

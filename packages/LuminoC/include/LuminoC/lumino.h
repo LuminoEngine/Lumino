@@ -127,8 +127,8 @@ extern LUMINO_API LNResult LNWindow_ProcessEvents(LNHandle handle, LNBool* outQu
 // 定数
 //------------------------------------------------------------------------------
 
-/** 同時に指定できるカラーアタッチメントの最大数 */
-#define LN_MAX_COLOR_ATTACHMENTS 8
+/** 同時に指定できるカラーアタッチメントの最大数 (OpenGL ES 3.0 の MAX_DRAW_BUFFERS 保証下限)。 */
+#define LN_MAX_COLOR_ATTACHMENTS 4
 
 //------------------------------------------------------------------------------
 // レンダーパス記述子の構造体
