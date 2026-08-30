@@ -18,7 +18,6 @@ VoidResult VulkanTexture::init(
     m_format = desc.format;
     m_width = desc.width;
     m_height = desc.height;
-    m_ownsImage = true;
 
     VkImageCreateInfo imgInfo{};
     imgInfo.sType = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO;
@@ -127,31 +126,14 @@ VoidResult VulkanTexture::init(
     return LN_MAKE_SUCCESS();
 }
 
-VoidResult VulkanTexture::initFromExternalImage(
-    VulkanDevice* device,
-    VkImage image,
-    TextureFormat format,
-    uint32_t width,
-    uint32_t height) {
-    m_device = device;
-    m_image = image;
-    m_format = format;
-    m_width = width;
-    m_height = height;
-    m_ownsImage = false;
-    return LN_MAKE_SUCCESS();
-}
-
 void VulkanTexture::finalize() {
-    if (m_ownsImage) {
-        VkDevice dev = m_device->vkDevice();
-        VkImage img = m_image;
-        VkDeviceMemory mem = m_memory;
-        m_device->frameResources().queueDelete(m_device->currentFrameIndex(), [dev, img, mem]() {
-            if (img) vkDestroyImage(dev, img, nullptr);
-            if (mem) vkFreeMemory(dev, mem, nullptr);
-        });
-    }
+    VkDevice dev = m_device->vkDevice();
+    VkImage img = m_image;
+    VkDeviceMemory mem = m_memory;
+    m_device->frameResources().queueDelete(m_device->currentFrameIndex(), [dev, img, mem]() {
+        if (img) vkDestroyImage(dev, img, nullptr);
+        if (mem) vkFreeMemory(dev, mem, nullptr);
+    });
     Texture::finalize();
 }
 

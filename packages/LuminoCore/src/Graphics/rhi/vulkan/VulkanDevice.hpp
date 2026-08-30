@@ -17,8 +17,6 @@ public:
     VulkanDevice();
     VoidResult init(const DeviceDesc& desc);
 
-    bool isValid() const { return m_device != VK_NULL_HANDLE; }
-
     // RHI interface
     DeviceLimits deviceLimits() const override;
     Result<Ref<SwapChain>> createSwapChain(const SwapChainDesc& desc) override;
@@ -40,7 +38,6 @@ public:
     const VkAllocationCallbacks* vulkanAllocator() const { return nullptr; }// TODO: return m_allocator.vulkanAllocator();
     VkPhysicalDevice physicalDevice() const { return m_physicalDevice; }
     VkQueue graphicsQueue() const { return m_graphicsQueue; }
-    uint32_t graphicsFamily() const { return m_graphicsQueuFamily; }
     VkCommandPool commandPool() const { return m_commandPool; }
 
     VkRenderPass getOrCreateRenderPass(const RenderPassKey& key);

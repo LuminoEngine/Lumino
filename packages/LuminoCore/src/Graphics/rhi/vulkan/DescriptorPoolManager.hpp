@@ -15,6 +15,7 @@
 
 #include <LuminoBase/Types.hpp>
 
+#include <iterator>
 #include <utility>
 #include <vector>
 #include "VulkanLoader.hpp"
@@ -87,7 +88,7 @@ private:
         // FREE_DESCRIPTOR_SET_BIT により個々のセットを解放できる。
         dpInfo.flags = VK_DESCRIPTOR_POOL_CREATE_FREE_DESCRIPTOR_SET_BIT;
         dpInfo.maxSets = SETS_PER_POOL;
-        dpInfo.poolSizeCount = 5;
+        dpInfo.poolSizeCount = static_cast<uint32_t>(std::size(poolSizes));
         dpInfo.pPoolSizes = poolSizes;
 
         VkDescriptorPool pool = VK_NULL_HANDLE;

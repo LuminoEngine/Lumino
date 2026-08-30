@@ -13,9 +13,6 @@ public:
     /** このオブジェクトが所有するテクスチャを作成する。 */
     VoidResult init(WebGPUDevice* device, const TextureDesc& desc);
 
-    /** 外部が所有する WGPUTexture (スワップチェーンのバックバッファなど) をラップする。 */
-    void initFromExternal(WGPUTexture texture, TextureFormat format, uint32_t width, uint32_t height);
-
     uint32_t width() const override { return m_width; }
     uint32_t height() const override { return m_height; }
     TextureFormat format() const override { return m_format; }
@@ -29,7 +26,6 @@ private:
     TextureFormat m_format = TextureFormat::RGBA8Unorm;
     uint32_t m_width = 0;
     uint32_t m_height = 0;
-    bool m_ownsTexture = true;
 };
 
 } // namespace ln::rhi::webgpu

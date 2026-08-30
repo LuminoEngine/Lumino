@@ -10,7 +10,6 @@
 
 namespace ln::rhi::webgpu {
 
-//------------------------------------------------------------------------------
 inline WGPUTextureFormat toWGPUTextureFormat(TextureFormat fmt) {
     switch (fmt) {
         case TextureFormat::BGRA8Unorm:        return WGPUTextureFormat_BGRA8Unorm;
@@ -27,7 +26,6 @@ inline WGPUTextureFormat toWGPUTextureFormat(TextureFormat fmt) {
     }
 }
 
-//------------------------------------------------------------------------------
 inline TextureFormat fromWGPUTextureFormat(WGPUTextureFormat fmt) {
     switch (fmt) {
         case WGPUTextureFormat_BGRA8Unorm:          return TextureFormat::BGRA8Unorm;
@@ -44,7 +42,6 @@ inline TextureFormat fromWGPUTextureFormat(WGPUTextureFormat fmt) {
     }
 }
 
-//------------------------------------------------------------------------------
 inline WGPUTextureUsage toWGPUTextureUsage(TextureUsage usage) {
     WGPUTextureUsage result = WGPUTextureUsage_None;
     if (static_cast<uint32_t>(usage) & static_cast<uint32_t>(TextureUsage::Sampled))
@@ -62,7 +59,6 @@ inline WGPUTextureUsage toWGPUTextureUsage(TextureUsage usage) {
     return result;
 }
 
-//------------------------------------------------------------------------------
 inline WGPULoadOp toWGPULoadOp(LoadOp op) {
     switch (op) {
         case LoadOp::Load:    return WGPULoadOp_Load;
@@ -72,7 +68,6 @@ inline WGPULoadOp toWGPULoadOp(LoadOp op) {
     }
 }
 
-//------------------------------------------------------------------------------
 inline WGPUStoreOp toWGPUStoreOp(StoreOp op) {
     switch (op) {
         case StoreOp::Store:    return WGPUStoreOp_Store;
@@ -81,7 +76,6 @@ inline WGPUStoreOp toWGPUStoreOp(StoreOp op) {
     }
 }
 
-//------------------------------------------------------------------------------
 inline WGPUFilterMode toWGPUFilterMode(FilterMode v) {
     switch (v) {
         case FilterMode::Nearest: return WGPUFilterMode_Nearest;
@@ -90,7 +84,6 @@ inline WGPUFilterMode toWGPUFilterMode(FilterMode v) {
     }
 }
 
-//------------------------------------------------------------------------------
 inline WGPUMipmapFilterMode toWGPUMipmapFilterMode(FilterMode v) {
     switch (v) {
         case FilterMode::Nearest: return WGPUMipmapFilterMode_Nearest;
@@ -99,7 +92,6 @@ inline WGPUMipmapFilterMode toWGPUMipmapFilterMode(FilterMode v) {
     }
 }
 
-//------------------------------------------------------------------------------
 inline WGPUAddressMode toWGPUAddressMode(AddressMode v) {
     switch (v) {
         case AddressMode::Repeat:         return WGPUAddressMode_Repeat;
@@ -109,7 +101,6 @@ inline WGPUAddressMode toWGPUAddressMode(AddressMode v) {
     }
 }
 
-//------------------------------------------------------------------------------
 inline WGPUPrimitiveTopology toWGPUPrimitiveTopology(PrimitiveTopology v) {
     switch (v) {
         case PrimitiveTopology::TriangleList:  return WGPUPrimitiveTopology_TriangleList;
@@ -121,7 +112,6 @@ inline WGPUPrimitiveTopology toWGPUPrimitiveTopology(PrimitiveTopology v) {
     }
 }
 
-//------------------------------------------------------------------------------
 inline WGPUCullMode toWGPUCullMode(CullMode v) {
     switch (v) {
         case CullMode::None:  return WGPUCullMode_None;
@@ -131,7 +121,6 @@ inline WGPUCullMode toWGPUCullMode(CullMode v) {
     }
 }
 
-//------------------------------------------------------------------------------
 inline WGPUFrontFace toWGPUFrontFace(FrontFace v) {
     switch (v) {
         case FrontFace::CCW: return WGPUFrontFace_CCW;
@@ -140,7 +129,6 @@ inline WGPUFrontFace toWGPUFrontFace(FrontFace v) {
     }
 }
 
-//------------------------------------------------------------------------------
 inline WGPUBlendFactor toWGPUBlendFactor(BlendFactor v) {
     switch (v) {
         case BlendFactor::Zero:             return WGPUBlendFactor_Zero;
@@ -157,7 +145,6 @@ inline WGPUBlendFactor toWGPUBlendFactor(BlendFactor v) {
     }
 }
 
-//------------------------------------------------------------------------------
 inline WGPUBlendOperation toWGPUBlendOperation(BlendOp v) {
     switch (v) {
         case BlendOp::Add:             return WGPUBlendOperation_Add;
@@ -169,7 +156,6 @@ inline WGPUBlendOperation toWGPUBlendOperation(BlendOp v) {
     }
 }
 
-//------------------------------------------------------------------------------
 inline WGPUCompareFunction toWGPUCompareFunction(CompareFunction v) {
     switch (v) {
         case CompareFunction::Never:        return WGPUCompareFunction_Never;
@@ -184,7 +170,6 @@ inline WGPUCompareFunction toWGPUCompareFunction(CompareFunction v) {
     }
 }
 
-//------------------------------------------------------------------------------
 inline WGPUStencilOperation toWGPUStencilOperation(StencilOp v) {
     switch (v) {
         case StencilOp::Keep:           return WGPUStencilOperation_Keep;
@@ -197,7 +182,6 @@ inline WGPUStencilOperation toWGPUStencilOperation(StencilOp v) {
     }
 }
 
-//------------------------------------------------------------------------------
 inline WGPUVertexFormat toWGPUVertexFormat(VertexFormat v) {
     switch (v) {
         case VertexFormat::Float32x2:   return WGPUVertexFormat_Float32x2;
@@ -210,7 +194,6 @@ inline WGPUVertexFormat toWGPUVertexFormat(VertexFormat v) {
     }
 }
 
-//------------------------------------------------------------------------------
 inline WGPUIndexFormat toWGPUIndexFormat(IndexFormat v) {
     switch (v) {
         case IndexFormat::Uint16: return WGPUIndexFormat_Uint16;

@@ -18,22 +18,10 @@ public:
 
     VkSemaphore imageAvailableSemaphore() const;
     VkSemaphore renderFinishedSemaphore() const;
-    uint32_t currentImageIndex() const { return m_imageIndex; }
     uint32_t currentFrame() const { return m_currentFrame; }
     CommandBuffer* getCurrentCommandBuffer() override;
 
 public:
-    struct SwapChainSupportDetails {
-        VkSurfaceCapabilitiesKHR capabilities;
-        std::vector<VkSurfaceFormatKHR> formats;
-        std::vector<VkPresentModeKHR> presentModes;
-
-        VkSurfaceTransformFlagBitsKHR preTransform;
-        VkCompositeAlphaFlagBitsKHR compositeAlpha;
-    };
-    static SwapChainSupportDetails querySwapChainSupport(
-        VkPhysicalDevice device,
-        VkSurfaceKHR surface);
     static VkSurfaceFormatKHR chooseSwapSurfaceFormat(
         const std::vector<VkSurfaceFormatKHR>& availableFormats);
 

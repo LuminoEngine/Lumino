@@ -28,11 +28,15 @@ VoidResult VulkanSwapChain::init(VulkanDevice* device, const SwapChainDesc& desc
     VkSurfaceCapabilitiesKHR caps{};
     vkGetPhysicalDeviceSurfaceCapabilitiesKHR(m_device->physicalDevice(), m_surface, &caps);
 
-    SwapChainSupportDetails swapChainSupport = querySwapChainSupport(
-        m_device->physicalDevice(),
-        m_surface);
+    uint32_t formatCount = 0;
+    vkGetPhysicalDeviceSurfaceFormatsKHR(m_device->physicalDevice(), m_surface, &formatCount, nullptr);
+    if (formatCount == 0) {
+        return LN_MAKE_ERROR("No supported surface formats.");
+    }
+    std::vector<VkSurfaceFormatKHR> formats(formatCount);
+    vkGetPhysicalDeviceSurfaceFormatsKHR(m_device->physicalDevice(), m_surface, &formatCount, formats.data());
 
-    VkSurfaceFormatKHR surfaceFormat = chooseSwapSurfaceFormat(swapChainSupport.formats);
+    VkSurfaceFormatKHR surfaceFormat = chooseSwapSurfaceFormat(formats);
     m_format = VulkanHelpers::fromVkFormat(surfaceFormat.format);
 
     m_extent = caps.currentExtent;
@@ -138,58 +142,6 @@ void VulkanSwapChain::finalize() {
     m_views.clear();
     if (m_swapchain) vkDestroySwapchainKHR(dev, m_swapchain, nullptr);
     if (m_surface) vkDestroySurfaceKHR(m_device->instance(), m_surface, nullptr);
-}
-
-VulkanSwapChain::SwapChainSupportDetails VulkanSwapChain::querySwapChainSupport(
-    VkPhysicalDevice device,
-    VkSurfaceKHR surface) {
-    SwapChainSupportDetails details;
-
-    vkGetPhysicalDeviceSurfaceCapabilitiesKHR(device, surface, &details.capabilities);
-
-    uint32_t formatCount;
-    vkGetPhysicalDeviceSurfaceFormatsKHR(device, surface, &formatCount, nullptr);
-
-    if (formatCount != 0) {
-        details.formats.resize(formatCount);
-        vkGetPhysicalDeviceSurfaceFormatsKHR(device, surface, &formatCount, details.formats.data());
-    }
-
-    uint32_t presentModeCount;
-    vkGetPhysicalDeviceSurfacePresentModesKHR(device, surface, &presentModeCount, nullptr);
-
-    if (presentModeCount != 0) {
-        details.presentModes.resize(presentModeCount);
-        vkGetPhysicalDeviceSurfacePresentModesKHR(
-            device,
-            surface,
-            &presentModeCount,
-            details.presentModes.data());
-    }
-
-    if (details.capabilities.supportedTransforms & VK_SURFACE_TRANSFORM_IDENTITY_BIT_KHR) {
-        details.preTransform = VK_SURFACE_TRANSFORM_IDENTITY_BIT_KHR;
-    }
-    else {
-        details.preTransform = details.capabilities.currentTransform;
-    }
-
-    // サポートされている composite alpha モードを探す
-    details.compositeAlpha = VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR;
-    VkCompositeAlphaFlagBitsKHR compositeAlphaFlags[4] = {
-        VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR,
-        VK_COMPOSITE_ALPHA_PRE_MULTIPLIED_BIT_KHR,
-        VK_COMPOSITE_ALPHA_POST_MULTIPLIED_BIT_KHR,
-        VK_COMPOSITE_ALPHA_INHERIT_BIT_KHR,
-    };
-    for (uint32_t i = 0; i < sizeof(compositeAlphaFlags) / sizeof(compositeAlphaFlags[0]); i++) {
-        if (details.capabilities.supportedCompositeAlpha & compositeAlphaFlags[i]) {
-            details.compositeAlpha = compositeAlphaFlags[i];
-            break;
-        }
-    }
-
-    return details;
 }
 
 VkSurfaceFormatKHR VulkanSwapChain::chooseSwapSurfaceFormat(

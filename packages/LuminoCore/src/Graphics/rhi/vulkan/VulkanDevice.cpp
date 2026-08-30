@@ -2,12 +2,8 @@
 #include "VulkanLoader.hpp"
 #include <GLFW/glfw3.h>
 
-#include <algorithm>
-#include <cassert>
 #include <cstring>
 #include <LuminoBase/Logger.hpp>
-#include <numeric>
-#include <unordered_set>
 
 #include <LuminoBase/SmallVector.hpp>
 #include "VulkanHelpers.hpp"
@@ -56,9 +52,7 @@ static VKAPI_ATTR VkBool32 VKAPI_CALL debugCallback(VkDebugUtilsMessageSeverityF
     }
 
 #if defined(_MSC_VER) && defined(_DEBUG)
-    //if (messageSeverity >= VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT) {
     __debugbreak();
-    //}
 #endif
 
     return VK_FALSE;
@@ -75,7 +69,6 @@ VoidResult VulkanDevice::init(const DeviceDesc& desc) {
         return LN_MAKE_ERROR("Vulkan loader is not available on this system.");
     }
 
-    // インスタンスを作成
     VkApplicationInfo appInfo{};
     appInfo.sType = VK_STRUCTURE_TYPE_APPLICATION_INFO;
     appInfo.pApplicationName = "Lumino";
@@ -121,8 +114,6 @@ VoidResult VulkanDevice::init(const DeviceDesc& desc) {
     // vkCreateDevice の後に volkLoadDevice() でロードする。
     volkLoadInstanceOnly(m_instance);
 
-#if 1
-    // デバッグメッセンジャーを設定
     if (desc.enableValidation) {
         VkDebugUtilsMessengerCreateInfoEXT createInfo{};
         createInfo.sType = VK_STRUCTURE_TYPE_DEBUG_UTILS_MESSENGER_CREATE_INFO_EXT;
@@ -133,7 +124,6 @@ VoidResult VulkanDevice::init(const DeviceDesc& desc) {
             LN_LOG_ERROR("Warning: Failed to set up Vulkan debug messenger.");
         }
     }
-#endif
 
     // 物理デバイスを選択
     uint32_t deviceCount = 0;
@@ -194,7 +184,7 @@ VoidResult VulkanDevice::init(const DeviceDesc& desc) {
 
     // リソース管理サブシステム
     m_descriptorPoolManager.init(m_device);
-    m_stagingPool.init(m_device, m_physicalDevice, this);
+    m_stagingPool.init(this, m_physicalDevice);
     return LN_MAKE_SUCCESS();
 }
 
@@ -376,8 +366,7 @@ Result<Ref<Buffer>> VulkanDevice::createBuffer(const BufferDesc& desc) {
     }
 
     if (useDeviceLocal && desc.initialData && desc.size > 0) {
-        m_stagingPool.uploadImmediate(
-            m_graphicsQueue, m_commandPool, buf->handle(), desc.initialData, desc.size);
+        m_stagingPool.uploadImmediate(buf->handle(), desc.initialData, desc.size);
     }
 
     return Ref<Buffer>(buf);
@@ -399,9 +388,7 @@ Result<Ref<Texture>> VulkanDevice::createTexture(const TextureDesc& desc) {
         VkDeviceSize imageSize = static_cast<VkDeviceSize>(desc.width) * desc.height * bpp;
 
         m_stagingPool.uploadTextureImmediate(
-            m_graphicsQueue, m_commandPool,
-            tex->handle(), desc.initialData, imageSize,
-            desc.width, desc.height);
+            tex->handle(), desc.initialData, imageSize, desc.width, desc.height);
     }
 
     return Ref<Texture>(tex);
@@ -495,8 +482,7 @@ Result<Ref<VulkanCommandBuffer>> VulkanDevice::createCommandBuffer() {
 VoidResult VulkanDevice::writeBuffer(Buffer* dst, uint64_t dstOffset, const void* data, uint64_t size) {
     auto* vkBuffer = static_cast<vulkan::VulkanBuffer*>(dst);
     if (vkBuffer->isDeviceLocal()) {
-        m_stagingPool.uploadImmediate(m_graphicsQueue, m_commandPool,
-                                      vkBuffer->handle(), data, size, dstOffset);
+        m_stagingPool.uploadImmediate(vkBuffer->handle(), data, size, dstOffset);
     } else {
         void* mapped = vkBuffer->mappedMemory();
         if (!mapped) {
@@ -517,10 +503,7 @@ Result<std::vector<uint8_t>> VulkanDevice::readbackTexture(TextureView* view) {
     const VkImageLayout currentLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
 
     auto pixels = m_stagingPool.downloadTextureImmediate(
-        m_graphicsQueue, m_commandPool,
-        vkView->image(), currentLayout,
-        vkView->width(), vkView->height(),
-        vkView->vkFormat());
+        vkView->image(), currentLayout, vkView->width(), vkView->height());
 
     return pixels;
 }
@@ -584,130 +567,25 @@ VkResult VulkanDevice::checkDeviceLost(VkResult r, const char* what) {
     return r;
 }
 
-//VoidResult VulkanDevice::transitionImageLayoutImmediately(
-//    VkImage image,
-//    VkFormat format,
-//    uint32_t mipLevel,
-//    VkImageLayout oldLayout,
-//    VkImageLayout newLayout) {
-//    VkCommandBuffer commandBuffer = beginSingleTimeCommands();
-//    Result_deprecated<> result = transitionImageLayout(commandBuffer, image, format, mipLevel, oldLayout, newLayout);
-//    endSingleTimeCommands(commandBuffer);
-//    return result;
-//}
-
-
-
-// Vulkan Tutorial(https://vulkan-tutorial.com/Compute_Shader) では
-// VK_QUEUE_GRAPHICS_BIT と VK_QUEUE_COMPUTE_BIT が両方サポートされている QueueFamily を使っており、
-// Vulkan 自体も そのような QueueFamily が最低1つあることをサポートしているとのこと。
-//
-// ただここでは、 Graphics と Compute、 そして Transfer を別々にサポートしている QueueFamily を優先して探すようにする
-// …というのを昔作ったので、そのまま移植してみている。
-// 現状、実際に使っているのは Graphics Queue だけなので注意。
-//
+// Graphics と Compute を両方サポートするキューファミリを探す。
+// Vulkan はそのようなファミリが少なくとも 1 つ存在することを保証している。
+// 現状 Lumino が実際に使うのは Graphics キューだけ。
 VoidResult VulkanDevice::lookupQueueFamilies(
     VkPhysicalDevice physicalDevice,
     uint32_t* outGraphicsQueuFamily) {
-    auto graphicsFamilyIndex = UINT32_MAX;
-    auto computeFamilyIndex = UINT32_MAX;
-    auto transferFamilyIndex = UINT32_MAX;
-    auto graphicsQueueIndex = UINT32_MAX;
-    auto computeQueueIndex = UINT32_MAX;
-    auto transferQueueindex = UINT32_MAX;
-    std::vector<VkQueueFamilyProperties> queueFamilyProps;
-    std::vector<VkDeviceQueueCreateInfo> queueCreateInfos;
-    std::vector<float> queuePriorities;
-    {
-        uint32_t propCount = 0;
-        vkGetPhysicalDeviceQueueFamilyProperties(physicalDevice, &propCount, nullptr);
-        queueFamilyProps.resize(propCount);
-        vkGetPhysicalDeviceQueueFamilyProperties(physicalDevice, &propCount, queueFamilyProps.data());
-        queueCreateInfos.resize(propCount);
+    uint32_t propCount = 0;
+    vkGetPhysicalDeviceQueueFamilyProperties(physicalDevice, &propCount, nullptr);
+    std::vector<VkQueueFamilyProperties> props(propCount);
+    vkGetPhysicalDeviceQueueFamilyProperties(physicalDevice, &propCount, props.data());
 
-        // Family[0]: Graphics|Compute|Transfer, QueueCount=16
-        // 
-
-        int queueIndex = 0;
-        int totalQueueCount = 0;
-        float queuePriority = 1.0f;
-        for (int i = 0; i < propCount; ++i) {
-            queueCreateInfos[i].sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
-            queueCreateInfos[i].pNext = nullptr;
-            queueCreateInfos[i].flags = 0;
-            queueCreateInfos[i].queueCount = queueFamilyProps[i].queueCount;
-            queueCreateInfos[i].queueFamilyIndex = i;
-
-            totalQueueCount += queueFamilyProps[i].queueCount;
-
-            // Graphics queue
-            //if (m_queueFamilyProps[i].queueFlags & VK_QUEUE_GRAPHICS_BIT) {
-            if ((queueFamilyProps[i].queueFlags & VK_QUEUE_GRAPHICS_BIT) &&
-                (queueFamilyProps[i].queueFlags & VK_QUEUE_COMPUTE_BIT)) {
-                if (graphicsFamilyIndex == UINT32_MAX) {
-                    graphicsFamilyIndex = i;
-                    graphicsQueueIndex = queueIndex;
-                    queueIndex++;
-                }
-            }
-
-            // Compute queue
-            if ((queueFamilyProps[i].queueFlags & VK_QUEUE_COMPUTE_BIT) &&
-                ((queueFamilyProps[i].queueFlags & VK_QUEUE_GRAPHICS_BIT) != VK_QUEUE_GRAPHICS_BIT)) {
-                if (computeFamilyIndex == UINT32_MAX) {
-                    computeFamilyIndex = i;
-                    computeQueueIndex = queueIndex;
-                    queueIndex++;
-                }
-            }
-
-            // Transfer queue
-            if ((queueFamilyProps[i].queueFlags & VK_QUEUE_TRANSFER_BIT) &&
-                ((queueFamilyProps[i].queueFlags & VK_QUEUE_TRANSFER_BIT) != VK_QUEUE_GRAPHICS_BIT)) {
-                if (transferFamilyIndex == UINT32_MAX) {
-                    transferFamilyIndex = i;
-                    transferQueueindex = queueIndex;
-                    queueIndex++;
-                }
-            }
-        }
-
-        // 1つも見つからなければ仕方ないので共用のものを探す.
-        if (computeFamilyIndex == UINT32_MAX) {
-            for (auto i = 0u; i < propCount; ++i) {
-                if (queueFamilyProps[i].queueFlags & VK_QUEUE_COMPUTE_BIT) {
-                    if (computeFamilyIndex == UINT32_MAX) {
-                        computeFamilyIndex = i;
-                        computeQueueIndex = queueIndex;
-                        queueIndex++;
-                    }
-                }
-            }
-        }
-
-        // 1つも見つからなければ仕方ないので共用のものを探す.
-        if (transferFamilyIndex == UINT32_MAX) {
-            for (auto i = 0u; i < propCount; ++i) {
-                if (queueFamilyProps[i].queueFlags & VK_QUEUE_TRANSFER_BIT) {
-                    if (transferFamilyIndex == UINT32_MAX) {
-                        transferFamilyIndex = i;
-                        transferQueueindex = queueIndex;
-                        queueIndex++;
-                    }
-                }
-            }
-        }
-
-        uint32_t offset = 0u;
-        queuePriorities.resize(totalQueueCount);
-        for (uint32_t i = 0u; i < propCount; ++i) {
-            queueCreateInfos[i].pQueuePriorities = &queuePriorities[offset];
-            offset += queueCreateInfos[i].queueCount;
+    constexpr VkQueueFlags required = VK_QUEUE_GRAPHICS_BIT | VK_QUEUE_COMPUTE_BIT;
+    for (uint32_t i = 0; i < propCount; ++i) {
+        if ((props[i].queueFlags & required) == required) {
+            *outGraphicsQueuFamily = i;
+            return LN_MAKE_SUCCESS();
         }
     }
-
-    *outGraphicsQueuFamily = graphicsFamilyIndex;
-    return LN_MAKE_SUCCESS();
+    return LN_MAKE_ERROR("No queue family supporting graphics was found.");
 }
 
 } // namespace ln::rhi::vulkan

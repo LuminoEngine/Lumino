@@ -10,7 +10,6 @@ VoidResult WebGPUTexture::init(WebGPUDevice* device, const TextureDesc& desc) {
     m_width = desc.width;
     m_height = desc.height;
     m_format = desc.format;
-    m_ownsTexture = true;
 
     WGPUTextureDescriptor texDesc = WGPU_TEXTURE_DESCRIPTOR_INIT;
     texDesc.usage = toWGPUTextureUsage(desc.usage);
@@ -55,19 +54,11 @@ VoidResult WebGPUTexture::init(WebGPUDevice* device, const TextureDesc& desc) {
     return LN_MAKE_SUCCESS();
 }
 
-void WebGPUTexture::initFromExternal(WGPUTexture texture, TextureFormat format, uint32_t width, uint32_t height) {
-    m_texture = texture;
-    m_format = format;
-    m_width = width;
-    m_height = height;
-    m_ownsTexture = false;
-}
-
 void WebGPUTexture::finalize() {
-    if (m_ownsTexture && m_texture) {
+    if (m_texture) {
         wgpuTextureRelease(m_texture);
+        m_texture = nullptr;
     }
-    m_texture = nullptr;
     Texture::finalize();
 }
 

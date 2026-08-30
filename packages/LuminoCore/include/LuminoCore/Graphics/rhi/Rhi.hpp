@@ -588,17 +588,11 @@ public:
     /**
      * バッファへデータを書き込む。map/unmap をサポートしないものを含む全バックエンドで動作する。
      *
-     * 順序の契約:
-     *   - 現在フレームの CommandBuffer::submit() より前に呼べば、それ以前にエンコード済みの
-     *     コマンドからも書き込んだ内容が見える (Vulkan: 常時マップしたメモリへの memcpy、
-     *     WebGPU: queue.writeBuffer は後続の submit より前に実行される)。
-     *     上位層はこれに依存している (DynamicUniformAllocator は全 draw のエンコード後、
-     *     submit 直前にページ単位でフラッシュする)。
-     *   - 即時実行の API (WebGL2 等) を使うバックエンドは、コマンドを記録して submit() 時に
-     *     再生することでこの契約を満たすこと。draw を即時に発行してはならない。
-     *   - 裏返すと、同一フレーム内で同じ領域に複数回書くと、そのフレームの全コマンドが
-     *     最後の内容を読む。draw ごとに異なる内容が必要な場合は領域を分ける
-     *     (DynamicUniformAllocator や BatchProcessor のメッシュプールがこの方式)。
+     * 順序の契約: 書き込みは現在フレームの CommandBuffer::submit() より前にまとめて反映される。
+     * したがって同一フレーム内で同じ領域に複数回書くと、そのフレームの全コマンドが最後の内容を読む。
+     * draw ごとに異なる内容が必要な場合は領域を分けること。
+     * 即時実行の API (WebGL2 等) を使うバックエンドは、コマンドを記録して submit() 時に
+     * 再生することでこの契約を満たすこと。draw を即時に発行してはならない。
      */
     virtual VoidResult writeBuffer(Buffer* dst, uint64_t dstOffset, const void* data, uint64_t size) = 0;
 

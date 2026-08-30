@@ -25,8 +25,6 @@ public:
     /** 非ブロッキング初期化を 1 ステップ進める。 */
     AsyncInitStatus pumpAsyncInit() override;
 
-    bool isValid() const { return m_device != nullptr; }
-
     // RHI インターフェース
     DeviceLimits deviceLimits() const override;
     Result<Ref<SwapChain>> createSwapChain(const SwapChainDesc& desc) override;

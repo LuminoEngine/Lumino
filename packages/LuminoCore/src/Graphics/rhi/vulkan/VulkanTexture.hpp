@@ -7,14 +7,6 @@ class VulkanTexture final : public Texture {
 public:
     VulkanTexture();
     VoidResult init(VulkanDevice* device, VkPhysicalDevice physicalDevice, const TextureDesc& desc);
-    /** 外部が所有する VkImage (スワップチェーンのイメージなど) をラップする。 */
-    VoidResult initFromExternalImage(
-        VulkanDevice* device,
-        VkImage image,
-        TextureFormat format,
-        uint32_t width,
-        uint32_t height);
-
     uint32_t width() const override { return m_width; }
     uint32_t height() const override { return m_height; }
     TextureFormat format() const override { return m_format; }
@@ -28,8 +20,8 @@ private:
     VkImage m_image = VK_NULL_HANDLE;
     VkDeviceMemory m_memory = VK_NULL_HANDLE;
     TextureFormat m_format = TextureFormat::RGBA8Unorm;
-    uint32_t m_width = 0, m_height = 0;
-    bool m_ownsImage = true;
+    uint32_t m_width = 0;
+    uint32_t m_height = 0;
 };
 
 } // namespace ln::rhi::vulkan

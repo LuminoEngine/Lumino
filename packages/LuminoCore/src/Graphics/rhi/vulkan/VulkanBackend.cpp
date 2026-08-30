@@ -1,11 +1,9 @@
 ﻿#include <algorithm>
-#include <cassert>
-#include <cstring>
-#include <iostream>
-#include <numeric>
+#include <unordered_map>
 #include <unordered_set>
 
 #include <LuminoBase/SmallVector.hpp>
+#include "VulkanCacheKeys.hpp"
 #include "VulkanHelpers.hpp"
 #include "VulkanBuffer.hpp"
 #include "VulkanTextureView.hpp"
