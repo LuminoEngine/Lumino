@@ -271,12 +271,18 @@ LNResult LNInstance_Initialize(const LNInstanceInitializeSettings* settings) {
     ln::CoreInstance::Settings s = {};
     if (settings) {
         s.enableValidation = settings->enableValidation;
+        if (settings->canvasSelector) {
+            s.canvasSelector = settings->canvasSelector;
+        }
         switch (settings->preferredBackend) {
             case LN_GRAPHICS_BACKEND_VULKAN:
                 s.preferredBackend = ln::rhi::Backend::Vulkan;
                 break;
             case LN_GRAPHICS_BACKEND_WEBGPU:
                 s.preferredBackend = ln::rhi::Backend::WebGPU;
+                break;
+            case LN_GRAPHICS_BACKEND_WEBGL2:
+                s.preferredBackend = ln::rhi::Backend::WebGL2;
                 break;
             case LN_GRAPHICS_BACKEND_DEFAULT:
             default:
@@ -661,7 +667,7 @@ LNResult LNDebug_GetGraphicsProfiler(LNHandle graphicsContext, LNGraphicsProfile
 // デスクトップでは異なるサイズになるため、wasm32 (__EMSCRIPTEN__) でのみ表明します。
 //------------------------------------------------------------------------------
 #ifdef __EMSCRIPTEN__
-static_assert(sizeof(LNInstanceInitializeSettings) == 8,
+static_assert(sizeof(LNInstanceInitializeSettings) == 12,
     "LNInstanceInitializeSettings のレイアウトが変わりました。types.ts の SIZEOF_INSTANCE_INIT_SETTINGS を更新してください");
 static_assert(sizeof(LNColorAttachmentDesc) == 24,
     "LNColorAttachmentDesc のレイアウトが変わりました。types.ts の SIZEOF_COLOR_ATTACHMENT_DESC を更新してください");

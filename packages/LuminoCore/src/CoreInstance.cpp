@@ -52,6 +52,7 @@ VoidResult CoreInstance::init(const Settings& settings) {
         GraphicsModule::Settings gfxSettings;
         gfxSettings.enableValidation = m_settings.enableValidation;
         gfxSettings.preferredBackend = m_settings.preferredBackend;
+        gfxSettings.canvasSelector = m_settings.canvasSelector;
         auto result = GraphicsModule::create(gfxSettings);
         if (!result) {
             return LN_FORWARD_ERROR(result);

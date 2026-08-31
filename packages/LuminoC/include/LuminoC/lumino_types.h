@@ -97,6 +97,13 @@ typedef enum LNGraphicsBackend {
     LN_GRAPHICS_BACKEND_DEFAULT = 0,
     LN_GRAPHICS_BACKEND_VULKAN = 1,
     LN_GRAPHICS_BACKEND_WEBGPU = 2,
+    /**
+     * WebGL 2.0 (OpenGL ES 3.0)。Web でのみ使用できます。
+     *
+     * Windows on ARM では Chromium が WebGPU をブロックするため、Web では最終的に
+     * これを既定にする予定です。現時点では明示的に指定した場合のみ有効になります。
+     */
+    LN_GRAPHICS_BACKEND_WEBGL2 = 3,
 } LNGraphicsBackend;
 
 /**

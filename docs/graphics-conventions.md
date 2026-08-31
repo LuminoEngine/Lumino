@@ -136,11 +136,32 @@ Lumino が想定するバックエンドは Vulkan (デスクトップ) と WebG
 | プラットフォーム | 既定 | 明示指定できるもの |
 |---|---|---|
 | デスクトップ | Vulkan | - |
-| Web | WebGL2 (移行予定。現状は WebGPU) | WebGPU |
+| Web | WebGPU (暫定。WebGL2 へ移行予定) | WebGL2 / WebGPU |
 
 Web の既定を WebGL2 にするのは、Windows on ARM の Chrome / Edge が WebGPU を既定で
 無効にしているためです。Chromium のアダプタブロックリストによるもので、プレイヤーが
 `chrome://flags` を変更しない限り WebGPU は使えず、解除のロードマップもありません。
+WebGL2 バックエンドの実装は入りましたが、ブラウザでの動作確認が済むまでは既定を
+切り替えず、`LN_GRAPHICS_BACKEND_WEBGL2` を明示した場合のみ有効になります。
+
+### WebGL2 は canvas を初期化時に決める
+
+WebGL のコンテキストは canvas に結び付いており、あとから別の canvas へ移せません。
+Lumino は初期化の直後に組み込みシェーダと既定テクスチャを構築するため、描画先の canvas は
+`LNInstance_Initialize` (TypeScript では `Runtime.initialize`) の時点で決まっている必要があります。
+
+```ts
+await Lumino.initialize({
+    backend: GraphicsBackend.WEBGL2,
+    canvasSelector: "#my_canvas",
+});
+const ctx = await GraphicsContext.createFromCanvas("#my_canvas");
+```
+
+`canvasSelector` を省略すると Emscripten の既定 canvas (`"#canvas"`) を使います。
+あとから別の canvas で `GraphicsContext` を作ろうとした場合は警告を出し、初期化時の
+canvas をそのまま使います。WebGPU と Vulkan はサーフェスを SwapChain の生成時に作るため、
+この指定を必要としません。
 
 **実行時の自動フォールバックは行いません。** 指定したバックエンドが使えない環境では
 初期化がエラーになります。自動で切り替えると、プレイヤーの環境ごとに 2 本の描画経路が

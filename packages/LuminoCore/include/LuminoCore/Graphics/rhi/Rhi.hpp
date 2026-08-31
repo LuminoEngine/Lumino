@@ -48,6 +48,7 @@ class RenderPass;
 enum class Backend {
     Vulkan,
     WebGPU,
+    WebGL2, ///< WebGL 2.0 / OpenGL ES 3.0。Web の既定バックエンド。
 };
 
 enum class TextureFormat {
@@ -319,8 +320,30 @@ struct BindGroupEntry {
     Sampler* sampler = nullptr;         // サンプラー用
 };
 
+/**
+ * GLSL ES 300 で (テクスチャ, サンプラー) を結合した sampler2D 1 つ分の情報。
+ *
+ * ESSL 300 は combined sampler しか持たないため、シェーダのコンパイル時に
+ * テクスチャとサンプラーが結合される。実行時にどのバインディングの組をどの
+ * テクスチャユニットへ流すかを決めるために、この対応表が必要になる。
+ * GLSL 以外のバックエンドはこの情報を参照しない。
+ */
+struct CombinedSamplerBinding {
+    std::string name; ///< 結合後の GLSL 変数名。glGetUniformLocation で引く。
+    uint32_t textureSet = 0;
+    uint32_t textureBinding = 0;
+    uint32_t samplerSet = 0;
+    uint32_t samplerBinding = 0;
+};
+
 struct PipelineLayoutDesc {
     std::vector<BindGroupLayoutDesc> setLayouts;
+
+    /**
+     * 結合後のサンプラーの一覧。配列の添字がそのままテクスチャユニット番号になる。
+     * GLSL ES 300 のバックエンドでのみ使用し、他のバックエンドでは空。
+     */
+    std::vector<CombinedSamplerBinding> combinedSamplers;
 };
 
 struct RenderPassLayoutDesc {
@@ -394,6 +417,17 @@ struct SwapChainDesc {
 struct DeviceDesc {
     Backend backend = Backend::Vulkan;
     bool enableValidation = false;
+
+    /**
+     * 描画先 canvas の CSS セレクタ (Web の WebGL2 バックエンドのみ)。
+     *
+     * WebGL のコンテキストは canvas に結び付いており、そのコンテキスト上でしか
+     * テクスチャもプログラムも作れない。デバイスの生成直後に組み込みシェーダと
+     * 既定テクスチャを作るため、SwapChain の生成を待たずにここで canvas が決まっている
+     * 必要がある。空の場合は Emscripten の既定 canvas ("#canvas") を使う。
+     * Vulkan / WebGPU はサーフェスを SwapChain の生成時に作るため参照しない。
+     */
+    std::string canvasSelector;
 };
 
 // ------ リソースのインターフェイス --------------------------------------------------------------------------------------------------

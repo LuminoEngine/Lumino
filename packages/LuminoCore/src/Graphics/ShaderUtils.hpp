@@ -10,6 +10,7 @@ inline shader::ShaderTarget backendToShaderTarget(rhi::Backend backend) {
     switch (backend) {
     case rhi::Backend::Vulkan: return shader::ShaderTarget_SPIRV;
     case rhi::Backend::WebGPU: return shader::ShaderTarget_WGSL;
+    case rhi::Backend::WebGL2: return shader::ShaderTarget_GLSL_ES300;
     }
     return shader::ShaderTarget_SPIRV;
 }

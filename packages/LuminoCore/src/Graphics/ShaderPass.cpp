@@ -20,6 +20,7 @@ static rhi::ShaderCodeFormat backendToCodeFormat(rhi::Backend backend) {
     switch (backend) {
         case rhi::Backend::Vulkan: return rhi::ShaderCodeFormat::SPIRV;
         case rhi::Backend::WebGPU: return rhi::ShaderCodeFormat::WGSL;
+        case rhi::Backend::WebGL2: return rhi::ShaderCodeFormat::GLSL;
     }
     return rhi::ShaderCodeFormat::SPIRV;
 }
@@ -251,6 +252,18 @@ Result<Ref<ShaderPass>> ShaderPass::buildFromUnifiedShader(
     plDesc.setLayouts[viewSetIndex] = viewLayoutDesc;
     plDesc.setLayouts[sceneSetIndex] = sceneLayoutDesc;
     plDesc.setLayouts[objectSetIndex] = objectLayoutDesc;
+
+    // GLSL ES 300 のバックエンド向けの combined sampler の対応表。
+    // 他のターゲットの .lcsh では空なので、そのまま空で渡る。
+    plDesc.combinedSamplers.reserve(targetPass->bindingLayout.combinedSamplers.size());
+    for (const auto& c : targetPass->bindingLayout.combinedSamplers) {
+        plDesc.combinedSamplers.push_back({
+            c.name,
+            static_cast<uint32_t>(c.textureSetIndex),
+            static_cast<uint32_t>(c.textureBindingIndex),
+            static_cast<uint32_t>(c.samplerSetIndex),
+            static_cast<uint32_t>(c.samplerBindingIndex)});
+    }
 
     // GlobalMemberInfo を MaterialMemberInfo へ変換する
     std::vector<MaterialMemberInfo> members;

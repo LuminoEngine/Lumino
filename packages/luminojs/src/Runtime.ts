@@ -103,7 +103,7 @@ export class Runtime {
         moduleOpts["print"]    = printFunc;
         moduleOpts["printErr"] = printErrFunc;
 
-        const preferredBackend: GraphicsBackend = GraphicsBackend.WEBGPU;
+        const preferredBackend: GraphicsBackend = options?.backend ?? GraphicsBackend.WEBGPU;
 
         this.module = await LuminoC(moduleOpts);
 
@@ -128,15 +128,26 @@ export class Runtime {
         // Lumino のグラフィックスインスタンスを初期化する。
         const m = this.module;
         const ptr = m._malloc(SIZEOF_INSTANCE_INIT_SETTINGS);
+        // canvasSelector は WebGL2 バックエンドが参照する。C 側は初期化中しか読まないため、
+        // 呼び出し後に解放してよい。
+        let selectorPtr = 0;
+        if (options?.canvasSelector) {
+            const encoded = new TextEncoder().encode(options.canvasSelector);
+            selectorPtr = m._malloc(encoded.length + 1);
+            m.HEAPU8.set(encoded, selectorPtr);
+            m.HEAPU8[selectorPtr + encoded.length] = 0; // ヌル終端
+        }
         const view = new DataView(m.HEAPU8.buffer, ptr, SIZEOF_INSTANCE_INIT_SETTINGS);
         view.setUint32(0, preferredBackend, true);
         view.setUint32(4, options?.enableValidation ? 1 : 0, true);
-        
+        view.setUint32(8, selectorPtr, true);
+
         try {
             await this.safeCallAsync(() =>
                 (API.LNInstance_Initialize as (p: number) => number | Promise<number>)(ptr));
         } finally {
             if (ptr) m._free(ptr);
+            if (selectorPtr) m._free(selectorPtr);
         }
     }
 

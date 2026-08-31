@@ -1,6 +1,6 @@
 # WebGL2 (OpenGL ES 3.0) バックエンド対応 計画書
 
-- ステータス: P0 / P1 / P2 完了。P3 (WebGL2 バックエンド) 待ち
+- ステータス: P0 / P1 / P2 / P3 完了。P4 (デスクトップ ES 3.0 と検証) 待ち
 - 作成日: 2026-08-30
 - 関連資料:
   - `AGENTS.md` "コアモジュールのメモリ使用の注意点" (WASM の 32bit メモリ制約)
@@ -299,25 +299,48 @@ struct TargetBindingLayout2 {
 置き換えは `set_name()` ではなく `compile()` の中で行われる。`glGetUniformLocation` で引く
 名前は `compile()` の**あと**に `get_name()` で読み直す必要がある。
 
-### P3: WebGL2 バックエンド
+### P3: WebGL2 バックエンド - 完了
 
 **P2 で判明した追加の課題**: ESSL 300 には `layout(binding = N)` が無いのは combined sampler
 だけでなくユニフォームブロックも同じで、こちらは `glGetUniformBlockIndex` に渡す
 **ブロック名**が要る。SPIRV-Cross が出すブロック名は `ViewParams_std140` のように
 Slang の**型名**由来であり、`TargetBinding2::name` (インスタンス名。暗黙の CB では空文字列)
-からは導けない。5 章の「シェーダバイナリのスキーマに追加が必要なのは combined sampler の
-対応表だけ」はこの点で不足している。P3 の着手時に、次のどちらかを選ぶ。
+からは導けない。
 
-- `ShaderCompiler2` 側で `set_name()` によりブロック名を (set, binding) から決まる名前へ
-  書き換える。スキーマの追加は不要になる。
-- `TargetBinding2` に GLSL 用のブロック名を足す。スキーマが 1 フィールド増える。
+(決定) **`ShaderCompiler2` 側で `set_name()` により書き換える**方を採った。スキーマの追加が
+不要で差分が小さい。名前の規則は `shader::glslUniformBlockName()` (`LuminoShader/Common.hpp`)
+に置き、コンパイラとバックエンドの両方がこれを使う。
 
-9. `Backend` enum に WebGL2 を追加、`DeviceFactory_Web.cpp` の「WebGPU のみ」の
-   ハードエラーを緩和、`ShaderPass.cpp:21-32` の `backendToShaderTarget` /
-   `backendToCodeFormat` に分岐を追加。
-10. Device / Buffer / Texture / Sampler / ShaderModule / RenderPipeline の実装。
-11. コマンド記録と再生 (3.6)、VAO キャッシュ、オフスクリーン FBO + present blit (3.5)。
-12. `readbackTexture` と Y 反転。
+9. (完了) `Backend::WebGL2` を追加。`DeviceFactory_Web.cpp` は WebGL2 / WebGPU の両方を
+   生成できるようにした。`backendToShaderTarget` / `backendToCodeFormat` に分岐を追加。
+   公開 API には `LN_GRAPHICS_BACKEND_WEBGL2` を追加した (Web の既定はまだ WebGPU のまま。
+   ブラウザでの動作確認が済む P4 で切り替える)。
+10. (完了) Device / Buffer / Texture / TextureView / Sampler / ShaderModule /
+    PipelineLayout / BindGroup / RenderPipeline を
+    `packages/LuminoCore/src/Graphics/rhi/webgl2` に実装。
+11. (完了) コマンド記録と再生 (3.6)、オフスクリーン FBO + present blit (3.5)。
+    VAO は使わず、描画ごとに頂点属性を張り直している (ES 3.0 / WebGL2 は既定 VAO が使えるため)。
+    描画数が増えて JS 呼び出しがボトルネックになったら VAO キャッシュへ差し替える。
+12. (完了) `readbackTexture`。行の反転は不要だった。`flip_vert_y` によりレンダーターゲットの
+    行 0 が画像の最上段になるため、`glReadPixels` が返す順序がそのまま RHI の契約と一致する。
+    同じ理由で viewport / scissor の y 座標変換も不要になった (4 章の想定から変わった点)。
+
+**P3 で追加した RHI / 公開 API の変更**
+
+- `rhi::PipelineLayoutDesc::combinedSamplers` (GLSL 専用。他のバックエンドでは空)。
+  `ShaderPass` が `.lcsh` の対応表から詰める。
+- `rhi::DeviceDesc::canvasSelector` と `LNInstanceInitializeSettings::canvasSelector`。
+  WebGL のコンテキストは canvas に結び付いており、デバイスの生成直後に組み込みシェーダと
+  既定テクスチャを作るため、SwapChain の生成を待てない。
+  `LNInstanceInitializeSettings` のサイズが 8 -> 12 バイトに変わったため、
+  `types.ts` の `SIZEOF_INSTANCE_INIT_SETTINGS` も更新した。
+
+**未検証の点** (P4 で確認する)
+
+- ブラウザ上での実描画。ビルドと GLSL 生成までしか確認していない。
+- 頂点シェーダとフラグメントシェーダで同じユニフォームブロックのメンバ構成が一致するか。
+  ずれていると GLSL ES 300 のリンクが失敗する。
+- sRGB レンダーターゲットの挙動が Vulkan / WebGPU と一致するか。
 
 ### P4: デスクトップ ES 3.0 と検証
 

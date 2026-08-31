@@ -20,6 +20,8 @@ public:
     struct Settings {
         rhi::Backend preferredBackend = rhi::Backend::Vulkan;
         bool enableValidation = false;
+        /** 描画先 canvas の CSS セレクタ (Web の WebGL2 のみ)。@see rhi::DeviceDesc::canvasSelector */
+        std::string canvasSelector;
     };
 
     /**

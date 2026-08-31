@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.20)
+﻿cmake_minimum_required(VERSION 3.20)
 project(Lumino VERSION 0.1.0 LANGUAGES CXX C)
 
 set(CMAKE_CXX_STANDARD 17)
@@ -30,6 +30,9 @@ if(EMSCRIPTEN)
     set(LN_PLATFORM_WEB ON)
     set(LN_ENABLE_VULKAN OFF)
     set(LN_ENABLE_WEBGPU ON)
+    # WebGL2 バックエンドは Emscripten でのみビルドする。
+    # デスクトップの OpenGL ES 3.0 (ANGLE) 対応は P4 で導入する。
+    set(LN_ENABLE_WEBGL2 ON)
 else()
     set(LN_PLATFORM_DESKTOP ON)
     set(LN_ENABLE_VULKAN ON)

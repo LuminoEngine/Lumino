@@ -77,6 +77,30 @@ struct VertexInputAttribute {
 
 using VertexInputAttributeTable = std::vector<VertexInputAttribute>;
 
+/**
+ * GLSL ES 300 のユニフォームブロック名を (set, binding) から求める。
+ *
+ * ESSL 300 には layout(binding = N) が無いため、実行時は glGetUniformBlockIndex に
+ * ブロック名を渡してブロックを特定する。SPIRV-Cross が既定で出すブロック名は Slang の
+ * 型名由来で (set, binding) からは導けないため、コンパイル時に set_name() でこの名前へ
+ * 書き換え、実行時も同じ規則で引く。ShaderCompiler2 と WebGL2 バックエンドの両方から使う。
+ */
+inline std::string glslUniformBlockName(int32_t setIndex, int32_t bindingIndex) {
+    return "_ln_ub_" + std::to_string(setIndex) + "_" + std::to_string(bindingIndex);
+}
+
+/**
+ * GLSL ES 300 のステージ間 varying の名前を location から求める。
+ *
+ * SPIR-V はステージ間のインターフェイスを location で対応付けるが、GLSL ES 300 の varying に
+ * layout(location = N) は無く、リンク時の対応付けは名前で行われる。SPIRV-Cross はステージごとに
+ * 独立した名前を付けるため、両ステージでこの名前へ書き換えて対応付ける。
+ * 実行時に引くことは無く、シェーダのコンパイル時にだけ使う。
+ */
+inline std::string glslVaryingName(int32_t location) {
+    return "_ln_vary_" + std::to_string(location);
+}
+
 using BlobId = int16_t;
 
 struct Blob {

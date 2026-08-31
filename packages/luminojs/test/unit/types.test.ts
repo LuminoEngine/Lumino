@@ -40,9 +40,9 @@ describe("types.ts SIZEOF_* layout constants", () => {
         expect(SIZEOF_RENDER_PASS_DESC).toBe(expected);
     });
 
-    it("SIZEOF_INSTANCE_INIT_SETTINGS = preferredBackend(4) + enableValidation(4)", () => {
-        expect(SIZEOF_INSTANCE_INIT_SETTINGS).toBe(4 + 4);
-        expect(SIZEOF_INSTANCE_INIT_SETTINGS).toBe(8);
+    it("SIZEOF_INSTANCE_INIT_SETTINGS = preferredBackend(4) + enableValidation(4) + canvasSelector(ptr,4)", () => {
+        expect(SIZEOF_INSTANCE_INIT_SETTINGS).toBe(4 + 4 + 4);
+        expect(SIZEOF_INSTANCE_INIT_SETTINGS).toBe(12);
     });
 
     it("SIZEOF_VERTEX = position(f32x3,12) + normal(f32x3,12) + uv(f32x2,8) + color(f32x4,16) + tangent(f32x4,16)", () => {

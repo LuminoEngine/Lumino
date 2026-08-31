@@ -952,6 +952,48 @@ VoidResult ShaderCompiler2::buildGlslEs300EntryPoint(const TargetEntryPoint2* sp
             combinedSamplers.push_back(std::move(c));
         }
 
+        // ステージ間の varying は名前を揃える。
+        //
+        // SPIR-V はステージ間のインターフェイスを location で対応付けるが、GLSL ES 300 の
+        // varying に layout(location = N) は無く (ES 3.1 以降の機能)、リンク時の対応付けは
+        // 名前で行われる。SPIRV-Cross はステージごとに独立した名前を付けるため
+        // (頂点は entryPointParam_vsMain_color、フラグメントは input_color のように)
+        // そのままでは "does not match any VERTEX varying" でリンクに失敗する。
+        // location から決まる名前へ両ステージで書き換えて対応付ける。
+        //
+        // 頂点入力とフラグメント出力は ESSL 300 でも layout(location = N) が使えるため対象外。
+        {
+            const spv::ExecutionModel model = compiler.get_execution_model();
+            const auto& resources = compiler.get_shader_resources();
+            const spirv_cross::SmallVector<spirv_cross::Resource>* varyings = nullptr;
+            if (model == spv::ExecutionModelVertex) {
+                varyings = &resources.stage_outputs;
+            }
+            else if (model == spv::ExecutionModelFragment) {
+                varyings = &resources.stage_inputs;
+            }
+            if (varyings) {
+                for (const auto& v : *varyings) {
+                    if (!compiler.has_decoration(v.id, spv::DecorationLocation)) continue;
+                    compiler.set_name(
+                        v.id,
+                        glslVaryingName(static_cast<int32_t>(
+                            compiler.get_decoration(v.id, spv::DecorationLocation))));
+                }
+            }
+        }
+
+        // ESSL 300 には layout(binding = N) が無く、実行時はブロック名でユニフォームブロックを
+        // 特定する。SPIRV-Cross の既定名は Slang の型名由来で (set, binding) から導けないため、
+        // 規則的な名前へ書き換える。実行時は glslUniformBlockName() で同じ名前を組み立てる。
+        for (const auto& ub : compiler.get_shader_resources().uniform_buffers) {
+            compiler.set_name(
+                ub.base_type_id,
+                glslUniformBlockName(
+                    static_cast<int32_t>(compiler.get_decoration(ub.id, spv::DecorationDescriptorSet)),
+                    static_cast<int32_t>(compiler.get_decoration(ub.id, spv::DecorationBinding))));
+        }
+
         source = compiler.compile();
 
         // Slang が付ける "materialData.baseTexture" のような名前には識別子として使えない

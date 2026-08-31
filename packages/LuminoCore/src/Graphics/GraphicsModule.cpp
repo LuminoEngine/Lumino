@@ -47,6 +47,7 @@ VoidResult GraphicsModule::init(const Settings& settings) {
     rhi::DeviceDesc devDesc;
     devDesc.backend = settings.preferredBackend;
     devDesc.enableValidation = settings.enableValidation;
+    devDesc.canvasSelector = settings.canvasSelector;
     auto deviceResult = rhi::Device::create(devDesc);
     if (!deviceResult) return LN_FORWARD_ERROR(deviceResult);
     m_device = std::move(*deviceResult);
@@ -175,6 +176,7 @@ void GraphicsModule::pumpRecovery() {
         rhi::DeviceDesc devDesc;
         devDesc.backend = m_settings.preferredBackend;
         devDesc.enableValidation = m_settings.enableValidation;
+        devDesc.canvasSelector = m_settings.canvasSelector;
         auto deviceResult = rhi::Device::beginCreateAsync(devDesc);
         if (!deviceResult) {
             LN_LOG_ERROR("GraphicsModule: device re-creation failed. retrying later.");

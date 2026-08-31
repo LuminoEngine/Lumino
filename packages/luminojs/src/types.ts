@@ -46,6 +46,12 @@ export enum GraphicsBackend {
     DEFAULT = 0,
     VULKAN = 1,
     WEBGPU = 2,
+    /**
+     * WebGL 2.0 (OpenGL ES 3.0)。Web でのみ使用できます。
+     * 使用する場合は `Runtime.initialize({ backend, canvasSelector })` で描画先 canvas も
+     * 指定してください。WebGL のコンテキストは canvas に結び付いており、あとから移せません。
+     */
+    WEBGL2 = 3,
 }
 
 /**
@@ -238,6 +244,16 @@ export interface RuntimeOptions {
     printErr?: (text: string) => void;
     /** グラフィックスのバリデーションレイヤを有効にします。 */
     enableValidation?: boolean;
+    /** 使用するグラフィックスバックエンド。省略時は `GraphicsBackend.WEBGPU`。 */
+    backend?: GraphicsBackend;
+    /**
+     * 描画先 canvas の CSS セレクタ (例: `"#my_canvas"`)。`GraphicsBackend.WEBGL2` でのみ使用します。
+     *
+     * WebGL のコンテキストは canvas に結び付いており、あとから別の canvas へ移せません。
+     * 初期化時に組み込みシェーダと既定テクスチャを構築するため、描画先はこの時点で
+     * 決まっている必要があります。省略時は Emscripten の既定 canvas (`"#canvas"`) を使います。
+     */
+    canvasSelector?: string;
     /**
      * ログ出力レベル。省略時は `LogLevel.Info`。
      * ランタイム初期化中のログも対象になります。
@@ -263,8 +279,8 @@ export const SIZEOF_RENDER_PASS_DESC = 128;
 // レイアウトは serialize.ts の writeRenderPassDesc を参照。
 
 /** wasm メモリ上の `LNInstanceInitializeSettings` のバイトサイズ。 */
-export const SIZEOF_INSTANCE_INIT_SETTINGS = 8;
-// レイアウト: preferredBackend(u32,0) enableValidation(u32,4)
+export const SIZEOF_INSTANCE_INIT_SETTINGS = 12;
+// レイアウト: preferredBackend(u32,0) enableValidation(u32,4) canvasSelector(ptr,8)
 
 /** wasm メモリ上の `LNVertex` のバイトサイズ。 */
 export const SIZEOF_VERTEX = 64;

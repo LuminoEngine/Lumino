@@ -46,6 +46,13 @@ if(LN_ENABLE_WEBGPU)
     )
 endif()
 
+if(LN_ENABLE_WEBGL2)
+    file(GLOB LN_LOCAL_SOURCES_Graphics_webgl2
+        src/Graphics/rhi/webgl2/*.cpp
+        src/Graphics/rhi/webgl2/*.hpp
+    )
+endif()
+
 file(GLOB LN_LOCAL_SOURCES_shaders shaders/*.slang)
 
 # Emscripten: exclude desktop-only Graphics files
@@ -72,6 +79,9 @@ endif()
 if(LN_ENABLE_WEBGPU)
     source_group("Graphics/webgpu" FILES ${LN_LOCAL_SOURCES_Graphics_webgpu})
 endif()
+if(LN_ENABLE_WEBGL2)
+    source_group("Graphics/webgl2" FILES ${LN_LOCAL_SOURCES_Graphics_webgl2})
+endif()
 source_group("shaders" FILES ${LN_LOCAL_SOURCES_shaders})
 
 set(LN_LOCAL_SOURCES
@@ -81,6 +91,7 @@ set(LN_LOCAL_SOURCES
     ${LN_LOCAL_SOURCES_Graphics}
     ${LN_LOCAL_SOURCES_Graphics_vulkan}
     ${LN_LOCAL_SOURCES_Graphics_webgpu}
+    ${LN_LOCAL_SOURCES_Graphics_webgl2}
     ${LN_LOCAL_SOURCES_shaders}
 )
 
@@ -125,6 +136,13 @@ endif()
 if(LN_ENABLE_WEBGPU)
     target_link_libraries(${PROJECT_NAME} PRIVATE webgpu)
     target_compile_definitions(${PROJECT_NAME} PRIVATE LN_ENABLE_WEBGPU=1)
+endif()
+
+# WebGL2 (OpenGL ES 3.0)
+if(LN_ENABLE_WEBGL2)
+    # WebGL 2 のエントリポイントを実際に有効にするのはリンク時の -sMAX_WEBGL_VERSION=2 で、
+    # これは LuminoC (実行可能ターゲット) 側で指定している。
+    target_compile_definitions(${PROJECT_NAME} PRIVATE LN_ENABLE_WEBGL2=1)
 endif()
 
 #-------------------------------------------------------------------------------

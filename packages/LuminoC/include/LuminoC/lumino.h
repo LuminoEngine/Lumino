@@ -47,6 +47,15 @@ typedef struct LNInstanceInitializeSettings {
     LNGraphicsBackend preferredBackend;
     /** デバッグ用のバリデーションレイヤーを有効にするか */
     LNBool enableValidation;
+    /**
+     * 描画先 canvas の CSS セレクタ (例: "#my_canvas")。Web の WebGL2 バックエンドでのみ使用します。
+     *
+     * WebGL のコンテキストは canvas に結び付いており、あとから別の canvas へ移せません。
+     * 初期化時に組み込みシェーダと既定テクスチャを構築するため、描画先はこの時点で
+     * 決まっている必要があります。NULL または空文字列の場合は Emscripten の既定 canvas
+     * ("#canvas") を使用します。他のバックエンドでは無視されます。
+     */
+    const char* canvasSelector;
 } LNInstanceInitializeSettings;
 
 /**

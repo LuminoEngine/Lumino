@@ -8,6 +8,7 @@ import {
     Camera,
     Matrix4x4,
     Transform,
+    GraphicsBackend,
 } from "luminojs";
 
 async function main() {
@@ -15,9 +16,12 @@ async function main() {
     canvas.width = canvas.clientWidth;
     canvas.height = canvas.clientHeight;
 
-    // WASM モジュールをロードし、Lumino インスタンスを初期化する (WebGPU デバイスが作成される)
+    // WASM モジュールをロードし、Lumino インスタンスを初期化する (グラフィックスデバイスが作成される)
+    // WebGL2 はコンテキストが canvas に結び付くため、描画先をここで指定する必要がある。
     await Runtime.initialize({
         wasmPath: new URL("../../../luminojs/lib/LuminoC.wasm", import.meta.url).href,
+        backend: GraphicsBackend.WEBGL2,
+        canvasSelector: "#my_canvas",
     });
 
     // canvas から GraphicsContext を作成する

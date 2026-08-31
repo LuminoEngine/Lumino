@@ -49,6 +49,8 @@ if(EMSCRIPTEN)
     # WebGPU の非同期処理 (RequestAdapter, RequestDevice 等) がブラウザの
     # イベントループへ制御を戻せるようにするため、ASYNCIFY が必要。
     string(APPEND LN_EM_LINK_FLAGS " -sASYNCIFY=1")
+    # WebGL2 バックエンドが使う GLES3 / html5_webgl の実装をリンクする。
+    string(APPEND LN_EM_LINK_FLAGS " -sMAX_WEBGL_VERSION=2")
     # 最適化レベルは CMAKE_BUILD_TYPE に連動させる。
     # Debug: ブラウザの開発者ツールでソースマップ付きデバッグができるよう最適化を無効化する。
     # Release: まず -O2 で安定を確認する。将来的に -O3 や -flto (Link Time Optimization)
