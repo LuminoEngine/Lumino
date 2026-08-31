@@ -1,6 +1,15 @@
 ﻿#pragma once
 #include "WebGL2Common.hpp"
+#if defined(__EMSCRIPTEN__)
 #include <emscripten/html5_webgl.h>
+#else
+// EGL/eglplatform.h は Windows で windows.h を取り込む。min/max マクロが
+// std::min / std::max と衝突するため、先に NOMINMAX を立てておく。
+#if defined(_WIN32) && !defined(NOMINMAX)
+#define NOMINMAX
+#endif
+#include <EGL/egl.h>
+#endif
 #include <string>
 
 namespace ln::rhi::webgl2 {
@@ -22,6 +31,7 @@ protected:
     void finalize() override;
 
 private:
+    WebGL2Device* m_device = nullptr;
     GLuint m_buffer = 0;
     GLenum m_target = 0;
     uint64_t m_size = 0;
@@ -42,6 +52,7 @@ protected:
     void finalize() override;
 
 private:
+    WebGL2Device* m_device = nullptr;
     GLuint m_texture = 0;
     TextureFormat m_format = TextureFormat::RGBA8Unorm;
     uint32_t m_width = 0;
@@ -79,6 +90,7 @@ protected:
     void finalize() override;
 
 private:
+    WebGL2Device* m_device = nullptr;
     GLuint m_sampler = 0;
 };
 
@@ -100,11 +112,13 @@ public:
     Result<GLuint> getOrCompile(GLenum stage);
 
     const std::string& debugName() const { return m_debugName; }
+    WebGL2Device* device() const { return m_device; }
 
 protected:
     void finalize() override;
 
 private:
+    WebGL2Device* m_device = nullptr;
     std::string m_source;
     std::string m_debugName;
     GLuint m_vertexShader = 0;
@@ -131,15 +145,51 @@ public:
     void waitIdle() override;
     Backend backend() const override { return Backend::WebGL2; }
 
+    /**
+     * このデバイスの GL コンテキストが現在カレントかどうか。
+     *
+     * GL のオブジェクト名 (GLuint) はコンテキストごとに独立している。デバイスロストの
+     * 復旧後、旧デバイスのリソースをそのまま glDelete* すると、同じ名前を持つ新しい
+     * コンテキスト側のオブジェクトを消してしまう。各リソースは破棄の前にこれを確認し、
+     * 自分のコンテキストがカレントでなければ何もしない (コンテキストごと破棄されるため
+     * 漏れにはならない)。
+     */
+    bool isContextCurrent() const;
+
+#if defined(__EMSCRIPTEN__)
     /** SwapChain がリサイズ時に canvas のサイズを合わせるために使う。 */
     const std::string& canvasSelector() const { return m_canvasSelector; }
+#else
+    // SwapChain がウィンドウサーフェスを作るために使う。
+    EGLDisplay eglDisplay() const { return m_eglDisplay; }
+    EGLConfig eglConfig() const { return m_eglConfig; }
+    EGLContext eglContext() const { return m_eglContext; }
+    /** ウィンドウサーフェスを破棄したあと、コンテキストを pbuffer 上へ戻す。 */
+    void makeDefaultSurfaceCurrent();
+#endif
 
 protected:
     void finalize() override;
 
 private:
+    /** プラットフォーム固有の GL コンテキストを作り、カレントにする。 */
+    VoidResult initContext(const DeviceDesc& desc);
+    void finalizeContext();
+
+#if defined(__EMSCRIPTEN__)
     EMSCRIPTEN_WEBGL_CONTEXT_HANDLE m_context = 0;
     std::string m_canvasSelector;
+#else
+    EGLDisplay m_eglDisplay = EGL_NO_DISPLAY;
+    EGLConfig m_eglConfig = nullptr;
+    EGLContext m_eglContext = EGL_NO_CONTEXT;
+    /**
+     * ウィンドウが無い状態でコンテキストをカレントにするための 1x1 サーフェス。
+     * デバイスの生成直後に組み込みシェーダと既定テクスチャを作るため、
+     * SwapChain (= ウィンドウサーフェス) を待たずにカレントにする必要がある。
+     */
+    EGLSurface m_eglPbuffer = EGL_NO_SURFACE;
+#endif
     DeviceLimits m_limits;
     /** readbackTexture 用の使い回し FBO。 */
     GLuint m_readbackFbo = 0;

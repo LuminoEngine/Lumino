@@ -135,7 +135,7 @@ Lumino が想定するバックエンドは Vulkan (デスクトップ) と WebG
 
 | プラットフォーム | 既定 | 明示指定できるもの |
 |---|---|---|
-| デスクトップ | Vulkan | - |
+| デスクトップ | Vulkan | WebGL2 (Windows のみ。ANGLE 経由) |
 | Web | WebGPU (暫定。WebGL2 へ移行予定) | WebGL2 / WebGPU |
 
 Web の既定を WebGL2 にするのは、Windows on ARM の Chrome / Edge が WebGPU を既定で
@@ -143,6 +143,11 @@ Web の既定を WebGL2 にするのは、Windows on ARM の Chrome / Edge が W
 `chrome://flags` を変更しない限り WebGPU は使えず、解除のロードマップもありません。
 WebGL2 バックエンドの実装は入りましたが、ブラウザでの動作確認が済むまでは既定を
 切り替えず、`LN_GRAPHICS_BACKEND_WEBGL2` を明示した場合のみ有効になります。
+
+デスクトップ (Windows) でも `LN_GRAPHICS_BACKEND_WEBGL2` を指定すると、ANGLE の
+OpenGL ES 3.0 上で同じバックエンドが動きます。Chromium が Windows で使うのも ANGLE
+(D3D11) のため、ブラウザに近い経路をデスクトップのデバッガで追えます。
+ビジュアルテストは `ctest -R "^webgl2\."` でこの構成に対して実行できます。
 
 ### WebGL2 は canvas を初期化時に決める
 

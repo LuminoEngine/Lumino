@@ -5,6 +5,8 @@
 
 namespace ln::rhi::webgl2 {
 
+class WebGL2Device;
+
 // ------ WebGL2BindGroup -------------------------------------------------------------------------------------------------------
 
 // GL にはバインドグループに相当するオブジェクトが無いため、エントリを控えておき、
@@ -68,6 +70,7 @@ protected:
     void finalize() override;
 
 private:
+    WebGL2Device* m_device = nullptr;
     GLuint m_program = 0;
     GLenum m_topology = GL_TRIANGLES;
     std::vector<VertexBufferLayout> m_vertexBuffers;

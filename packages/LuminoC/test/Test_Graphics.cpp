@@ -754,8 +754,8 @@ TEST_F(Test_Graphics, SpritesAcrossRenderPasses) {
 
 // コンパイル済みシェーダ (.lcsh) からマテリアルを作成し、赤い三角形を描画するテスト。
 TEST_F(Test_Graphics, CustomShaderMaterial) {
-    // コンパイル済みシェーダをファイルから読み込む
-    const char* shaderPath = TEST_DATA_DIR "/Data/Unlit.lcsh";
+    // コンパイル済みシェーダをファイルから読み込む。
+    const char* shaderPath = LN_TEST_UNLIT_LCSH;
     FILE* fp = fopen(shaderPath, "rb");
     ASSERT_NE(nullptr, fp) << "Failed to open: " << shaderPath;
     fseek(fp, 0, SEEK_END);

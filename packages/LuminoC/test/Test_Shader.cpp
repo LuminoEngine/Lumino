@@ -72,7 +72,7 @@ TEST_F(Test_Shader, CreateFromShaderSourceWithoutConstantBuffer) {
 // 1 ShaderPass = シェーダモジュール 2 個 + パイプラインレイアウト 1 個なので、
 // この値が増えなければ GPU 側のシェーダ資源が増えていないと言える。
 TEST_F(Test_Shader, MaterialsFromOneShaderShareShaderPasses) {
-    auto shaderData = loadFile(TEST_DATA_DIR "/Data/Unlit.lcsh");
+    auto shaderData = loadFile(LN_TEST_UNLIT_LCSH);
     ASSERT_FALSE(shaderData.empty());
 
     const int32_t baseCount = shaderPassCount();
@@ -122,7 +122,7 @@ TEST_F(Test_Shader, MaterialsFromOneShaderShareShaderPasses) {
 // Material ごとに作られる ((Material, ShaderPass) をキーにキャッシュされる) ため、
 // 同一フレーム内で色の異なる 2 つの Material を描き分けられる。
 TEST_F(Test_Shader, DrawMaterialsFromSharedShader) {
-    auto shaderData = loadFile(TEST_DATA_DIR "/Data/Unlit.lcsh");
+    auto shaderData = loadFile(LN_TEST_UNLIT_LCSH);
     ASSERT_FALSE(shaderData.empty());
 
     LNHandle shader = LN_NULL_HANDLE;

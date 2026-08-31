@@ -1,12 +1,9 @@
 ﻿#pragma once
 #include <LuminoCore/Graphics/rhi/Rhi.hpp>
 
-#if defined(__EMSCRIPTEN__)
+// Emscripten では WebGL 2.0 が、デスクトップでは ANGLE の libGLESv2 が
+// 同じ OpenGL ES 3.0 のエントリポイントを提供する。GL 関数ローダは不要。
 #include <GLES3/gl3.h>
-#else
-// デスクトップでの OpenGL ES 3.0 実行 (ANGLE + GL ローダ) は P4 で導入する。
-#error "The WebGL2 backend is currently available only on Emscripten."
-#endif
 
 namespace ln::rhi::webgl2 {
 

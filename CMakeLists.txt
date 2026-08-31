@@ -14,6 +14,7 @@ option(LUMINO_BUILD_EXAMPLES "Build example applications" ON)
 option(LUMINO_BUILD_TESTS "Build unit tests" ON)
 option(LUMINO_BUILD_TOOLS "Build tools" ON)
 option(LUMINO_USE_WEBGPU  "Enable WebGPU backend" ON)
+option(LUMINO_USE_WEBGL2  "Enable WebGL2 (OpenGL ES 3.0) backend" ON)
 
 #-------------------------------------------------------------------------------
 # Common packages (found via vcpkg toolchain on all platforms)
@@ -30,8 +31,6 @@ if(EMSCRIPTEN)
     set(LN_PLATFORM_WEB ON)
     set(LN_ENABLE_VULKAN OFF)
     set(LN_ENABLE_WEBGPU ON)
-    # WebGL2 バックエンドは Emscripten でのみビルドする。
-    # デスクトップの OpenGL ES 3.0 (ANGLE) 対応は P4 で導入する。
     set(LN_ENABLE_WEBGL2 ON)
 else()
     set(LN_PLATFORM_DESKTOP ON)
@@ -41,6 +40,13 @@ else()
         set(LN_ENABLE_WEBGPU ON)
     else()
         set(LN_ENABLE_WEBGPU OFF)
+    endif()
+    # デスクトップでは ANGLE (EGL + GLESv2) 上で同じバックエンドを動かし、
+    # Web の主経路をデスクトップで再現できるデバッグ環境にする。
+    if(LUMINO_USE_WEBGL2)
+        set(LN_ENABLE_WEBGL2 ON)
+    else()
+        set(LN_ENABLE_WEBGL2 OFF)
     endif()
 endif()
 
@@ -79,6 +85,12 @@ endif()
 
 if(LUMINO_USE_SLANG)
     find_package(slang CONFIG REQUIRED)
+endif()
+
+if(LN_ENABLE_WEBGL2)
+    # ANGLE は libEGL / libGLESv2 を提供する。GL 関数ローダは不要で、
+    # ES 3.0 のエントリポイントを直接リンクできる。
+    find_package(unofficial-angle CONFIG REQUIRED)
 endif()
 
 #-------------------------------------------------------------------------------
@@ -130,6 +142,17 @@ function(ln_setup_c_api_client_configurations TARGET)
         $<TARGET_FILE:glfw>
         $<TARGET_FILE_DIR:${TARGET}>
     )
+
+    # ANGLE (libEGL.dll / libGLESv2.dll)
+    if(LN_ENABLE_WEBGL2)
+        add_custom_command(
+            TARGET ${TARGET} POST_BUILD
+            COMMAND ${CMAKE_COMMAND} -E copy_if_different
+                $<TARGET_FILE:unofficial::angle::libEGL>
+                $<TARGET_FILE:unofficial::angle::libGLESv2>
+                $<TARGET_FILE_DIR:${TARGET}>
+        )
+    endif()
 
     # DXC libraries required by Dawn's D3D12 backend
     if(LN_ENABLE_WEBGPU AND TARGET Microsoft::DirectXShaderCompiler)

@@ -45,3 +45,16 @@ gtest_discover_tests(${PROJECT_NAME}
     PROPERTIES LABELS "gpu"
     DISCOVERY_TIMEOUT 60
 )
+
+# 同じビジュアルテストを WebGL2 (デスクトップでは ANGLE の OpenGL ES 3.0) でも走らせる。
+# Web の主経路をデスクトップで検証するための構成 (webgl2-backend-plan.md P4)。
+# WebGL2 側だけを走らせるには ctest -R "^webgl2\." を使う。
+if(LN_ENABLE_WEBGL2)
+    gtest_discover_tests(${PROJECT_NAME}
+        EXTRA_ARGS --backend=webgl2
+        TEST_FILTER "Test_Graphics.*:Test_DeviceLost.*"
+        TEST_PREFIX "webgl2."
+        PROPERTIES LABELS "gpu"
+        DISCOVERY_TIMEOUT 60
+    )
+endif()

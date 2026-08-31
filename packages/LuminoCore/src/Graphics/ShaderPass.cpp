@@ -141,6 +141,14 @@ Result<Ref<ShaderPass>> ShaderPass::buildFromUnifiedShader(
 
     auto* vertBlob = unifiedShader->blob(vertEP->codeBlobId);
     auto* fragBlob = unifiedShader->blob(fragEP->codeBlobId);
+    // 現在のバックエンドのターゲットを含まない .lcsh (ターゲット追加前にコンパイルされた
+    // 古いファイルなど) では、コードの実体が入っていない。
+    if (!vertBlob || !fragBlob || vertBlob->data.empty() || fragBlob->data.empty()) {
+        return LN_MAKE_ERROR(
+            "No shader code for the current backend. The .lcsh may have been compiled "
+            "before this target was added; recompile it with luminosc. (shader: %s, pass: %s)",
+            resolvedName.c_str(), globalPass->name.c_str());
+    }
 
     // シェーダモジュールを作成する
     // debugName は WebGPU オブジェクトのラベルになる。ブラウザ / Dawn は不正なシェーダを

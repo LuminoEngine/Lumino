@@ -51,6 +51,8 @@ VoidResult WebGL2RenderPipeline::init(const RenderPipelineDesc& desc) {
         return LN_MAKE_ERROR("RenderPipelineDesc requires a PipelineLayout.");
     }
     m_debugName = desc.debugName.empty() ? std::string("LuminoPipeline") : desc.debugName;
+    // プログラムの破棄はシェーダモジュールと同じコンテキスト上で行う必要がある。
+    m_device = static_cast<WebGL2ShaderModule*>(desc.vertexShader)->device();
     auto* layout = static_cast<WebGL2PipelineLayout*>(desc.layout);
     m_combinedSamplers = layout->combinedSamplers();
     m_topology = toGLPrimitive(desc.topology);
@@ -213,7 +215,7 @@ void WebGL2RenderPipeline::applyStencilReference(uint32_t reference) const {
 
 void WebGL2RenderPipeline::finalize() {
     if (m_program) {
-        glDeleteProgram(m_program);
+        if (m_device && m_device->isContextCurrent()) glDeleteProgram(m_program);
         m_program = 0;
     }
     RenderPipeline::finalize();

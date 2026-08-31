@@ -1,6 +1,6 @@
 # WebGL2 (OpenGL ES 3.0) バックエンド対応 計画書
 
-- ステータス: P0 / P1 / P2 / P3 完了。P4 (デスクトップ ES 3.0 と検証) 待ち
+- ステータス: P0 / P1 / P2 / P3 / P4 完了。ブラウザでの実機確認が残り
 - 作成日: 2026-08-30
 - 関連資料:
   - `AGENTS.md` "コアモジュールのメモリ使用の注意点" (WASM の 32bit メモリ制約)
@@ -342,10 +342,65 @@ Slang の**型名**由来であり、`TargetBinding2::name` (インスタンス�
   ずれていると GLSL ES 300 のリンクが失敗する。
 - sRGB レンダーターゲットの挙動が Vulkan / WebGPU と一致するか。
 
-### P4: デスクトップ ES 3.0 と検証
+### P4: デスクトップ ES 3.0 と検証 - 完了
 
-13. ANGLE + GL ローダの導入、デスクトップでの ES 3.0 実行。
-14. 既存のビジュアルテスト (`packages/LuminoC/test`) を WebGL2 バックエンドで通す。
+13. (完了) ANGLE の導入。`vcpkg.json` に `angle` を追加し、デスクトップでも
+    `LN_ENABLE_WEBGL2` を有効にした (`LUMINO_USE_WEBGL2`、既定 ON)。
+    ANGLE の `libGLESv2` が ES 3.0 のエントリポイントをそのままエクスポートするため、
+    **GL 関数ローダは不要**になった (glad は入れていない)。ヘッダも Emscripten と同じ
+    `<GLES3/gl3.h>` で、`WebGL2Common.hpp` のプラットフォーム分岐は消えた。
+
+    コンテキストの生成は **EGL** を使う (要判断事項だった glad / EGL の選定)。
+    WebGL2 バックエンドはデバイスの生成時にコンテキストを作り、SwapChain の生成時に
+    描画先が決まるという順序になっている。EGL はコンテキストとサーフェスが分離しており、
+    デバイス生成時は 1x1 の pbuffer をカレントにし、SwapChain の生成時に HWND から
+    ウィンドウサーフェスを作って差し替えるだけでこの順序に乗る。
+    `eglGetDisplay(EGL_DEFAULT_DISPLAY)` は Windows では ANGLE の D3D11 になり、
+    Chromium が Windows で使う経路と一致する。GLFW のウィンドウは `GLFW_NO_API` のまま
+    変更していない。
+
+    現状 Windows のみ。X11 / Wayland は `initSurface` に分岐を足せば足りる。
+
+14. (完了) ビジュアルテストを WebGL2 で実行できるようにした。`LuminoC_test` に
+    `--backend=<vulkan|webgpu|webgl2>` を追加し、`gtest_discover_tests` で
+    `webgl2.` 接頭辞つきのテストとして二重登録している (`ctest -R "^webgl2\."`)。
+    Vulkan と WebGL2 の両方で 23/23 パスする。
+
+**P4 で見つけて直した不具合**
+
+1. **デバイスロスト復旧後に GL オブジェクトが巻き添えで消える** (WebGL2 固有・重大)。
+   GL のオブジェクト名 (GLuint) はコンテキストごとに独立しているため、復旧前に作られた
+   stale リソースを解放すると、`glDelete*` が同じ名前を持つ**新しいコンテキスト側の
+   オブジェクト**を消してしまう。既定の白テクスチャ (名前 1) が消え、テクスチャを
+   明示していないマテリアルがすべて黒 (0,0,0,0) で描画されていた。
+   `WebGL2Device::isContextCurrent()` を追加し、各リソースは自分を作ったデバイスの
+   コンテキストがカレントのときだけ `glDelete*` する。カレントでない場合は
+   コンテキストごと破棄されるため漏れにはならない。
+   `GraphicsModule` が旧デバイスを `m_retiredDevices` で生かし続けているため、
+   リソースが持つデバイスのポインタは常に有効。
+2. **`UnifiedShader2` の id 引数が範囲検査されていない**。`targetShaderPass()` /
+   `targetEntryPoint()` / `blob()` が `m_xxx[id]` を無検査で引いていた。
+   現在のターゲットを含まない古い `.lcsh` では `getTargetShaderPassId()` が -1 を返すため、
+   `m_targetShaderPasses[-1]` でアクセス違反になっていた。範囲外は nullptr を返すようにし、
+   `ShaderPass` 側でもコード blob が空のケースに明示的なエラーメッセージを出すようにした。
+3. **テスト用の `.lcsh` が古いまま取り残されていた**。
+   `packages/LuminoC/test/Data/Unlit.lcsh` は `FileVersion_2` (GLSL ターゲットも
+   combined sampler も入る前) のコピーだった。削除し、ビルド時に luminosc が生成する
+   `packages/LuminoCore/shaders/Unlit.lcsh` を直接読むようにした (`LN_TEST_UNLIT_LCSH`)。
+
+**確認できたこと**
+
+- 頂点シェーダとフラグメントシェーダのユニフォームブロックは一致しており、
+  GLSL ES 300 のリンクは通る (P3 の未検証項目)。
+- sRGB のレンダーターゲットを含め、ビジュアルテストの参照画像は Vulkan と同じものが通る
+  (P3 の未検証項目、5.2 の要判断事項)。
+- `MAX_UNIFORM_BLOCK_SIZE` は ANGLE/D3D11 で 65536、UBO のアラインメントは 256。
+
+**残っている確認事項**
+
+- ブラウザ上での実描画。デスクトップの ANGLE では通っているが、実ブラウザでは未確認。
+- デスクトップの WebGPU バックエンド (`--backend=webgpu`) はビジュアルテストが通らない。
+  P4 の変更より前から同じで、WebGL2 とは無関係 (サーフェスが BGRA8 で返る扱いの問題に見える)。
 
 ## 9. 決定事項と要判断事項
 
@@ -362,5 +417,7 @@ Slang の**型名**由来であり、`TargetBinding2::name` (インスタンス�
 
 ### 要判断事項
 
-- デスクトップの GL ローダの選定 (ANGLE 前提で glad / EGL のどちらを使うか)。
-- sRGB レンダーターゲットの挙動が Vulkan / WebGPU と一致するかの実測。
+- (P4 で決着) デスクトップの GL ローダの選定 -> ローダは不要。ANGLE の libGLESv2 を
+  直接リンクし、コンテキストの生成は EGL で行う。
+- (P4 で決着) sRGB レンダーターゲットの挙動 -> ビジュアルテストは Vulkan と同じ参照画像で
+  通ったため、デスクトップの ANGLE 上では一致している。ブラウザでの確認は残る。

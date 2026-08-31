@@ -595,6 +595,9 @@ VoidResult VulkanDevice::lookupQueueFamilies(
 #ifdef LN_ENABLE_WEBGPU
 #include "../webgpu/WebGPUDevice.hpp"
 #endif
+#ifdef LN_ENABLE_WEBGL2
+#include "../webgl2/WebGL2Device.hpp"
+#endif
 
 namespace ln::rhi {
 
@@ -611,6 +614,17 @@ Result<Ref<Device>> Device::create(const DeviceDesc& desc) {
         auto dev = Ref<webgpu::WebGPUDevice>::adopt(new webgpu::WebGPUDevice());
         if (!dev->init(desc)) {
             return LN_MAKE_ERROR("Failed to initialize WebGPU device");
+        }
+        return Ref<Device>(dev);
+    }
+#endif
+#ifdef LN_ENABLE_WEBGL2
+    // デスクトップでも ANGLE 上で ES 3.0 として動かし、Web の主経路を再現する。
+    if (desc.backend == Backend::WebGL2) {
+        auto dev = Ref<webgl2::WebGL2Device>::adopt(new webgl2::WebGL2Device());
+        auto r = dev->init(desc);
+        if (!r) {
+            return LN_FORWARD_ERROR(r);
         }
         return Ref<Device>(dev);
     }

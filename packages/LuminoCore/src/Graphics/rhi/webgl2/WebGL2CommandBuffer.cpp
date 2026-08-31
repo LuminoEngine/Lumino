@@ -475,7 +475,7 @@ void WebGL2CommandBuffer::replay() {
 void WebGL2CommandBuffer::finalize() {
     m_currentRenderPass = nullptr;
     if (m_framebuffer) {
-        glDeleteFramebuffers(1, &m_framebuffer);
+        if (m_device && m_device->isContextCurrent()) glDeleteFramebuffers(1, &m_framebuffer);
         m_framebuffer = 0;
     }
     CommandBuffer::finalize();

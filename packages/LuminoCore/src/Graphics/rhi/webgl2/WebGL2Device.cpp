@@ -8,8 +8,10 @@ namespace ln::rhi::webgl2 {
 
 namespace {
 
+#if defined(__EMSCRIPTEN__)
 /** Emscripten の既定 canvas。DeviceDesc::canvasSelector が空のときに使う。 */
 const char* kDefaultCanvasSelector = "#canvas";
+#endif
 
 /**
  * BufferUsage から、このバッファを常にバインドするターゲットを選ぶ。
@@ -28,7 +30,8 @@ GLenum pickBufferTarget(BufferUsage usage) {
 
 // ------ WebGL2Buffer ----------------------------------------------------------------------------------------------------------
 
-VoidResult WebGL2Buffer::init(WebGL2Device* /*device*/, const BufferDesc& desc) {
+VoidResult WebGL2Buffer::init(WebGL2Device* device, const BufferDesc& desc) {
+    m_device = device;
     m_size = desc.size;
     glGenBuffers(1, &m_buffer);
     if (!m_buffer) {
@@ -44,7 +47,7 @@ VoidResult WebGL2Buffer::init(WebGL2Device* /*device*/, const BufferDesc& desc) 
 
 void WebGL2Buffer::finalize() {
     if (m_buffer) {
-        glDeleteBuffers(1, &m_buffer);
+        if (m_device && m_device->isContextCurrent()) glDeleteBuffers(1, &m_buffer);
         m_buffer = 0;
     }
     Buffer::finalize();
@@ -52,7 +55,8 @@ void WebGL2Buffer::finalize() {
 
 // ------ WebGL2Texture ---------------------------------------------------------------------------------------------------------
 
-VoidResult WebGL2Texture::init(WebGL2Device* /*device*/, const TextureDesc& desc) {
+VoidResult WebGL2Texture::init(WebGL2Device* device, const TextureDesc& desc) {
+    m_device = device;
     const GLFormatInfo fmt = toGLFormat(desc.format);
     if (!fmt.supported) {
         return LN_MAKE_ERROR("Unsupported TextureFormat on WebGL2: %d", static_cast<int>(desc.format));
@@ -89,7 +93,7 @@ VoidResult WebGL2Texture::init(WebGL2Device* /*device*/, const TextureDesc& desc
 
 void WebGL2Texture::finalize() {
     if (m_texture) {
-        glDeleteTextures(1, &m_texture);
+        if (m_device && m_device->isContextCurrent()) glDeleteTextures(1, &m_texture);
         m_texture = 0;
     }
     Texture::finalize();
@@ -124,7 +128,7 @@ VoidResult WebGL2Sampler::init(WebGL2Device* /*device*/, const SamplerDesc& desc
 
 void WebGL2Sampler::finalize() {
     if (m_sampler) {
-        glDeleteSamplers(1, &m_sampler);
+        if (m_device && m_device->isContextCurrent()) glDeleteSamplers(1, &m_sampler);
         m_sampler = 0;
     }
     Sampler::finalize();
@@ -132,7 +136,8 @@ void WebGL2Sampler::finalize() {
 
 // ------ WebGL2ShaderModule ----------------------------------------------------------------------------------------------------
 
-VoidResult WebGL2ShaderModule::init(WebGL2Device* /*device*/, const ShaderModuleDesc& desc) {
+VoidResult WebGL2ShaderModule::init(WebGL2Device* device, const ShaderModuleDesc& desc) {
+    m_device = device;
     if (desc.format != ShaderCodeFormat::GLSL) {
         return LN_MAKE_ERROR("WebGL2 backend requires ShaderCodeFormat::GLSL. (%s)", desc.debugName.c_str());
     }
@@ -173,12 +178,13 @@ Result<GLuint> WebGL2ShaderModule::getOrCompile(GLenum stage) {
 }
 
 void WebGL2ShaderModule::finalize() {
+    const bool current = m_device && m_device->isContextCurrent();
     if (m_vertexShader) {
-        glDeleteShader(m_vertexShader);
+        if (current) glDeleteShader(m_vertexShader);
         m_vertexShader = 0;
     }
     if (m_fragmentShader) {
-        glDeleteShader(m_fragmentShader);
+        if (current) glDeleteShader(m_fragmentShader);
         m_fragmentShader = 0;
     }
     ShaderModule::finalize();
@@ -186,7 +192,9 @@ void WebGL2ShaderModule::finalize() {
 
 // ------ WebGL2Device ----------------------------------------------------------------------------------------------------------
 
-VoidResult WebGL2Device::init(const DeviceDesc& desc) {
+#if defined(__EMSCRIPTEN__)
+
+VoidResult WebGL2Device::initContext(const DeviceDesc& desc) {
     m_canvasSelector = desc.canvasSelector.empty() ? kDefaultCanvasSelector : desc.canvasSelector;
 
     EmscriptenWebGLContextAttributes attrs;
@@ -217,6 +225,113 @@ VoidResult WebGL2Device::init(const DeviceDesc& desc) {
     if (emscripten_webgl_make_context_current(m_context) != EMSCRIPTEN_RESULT_SUCCESS) {
         return LN_MAKE_ERROR("emscripten_webgl_make_context_current failed.");
     }
+    LN_LOG_INFO("[WebGL2] WebGL 2.0 context created. (canvas: %s)", m_canvasSelector.c_str());
+    return LN_MAKE_SUCCESS();
+}
+
+bool WebGL2Device::isContextCurrent() const {
+    return m_context > 0 && emscripten_webgl_get_current_context() == m_context;
+}
+
+void WebGL2Device::finalizeContext() {
+    if (m_context > 0) {
+        emscripten_webgl_destroy_context(m_context);
+        m_context = 0;
+    }
+}
+
+#else // !__EMSCRIPTEN__
+
+VoidResult WebGL2Device::initContext(const DeviceDesc& /*desc*/) {
+    // ANGLE の既定のディスプレイタイプを使う。Windows では D3D11 になり、
+    // Chromium が実際に使う経路と同じになる。
+    m_eglDisplay = eglGetDisplay(EGL_DEFAULT_DISPLAY);
+    if (m_eglDisplay == EGL_NO_DISPLAY) {
+        return LN_MAKE_ERROR("eglGetDisplay failed. Is ANGLE (libEGL) available?");
+    }
+    EGLint major = 0, minor = 0;
+    if (eglInitialize(m_eglDisplay, &major, &minor) != EGL_TRUE) {
+        m_eglDisplay = EGL_NO_DISPLAY;
+        return LN_MAKE_ERROR("eglInitialize failed. (0x%04x)", static_cast<unsigned>(eglGetError()));
+    }
+    if (eglBindAPI(EGL_OPENGL_ES_API) != EGL_TRUE) {
+        return LN_MAKE_ERROR("eglBindAPI(EGL_OPENGL_ES_API) failed.");
+    }
+
+    // 描画は常にオフスクリーン FBO へ行うため、既定のフレームバッファには
+    // デプス / ステンシル / MSAA は要らない (Emscripten 側の属性と揃えている)。
+    const EGLint configAttribs[] = {
+        EGL_SURFACE_TYPE,    EGL_WINDOW_BIT | EGL_PBUFFER_BIT,
+        EGL_RENDERABLE_TYPE, EGL_OPENGL_ES3_BIT,
+        EGL_RED_SIZE,        8,
+        EGL_GREEN_SIZE,      8,
+        EGL_BLUE_SIZE,       8,
+        EGL_ALPHA_SIZE,      8,
+        EGL_DEPTH_SIZE,      0,
+        EGL_STENCIL_SIZE,    0,
+        EGL_NONE
+    };
+    EGLint configCount = 0;
+    if (eglChooseConfig(m_eglDisplay, configAttribs, &m_eglConfig, 1, &configCount) != EGL_TRUE ||
+        configCount == 0) {
+        return LN_MAKE_ERROR("eglChooseConfig failed to find an ES 3.0 capable config.");
+    }
+
+    const EGLint contextAttribs[] = {
+        EGL_CONTEXT_MAJOR_VERSION, 3,
+        EGL_CONTEXT_MINOR_VERSION, 0,
+        EGL_NONE
+    };
+    m_eglContext = eglCreateContext(m_eglDisplay, m_eglConfig, EGL_NO_CONTEXT, contextAttribs);
+    if (m_eglContext == EGL_NO_CONTEXT) {
+        return LN_MAKE_ERROR("eglCreateContext failed. (0x%04x)", static_cast<unsigned>(eglGetError()));
+    }
+
+    // ウィンドウが来る前にコンテキストをカレントにするための最小のサーフェス。
+    const EGLint pbufferAttribs[] = { EGL_WIDTH, 1, EGL_HEIGHT, 1, EGL_NONE };
+    m_eglPbuffer = eglCreatePbufferSurface(m_eglDisplay, m_eglConfig, pbufferAttribs);
+    if (m_eglPbuffer == EGL_NO_SURFACE) {
+        return LN_MAKE_ERROR("eglCreatePbufferSurface failed. (0x%04x)", static_cast<unsigned>(eglGetError()));
+    }
+    if (eglMakeCurrent(m_eglDisplay, m_eglPbuffer, m_eglPbuffer, m_eglContext) != EGL_TRUE) {
+        return LN_MAKE_ERROR("eglMakeCurrent failed. (0x%04x)", static_cast<unsigned>(eglGetError()));
+    }
+
+    LN_LOG_INFO("[WebGL2] ANGLE context created. (EGL %d.%d, renderer: %s)",
+                major, minor, reinterpret_cast<const char*>(glGetString(GL_RENDERER)));
+    return LN_MAKE_SUCCESS();
+}
+
+bool WebGL2Device::isContextCurrent() const {
+    return m_eglContext != EGL_NO_CONTEXT && eglGetCurrentContext() == m_eglContext;
+}
+
+void WebGL2Device::makeDefaultSurfaceCurrent() {
+    if (m_eglDisplay == EGL_NO_DISPLAY || m_eglPbuffer == EGL_NO_SURFACE) return;
+    eglMakeCurrent(m_eglDisplay, m_eglPbuffer, m_eglPbuffer, m_eglContext);
+}
+
+void WebGL2Device::finalizeContext() {
+    if (m_eglDisplay == EGL_NO_DISPLAY) return;
+    eglMakeCurrent(m_eglDisplay, EGL_NO_SURFACE, EGL_NO_SURFACE, EGL_NO_CONTEXT);
+    if (m_eglPbuffer != EGL_NO_SURFACE) {
+        eglDestroySurface(m_eglDisplay, m_eglPbuffer);
+        m_eglPbuffer = EGL_NO_SURFACE;
+    }
+    if (m_eglContext != EGL_NO_CONTEXT) {
+        eglDestroyContext(m_eglDisplay, m_eglContext);
+        m_eglContext = EGL_NO_CONTEXT;
+    }
+    // eglTerminate はプロセス内の他の EGL 利用者も巻き込むため呼ばない。
+    m_eglDisplay = EGL_NO_DISPLAY;
+}
+
+#endif // __EMSCRIPTEN__
+
+VoidResult WebGL2Device::init(const DeviceDesc& desc) {
+    if (auto r = initContext(desc); !r) {
+        return LN_FORWARD_ERROR(r);
+    }
 
     GLint alignment = 256;
     GLint maxBlockSize = 16384;
@@ -225,8 +340,7 @@ VoidResult WebGL2Device::init(const DeviceDesc& desc) {
     m_limits.minUniformBufferOffsetAlignment = static_cast<uint32_t>(alignment > 0 ? alignment : 256);
     m_limits.maxUniformBufferRange = static_cast<uint32_t>(maxBlockSize > 0 ? maxBlockSize : 16384);
 
-    LN_LOG_INFO("[WebGL2] Context created. (canvas: %s, uboAlign: %d, maxUboRange: %d)",
-                m_canvasSelector.c_str(), alignment, maxBlockSize);
+    LN_LOG_INFO("[WebGL2] Device ready. (uboAlign: %d, maxUboRange: %d)", alignment, maxBlockSize);
     return LN_MAKE_SUCCESS();
 }
 
@@ -341,13 +455,10 @@ void WebGL2Device::waitIdle() {
 
 void WebGL2Device::finalize() {
     if (m_readbackFbo) {
-        glDeleteFramebuffers(1, &m_readbackFbo);
+        if (isContextCurrent()) glDeleteFramebuffers(1, &m_readbackFbo);
         m_readbackFbo = 0;
     }
-    if (m_context > 0) {
-        emscripten_webgl_destroy_context(m_context);
-        m_context = 0;
-    }
+    finalizeContext();
     Device::finalize();
 }
 

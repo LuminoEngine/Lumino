@@ -140,9 +140,15 @@ endif()
 
 # WebGL2 (OpenGL ES 3.0)
 if(LN_ENABLE_WEBGL2)
-    # WebGL 2 のエントリポイントを実際に有効にするのはリンク時の -sMAX_WEBGL_VERSION=2 で、
-    # これは LuminoC (実行可能ターゲット) 側で指定している。
+    # Emscripten では WebGL 2 のエントリポイントを実際に有効にするのはリンク時の
+    # -sMAX_WEBGL_VERSION=2 で、これは LuminoC (実行可能ターゲット) 側で指定している。
+    # デスクトップでは ANGLE が同じ ES 3.0 のエントリポイントを提供する。
     target_compile_definitions(${PROJECT_NAME} PRIVATE LN_ENABLE_WEBGL2=1)
+    if(LN_PLATFORM_DESKTOP)
+        target_link_libraries(${PROJECT_NAME} PRIVATE
+            unofficial::angle::libEGL
+            unofficial::angle::libGLESv2)
+    endif()
 endif()
 
 #-------------------------------------------------------------------------------

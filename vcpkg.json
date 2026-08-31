@@ -36,6 +36,10 @@
       "platform": "windows | linux | osx"
     },
     {
+      "name": "angle",
+      "platform": "windows | linux | osx"
+    },
+    {
       "name": "cli11",
       "platform": "windows | linux | osx"
     }

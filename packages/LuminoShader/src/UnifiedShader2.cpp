@@ -24,15 +24,22 @@ const std::vector<std::unique_ptr<TargetEntryPoint2>>& UnifiedShader2::targetEnt
     return m_targetEntryPoints;
 }
 
+// Id は「該当なし」を表す -1 を取りうる (例: 古い .lcsh に現在のターゲットが
+// 入っていない場合の getTargetShaderPassId)。また、ターゲットで絞り込んで
+// デシリアライズすると添字が疎になる。呼び出し側は nullptr で判定するため、
+// 範囲外は例外にせず nullptr を返す。
 TargetShaderPass2* UnifiedShader2::targetShaderPass(TargetShaderPassId2 id) const {
+    if (id < 0 || static_cast<size_t>(id) >= m_targetShaderPasses.size()) return nullptr;
     return m_targetShaderPasses[id].get();
 }
 
 TargetEntryPoint2* UnifiedShader2::targetEntryPoint(TargetEntryPointId2 id) const {
+    if (id < 0 || static_cast<size_t>(id) >= m_targetEntryPoints.size()) return nullptr;
     return m_targetEntryPoints[id].get();
 }
 
 Blob* UnifiedShader2::blob(BlobId2 id) const {
+    if (id < 0 || static_cast<size_t>(id) >= m_blobs.size()) return nullptr;
     return m_blobs[id].get();
 }
 
