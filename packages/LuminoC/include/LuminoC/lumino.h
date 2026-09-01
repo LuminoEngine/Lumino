@@ -45,7 +45,13 @@ extern LUMINO_API LNResult LNLogger_SetLevel(LNLogLevel level);
 typedef struct LNInstanceInitializeSettings {
     /** 使用するグラフィックスバックエンド (デフォルト: LN_GRAPHICS_BACKEND_DEFAULT) */
     LNGraphicsBackend preferredBackend;
-    /** デバッグ用のバリデーションレイヤーを有効にするか */
+    /**
+     * デバッグ用のバリデーションレイヤーを有効にするか。
+     *
+     * @warning 性能計測時は LN_FALSE に。Vulkan は検証レイヤーでフレーム時間が 8 倍
+     *          (0.56ms -> 4.4ms)。WebGL2 は無効果なので、有効のまま比較すると
+     *          Vulkan だけ遅く見えます。
+     */
     LNBool enableValidation;
     /**
      * 描画先 canvas の CSS セレクタ (例: "#my_canvas")。Web の WebGL2 バックエンドでのみ使用します。

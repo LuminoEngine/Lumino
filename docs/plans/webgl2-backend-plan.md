@@ -396,6 +396,21 @@ Slang の**型名**由来であり、`TargetBinding2::name` (インスタンス�
   (P3 の未検証項目、5.2 の要判断事項)。
 - `MAX_UNIFORM_BLOCK_SIZE` は ANGLE/D3D11 で 65536、UBO のアラインメントは 256。
 
+**性能: Debug 構成では Release 版の ANGLE を使う**
+
+BatchRendering サンプル (スプライト 1024 個 / 704 ドローコール) の実測値。
+
+| 構成 | Vulkan | WebGL2 |
+|---|---|---|
+| Release | 230 FPS | 450 FPS |
+| Debug (debug 版 ANGLE) | 145 FPS | **3.5 FPS** |
+| Debug (Release 版 ANGLE) | 145 FPS | 224 FPS |
+
+Debug の 3.5 FPS は Lumino 側ではなく **vcpkg の debug 版 ANGLE** (検証とアサートが
+全て有効) が原因。Vulkan が影響を受けないのは volk が構成によらずシステムのドライバを
+読むため。揃えるために `MAP_IMPORTED_CONFIG_DEBUG Release` を設定した
+(ルートの `CMakeLists.txt`)。
+
 **残っている確認事項**
 
 - ブラウザ上での実描画。デスクトップの ANGLE では通っているが、実ブラウザでは未確認。

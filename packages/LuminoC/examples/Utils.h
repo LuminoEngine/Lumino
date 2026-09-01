@@ -14,7 +14,7 @@ void InitializeInstance() {
     _CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
 #endif
     LNInstanceInitializeSettings settings = {};
-    settings.preferredBackend = LN_GRAPHICS_BACKEND_WEBGL2;
+    settings.preferredBackend = LN_GRAPHICS_BACKEND_VULKAN;
     settings.enableValidation = LN_TRUE;
     LNInstance_Initialize(&settings);
 }

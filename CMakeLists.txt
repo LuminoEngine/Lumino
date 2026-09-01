@@ -91,6 +91,11 @@ if(LN_ENABLE_WEBGL2)
     # ANGLE は libEGL / libGLESv2 を提供する。GL 関数ローダは不要で、
     # ES 3.0 のエントリポイントを直接リンクできる。
     find_package(unofficial-angle CONFIG REQUIRED)
+
+    # Debug 構成でも Release 版の ANGLE を使う。debug 版は検証とアサートが全て有効で
+    # 極端に遅い (実測 53 倍。docs/plans/webgl2-backend-plan.md 参照)。
+    set_target_properties(unofficial::angle::libEGL unofficial::angle::libGLESv2
+        PROPERTIES MAP_IMPORTED_CONFIG_DEBUG Release)
 endif()
 
 #-------------------------------------------------------------------------------
@@ -143,13 +148,16 @@ function(ln_setup_c_api_client_configurations TARGET)
         $<TARGET_FILE_DIR:${TARGET}>
     )
 
-    # ANGLE (libEGL.dll / libGLESv2.dll)
+    # ANGLE (libEGL.dll / libGLESv2.dll / 依存する zlib1.dll)
+    # 上記 MAP_IMPORTED_CONFIG_DEBUG で Debug 構成でも Release 版を使うため、
+    # applocal 任せ (Debug は zlibd1.dll) にせず Release 版の zlib を明示コピーする。
     if(LN_ENABLE_WEBGL2)
         add_custom_command(
             TARGET ${TARGET} POST_BUILD
             COMMAND ${CMAKE_COMMAND} -E copy_if_different
                 $<TARGET_FILE:unofficial::angle::libEGL>
                 $<TARGET_FILE:unofficial::angle::libGLESv2>
+                $<TARGET_FILE_DIR:unofficial::angle::libGLESv2>/zlib1.dll
                 $<TARGET_FILE_DIR:${TARGET}>
         )
     endif()
