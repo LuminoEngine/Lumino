@@ -1,6 +1,7 @@
 ﻿// clang-format off
 #include <LuminoBase/math/Math.hpp>
 #include <cmath>
+#include <cstring>
 #include <iostream>
 #define GLM_TEST 0
 

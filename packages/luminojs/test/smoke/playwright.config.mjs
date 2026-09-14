@@ -15,6 +15,10 @@ const extraArgs = (process.env.LUMINO_SMOKE_CHROMIUM_ARGS ?? "")
     .split(/\s+/)
     .filter(Boolean);
 
+// Playwright が同梱する Chromium ではなく、環境側に用意された Chromium を使いたい
+// 場合のための逃げ道 (CI コンテナにブラウザが事前インストールされている場合など)。
+const executablePath = process.env.LUMINO_SMOKE_CHROMIUM_EXECUTABLE || undefined;
+
 export default defineConfig({
     // このファイルと同じディレクトリの *.spec.mjs を対象にする。
     testDir: ".",
@@ -33,10 +37,18 @@ export default defineConfig({
 
     use: {
         // フル Chromium を使う (headless_shell では WebGPU が使えない)。
-        channel: "chromium",
+        // executablePath を指定した場合は channel より優先される。
+        channel: executablePath ? undefined : "chromium",
         headless: true,
         launchOptions: {
-            args: ["--enable-unsafe-swiftshader", ...extraArgs],
+            executablePath,
+            // --enable-unsafe-webgpu: GPU の無い Linux の headless Chromium は
+            // 既定で WebGPU を公開しない (requestAdapter() が null になる) ため必要。
+            args: [
+                "--enable-unsafe-webgpu",
+                "--enable-unsafe-swiftshader",
+                ...extraArgs,
+            ],
         },
     },
 });

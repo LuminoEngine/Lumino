@@ -138,7 +138,7 @@ TEST_F(Test_Graphics, HelloTexture) {
     ASSERT_EQ(LN_OK, LNCamera_Create(&camera));
     ASSERT_EQ(LN_OK, LNCamera_SetPerspective(camera,
         60.0f * 3.14159f / 180.0f,
-        TEST_W.0f / TEST_H.0f,
+        (float)TEST_W / (float)TEST_H,
         0.1f, 100.0f));
     ASSERT_EQ(LN_OK, LNCamera_SetLookAt(camera,
         0.0f, 0.0f, 3.0f,
@@ -359,7 +359,7 @@ TEST_F(Test_Graphics, StencilMask1) {
     LNHandle camera = LN_NULL_HANDLE;
     ASSERT_EQ(LN_OK, LNCamera_Create(&camera));
     ASSERT_EQ(LN_OK, LNCamera_SetPerspective(camera,
-        60.0f * 3.14159f / 180.0f, TEST_W.0f / TEST_H.0f, 0.1f, 100.0f));
+        60.0f * 3.14159f / 180.0f, (float)TEST_W / (float)TEST_H, 0.1f, 100.0f));
     ASSERT_EQ(LN_OK, LNCamera_SetLookAt(camera,
         0.0f, 0.0f, 3.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f));
 
@@ -521,7 +521,7 @@ TEST_F(Test_Graphics, MaterialDepthTestEnabled) {
     ASSERT_EQ(LN_OK, LNCamera_Create(&camera));
     ASSERT_EQ(LN_OK, LNCamera_SetPerspective(camera,
         60.0f * 3.14159f / 180.0f,
-        TEST_W.0f / TEST_H.0f,
+        (float)TEST_W / (float)TEST_H,
         0.1f, 100.0f));
     ASSERT_EQ(LN_OK, LNCamera_SetLookAt(camera,
         0.0f, 0.0f, 3.0f,
@@ -605,7 +605,7 @@ TEST_F(Test_Graphics, MaterialDepthWriteEnabled) {
     ASSERT_EQ(LN_OK, LNCamera_Create(&camera));
     ASSERT_EQ(LN_OK, LNCamera_SetPerspective(camera,
         60.0f * 3.14159f / 180.0f,
-        TEST_W.0f / TEST_H.0f,
+        (float)TEST_W / (float)TEST_H,
         0.1f, 100.0f));
     ASSERT_EQ(LN_OK, LNCamera_SetLookAt(camera,
         0.0f, 0.0f, 3.0f,
@@ -790,7 +790,7 @@ TEST_F(Test_Graphics, CustomShaderMaterial) {
     LNHandle camera = LN_NULL_HANDLE;
     ASSERT_EQ(LN_OK, LNCamera_Create(&camera));
     ASSERT_EQ(LN_OK, LNCamera_SetPerspective(camera,
-        60.0f * 3.14159f / 180.0f, TEST_W.0f / TEST_H.0f, 0.1f, 100.0f));
+        60.0f * 3.14159f / 180.0f, (float)TEST_W / (float)TEST_H, 0.1f, 100.0f));
     ASSERT_EQ(LN_OK, LNCamera_SetLookAt(camera,
         0.0f, 0.0f, 3.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f));
 

@@ -1,6 +1,7 @@
 ﻿#include "VulkanHelpers.hpp"
 #include "VulkanDevice.hpp"
 #include "VulkanBuffer.hpp"
+#include <cstring>
 
 namespace ln::rhi::vulkan {
 
