@@ -89,6 +89,13 @@ struct Quaternion {
     }
 
     static Quaternion fromAxisAngle(const Vector3& axis, float angle);
+
+    /**
+     * オイラー角 (ラジアン) からクォータニオンを作成する。
+     *
+     * Y-up 右手系の軸割り当てに従い、pitch は X 軸、yaw は Y 軸、roll は Z 軸まわりの
+     * 回転です。roll(Z) -> pitch(X) -> yaw(Y) の順に合成します。
+     */
     static Quaternion fromEuler(float pitch, float yaw, float roll);
     static Quaternion slerp(const Quaternion& a, const Quaternion& b, float t);
 

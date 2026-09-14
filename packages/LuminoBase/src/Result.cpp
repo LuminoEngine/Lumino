@@ -1,6 +1,12 @@
 ﻿#include <LuminoBase/Logger.hpp>
 #include <LuminoBase/Result.hpp>
 
+#ifdef _MSC_VER
+#define WIN32_LEAN_AND_MEAN
+#define NOMINMAX
+#include <windows.h>
+#endif
+
 namespace ln {
 
 namespace detail {
@@ -33,12 +39,16 @@ tl::unexpected<Error> makeInternalErrorWithCode(
         function,
         message.c_str());
     LogLocation loc{file, line, function};
-    Logger::log(loc, LN_LOG_LEVEL_ERROR, logMessage.c_str());
+    // logMessage は展開済みなので、書式文字列として渡してはならない。
+    // メッセージ中の '%' が書式指定子として再解釈され、存在しない可変長引数を読んでしまう。
+    Logger::log(loc, LN_LOG_LEVEL_ERROR, "%s", logMessage.c_str());
 
 #ifdef _MSC_VER
     // DeviceLost はタブ復帰やドライバ更新で起きる想定内の実行時状態のため、
     // デバッガ接続時でもブレークしない。
-    if (code != ErrorCode::DeviceLost) {
+    // また _MSC_VER は Release ビルドでも定義されるため、デバッガ未接続のまま
+    // __debugbreak() すると製品版が STATUS_BREAKPOINT で落ちてしまう。
+    if (code != ErrorCode::DeviceLost && IsDebuggerPresent()) {
         __debugbreak();
     }
 #endif

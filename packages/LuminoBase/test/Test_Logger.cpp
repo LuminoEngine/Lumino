@@ -10,6 +10,10 @@ void captureLog(LNLogLevel level, const char* /*file*/, int /*line*/,
     g_captured.push_back(level);
 }
 
+// プロセス起動直後の (どのテストも setLevel() を呼んでいない時点の) レベル。
+// Logger.cpp の g_level は定数初期化されるため、この動的初期化の時点では既定値のままである。
+const LNLogLevel g_initialLevel = ln::Logger::level();
+
 } // anonymous namespace
 
 class Test_Logger : public ::testing::Test {
@@ -20,7 +24,7 @@ protected:
     }
     void TearDown() override {
         ln::Logger::setCallback(nullptr);
-        ln::Logger::setLevel(LN_LOG_LEVEL_INFO);
+        ln::Logger::setLevel(g_initialLevel);
         g_captured.clear();
     }
 };
@@ -39,8 +43,8 @@ TEST_F(Test_Logger, LevelFiltersLowerSeverity) {
     ASSERT_EQ(LN_LOG_LEVEL_ERROR, g_captured[1]);
 }
 
-// LN_LOG_LEVEL_OFF はすべてのログを破棄すること。
-TEST_F(Test_Logger, OffDiscardsEverything) {
+// LN_LOG_LEVEL_DISABLE はすべてのログを破棄すること。
+TEST_F(Test_Logger, DisableDiscardsEverything) {
     ln::Logger::setLevel(LN_LOG_LEVEL_DISABLE);
 
     LN_LOG_TRACE("trace");
@@ -51,10 +55,7 @@ TEST_F(Test_Logger, OffDiscardsEverything) {
 }
 
 // 既定レベルは LN_LOG_LEVEL_INFO であること (WASM も含め全プラットフォーム共通)。
+// setLevel() すると検証対象そのものを上書きするため、起動時に記録した値を見る。
 TEST_F(Test_Logger, DefaultLevelIsInfo) {
-    ln::Logger::setLevel(LN_LOG_LEVEL_INFO);
-
-    ASSERT_FALSE(ln::Logger::shouldLog(LN_LOG_LEVEL_VERBOSE));
-    ASSERT_TRUE(ln::Logger::shouldLog(LN_LOG_LEVEL_INFO));
-    ASSERT_TRUE(ln::Logger::shouldLog(LN_LOG_LEVEL_FATAL));
+    ASSERT_EQ(LN_LOG_LEVEL_INFO, g_initialLevel);
 }

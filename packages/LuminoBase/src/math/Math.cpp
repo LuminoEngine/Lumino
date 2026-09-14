@@ -13,15 +13,16 @@ Quaternion Quaternion::fromAxisAngle(const Vector3& axis, float angle) {
     return {n.x * s, n.y * s, n.z * s, std::cos(half)};
 }
 
+// DirectXMath の XMQuaternionRotationRollPitchYaw と同じ結果になる。
 Quaternion Quaternion::fromEuler(float pitch, float yaw, float roll) {
     float cp = std::cos(pitch * 0.5f), sp = std::sin(pitch * 0.5f);
     float cy = std::cos(yaw * 0.5f),   sy = std::sin(yaw * 0.5f);
     float cr = std::cos(roll * 0.5f),  sr = std::sin(roll * 0.5f);
     return {
-        sr * cp * cy - cr * sp * sy,
-        cr * sp * cy + sr * cp * sy,
-        cr * cp * sy - sr * sp * cy,
-        cr * cp * cy + sr * sp * sy,
+        sp * cy * cr + cp * sy * sr,
+        cp * sy * cr - sp * cy * sr,
+        cp * cy * sr - sp * sy * cr,
+        cp * cy * cr + sp * sy * sr,
     };
 }
 

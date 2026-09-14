@@ -2,20 +2,14 @@
 #include <cstddef>
 #include <cassert>
 #include <type_traits>
+#include <LuminoBase/Logger.hpp>
 
 namespace ln {
 
 /**
  * スタック上に固定サイズのバッファを持つ配列。
- * 
+ *
  * Capacity 個までの要素をヒープアロケーションなしで保持できます。
- * Capacity を超える要素を追加しようとした場合は assert で停止します。。
- *
- * 要素は trivially copyable な型に限定しているため、コピー、ムーブ、破棄は
- * コンパイラが生成するものをそのまま使用します。
- *
- * @tparam T 要素の型
- * @tparam Capacity 最大要素数
  *
  * @example
  * ```
@@ -28,10 +22,16 @@ namespace ln {
 template<typename T, std::size_t Capacity>
 class SmallVector {
     static_assert(std::is_trivially_copyable_v<T>, "SmallVector の要素は trivially copyable な型のみです。");
+    static_assert(Capacity > 0, "SmallVector の Capacity は 1 以上である必要があります。");
 
 public:
     void push_back(const T& value) {
         assert(m_size < Capacity && "SmallVector capacity exceeded");
+        if (m_size >= Capacity) {
+            // assert は NDEBUG で消えるため、ここで弾かないと範囲外書き込みになる。
+            LN_LOG_ERROR("SmallVector: 容量 (%zu) を超えるため要素を追加できません。", Capacity);
+            return;
+        }
         m_data[m_size] = value;
         ++m_size;
     }
@@ -60,7 +60,9 @@ public:
     bool operator==(const SmallVector& other) const {
         if (m_size != other.m_size) return false;
         for (std::size_t i = 0; i < m_size; ++i) {
-            if (!(m_data[i] == other.m_data[i])) return false;
+            if (!(m_data[i] == other.m_data[i])) {
+                return false;
+            }
         }
         return true;
     }

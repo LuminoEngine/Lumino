@@ -1,30 +1,24 @@
-﻿#include <LuminoBase/math/Math.hpp>
+﻿#include <LuminoBase/Logger.hpp>
+#include <LuminoBase/math/Math.hpp>
 #include <LuminoBase/math/Matrix4x4.hpp>
 
 namespace ln {
 
+namespace {
+// 軸ベクトルが縮退しているかどうかの判定に使う長さの下限。
+constexpr float kAxisEpsilon = 1e-6f;
+} // namespace
+
 Matrix4x4::Matrix4x4(
-    float m11,
-    float m12,
-    float m13,
-    float m14,
-    float m21,
-    float m22,
-    float m23,
-    float m24,
-    float m31,
-    float m32,
-    float m33,
-    float m34,
-    float m41,
-    float m42,
-    float m43,
-    float m44)
+    float x0, float y0, float z0, float w0,
+    float x1, float y1, float z1, float w1,
+    float x2, float y2, float z2, float w2,
+    float x3, float y3, float z3, float w3)
     : m{
-        m11, m12, m13, m14,
-        m21, m22, m23, m24,
-        m31, m32, m33, m34,
-        m41, m42, m43, m44
+        x0, y0, z0, w0,
+        x1, y1, z1, w1,
+        x2, y2, z2, w2,
+        x3, y3, z3, w3
     } {
 }
 
@@ -34,7 +28,9 @@ Matrix4x4::Matrix4x4(
 Matrix4x4 Matrix4x4::perspectiveRH(float fovY, float aspect, float nearZ, float farZ) {
     Matrix4x4 r;
     const float tanHalf = std::tan(fovY * 0.5f);
-    for (auto& v : r.m) v = 0;
+    for (auto& v : r.m) {
+        v = 0;
+    }
     r.m[0]  = 1.0f / (aspect * tanHalf);
     r.m[5]  = 1.0f / tanHalf;
     r.m[10] = farZ / (nearZ - farZ);
@@ -45,7 +41,9 @@ Matrix4x4 Matrix4x4::perspectiveRH(float fovY, float aspect, float nearZ, float 
 
 Matrix4x4 Matrix4x4::ortho(float left, float right, float bottom, float top, float nearZ, float farZ) {
     Matrix4x4 r;
-    for (auto& v : r.m) v = 0;
+    for (auto& v : r.m) {
+        v = 0;
+    }
     r.m[0]  = 2.0f / (right - left);
     r.m[5]  = 2.0f / (top - bottom);
     r.m[10] = 1.0f / (nearZ - farZ);
@@ -63,6 +61,13 @@ Matrix4x4 Matrix4x4::lookAtRH(const Vector3& position, const Vector3& lookAt_, c
     zaxis.normalize();
     // Z 軸と上方向のベクトルの外積をとると X 軸が求まる
     xaxis = Vector3::cross(zaxis, up);
+    // 視点と注視点が同じ場合は zaxis が (normalized() は長さ 0 でゼロベクトルを返す)、
+    // 上方向が視線と平行な場合は外積がゼロになる。そのまま進めると全頂点を 1 点に潰す
+    // ゼロ行列ができてしまうため、単位行列にフォールバックする。
+    if (xaxis.length() <= kAxisEpsilon) {
+        LN_LOG_WARNING("Matrix4x4::lookAtRH: 視線方向と上方向が縮退しているため、単位行列を返します。");
+        return identity();
+    }
     xaxis.normalize();
     // 2 つの軸が求まったので、その外積が残りの軸 (Y 軸) になる
     yaxis = Vector3::cross(xaxis, zaxis);
@@ -164,9 +169,11 @@ Matrix4x4 Matrix4x4::fromQuaternion(const Quaternion& q) {
 
 Matrix4x4 Matrix4x4::transposed() const {
     Matrix4x4 r;
-    for (int i = 0; i < 4; ++i)
-        for (int j = 0; j < 4; ++j)
+    for (int i = 0; i < 4; ++i) {
+        for (int j = 0; j < 4; ++j) {
             r.m[j * 4 + i] = m[i * 4 + j];
+        }
+    }
     return r;
 }
 
@@ -191,8 +198,15 @@ Matrix4x4 Matrix4x4::inversed() const {
     float b11 = a22 * a33 - a23 * a32;
 
     float det = b00 * b11 - b01 * b10 + b02 * b09 + b03 * b08 - b04 * b07 + b05 * b06;
-    if (std::abs(det) < 1e-12f) return identity();
-    float invDet = 1.0f / det;
+
+    // det はスケールの 4 乗で変化するため、固定の絶対値をしきい値にすると小スケールの
+    // 可逆な行列まで特異と誤判定する (例: scale(0.0001) の det は 1e-12)。
+    // 代わりに逆数が有効な有限値になるかどうかだけを見る (0 なら inf、inf なら 0 になる)。
+    const float invDet = 1.0f / det;
+    if (!std::isfinite(invDet) || invDet == 0.0f) {
+        LN_LOG_WARNING("Matrix4x4::inversed: 逆行列を計算できないため、単位行列を返します。 (det=%g)", static_cast<double>(det));
+        return identity();
+    }
 
     Matrix4x4 r;
     r.m[0]  = ( a11 * b11 - a12 * b10 + a13 * b09) * invDet;

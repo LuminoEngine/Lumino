@@ -3,29 +3,46 @@ using namespace ln;
 
 class Test_Quaternion : public ::testing::Test {};
 
+static constexpr float kPi = 3.14159265358979323846f;
+
+static void expectQuatNear(const Quaternion& actual, const Quaternion& expected, float eps = 1e-5f) {
+    EXPECT_NEAR(actual.x, expected.x, eps);
+    EXPECT_NEAR(actual.y, expected.y, eps);
+    EXPECT_NEAR(actual.z, expected.z, eps);
+    EXPECT_NEAR(actual.w, expected.w, eps);
+}
+
 TEST(Test_Quaternion, FromEuler_Identity) {
-    Quaternion q = Quaternion::fromEuler(0, 0, 0);
-    EXPECT_NEAR(q.x, 0.0f, 1e-5f);
-    EXPECT_NEAR(q.y, 0.0f, 1e-5f);
-    EXPECT_NEAR(q.z, 0.0f, 1e-5f);
-    EXPECT_NEAR(q.w, 1.0f, 1e-5f);
+    expectQuatNear(Quaternion::fromEuler(0, 0, 0), Quaternion{0, 0, 0, 1});
+}
+
+// pitch=X, yaw=Y, roll=Z の軸割り当てを検証する。
+// fromEuler(0, 0, 0) は軸が入れ替わっていても単位クォータニオンになるため、
+// 各軸を個別に回転させて確認する必要がある。
+TEST(Test_Quaternion, FromEuler_AxisAssignment) {
+    const float a = kPi * 0.5f;
+    expectQuatNear(Quaternion::fromEuler(a, 0, 0), Quaternion::fromAxisAngle(Vector3::unitX(), a));
+    expectQuatNear(Quaternion::fromEuler(0, a, 0), Quaternion::fromAxisAngle(Vector3::unitY(), a));
+    expectQuatNear(Quaternion::fromEuler(0, 0, a), Quaternion::fromAxisAngle(Vector3::unitZ(), a));
+}
+
+// 合成順は roll(Z) -> pitch(X) -> yaw(Y)、すなわち q = Qy(yaw) * Qx(pitch) * Qz(roll)。
+TEST(Test_Quaternion, FromEuler_CompositionOrder) {
+    const float pitch = 0.3f, yaw = 0.7f, roll = -0.4f;
+    Quaternion actual = Quaternion::fromEuler(pitch, yaw, roll);
+    Quaternion expected = Quaternion::fromAxisAngle(Vector3::unitY(), yaw) *
+                          Quaternion::fromAxisAngle(Vector3::unitX(), pitch) *
+                          Quaternion::fromAxisAngle(Vector3::unitZ(), roll);
+    expectQuatNear(actual, expected);
 }
 
 TEST(Test_Quaternion, Slerp_Endpoints) {
     Quaternion a{0, 0, 0, 1};
-    Quaternion b = Quaternion::fromAxisAngle({0, 1, 0}, 90.0f);
+    // fromAxisAngle はラジアンを取る。90 度は pi/2。
+    Quaternion b = Quaternion::fromAxisAngle({0, 1, 0}, kPi * 0.5f);
 
-    Quaternion s0 = Quaternion::slerp(a, b, 0.0f);
-    EXPECT_NEAR(s0.x, a.x, 1e-5f);
-    EXPECT_NEAR(s0.y, a.y, 1e-5f);
-    EXPECT_NEAR(s0.z, a.z, 1e-5f);
-    EXPECT_NEAR(s0.w, a.w, 1e-5f);
-
-    Quaternion s1 = Quaternion::slerp(a, b, 1.0f);
-    EXPECT_NEAR(s1.x, b.x, 1e-4f);
-    EXPECT_NEAR(s1.y, b.y, 1e-4f);
-    EXPECT_NEAR(s1.z, b.z, 1e-4f);
-    EXPECT_NEAR(s1.w, b.w, 1e-4f);
+    expectQuatNear(Quaternion::slerp(a, b, 0.0f), a);
+    expectQuatNear(Quaternion::slerp(a, b, 1.0f), b, 1e-4f);
 }
 
 TEST(Test_Quaternion, ToMatrix_Identity) {

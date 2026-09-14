@@ -11,13 +11,21 @@
 // ログ出力マクロ
 //------------------------------------------------------------------------------
 
-#define LN_LOG_TRACE(...)   ::ln::Logger::log(::ln::LogLocation{__FILE__, __LINE__, LN_FUNC_SIG}, LN_LOG_LEVEL_TRACE,   __VA_ARGS__)
-#define LN_LOG_DEBUG(...)   ::ln::Logger::log(::ln::LogLocation{__FILE__, __LINE__, LN_FUNC_SIG}, LN_LOG_LEVEL_DEBUG,   __VA_ARGS__)
-#define LN_LOG_VERBOSE(...) ::ln::Logger::log(::ln::LogLocation{__FILE__, __LINE__, LN_FUNC_SIG}, LN_LOG_LEVEL_VERBOSE, __VA_ARGS__)
-#define LN_LOG_INFO(...)    ::ln::Logger::log(::ln::LogLocation{__FILE__, __LINE__, LN_FUNC_SIG}, LN_LOG_LEVEL_INFO,    __VA_ARGS__)
-#define LN_LOG_WARNING(...) ::ln::Logger::log(::ln::LogLocation{__FILE__, __LINE__, LN_FUNC_SIG}, LN_LOG_LEVEL_WARNING, __VA_ARGS__)
-#define LN_LOG_ERROR(...)   ::ln::Logger::log(::ln::LogLocation{__FILE__, __LINE__, LN_FUNC_SIG}, LN_LOG_LEVEL_ERROR,   __VA_ARGS__)
-#define LN_LOG_FATAL(...)   ::ln::Logger::log(::ln::LogLocation{__FILE__, __LINE__, LN_FUNC_SIG}, LN_LOG_LEVEL_FATAL,   __VA_ARGS__)
+// 破棄されるログの引数 (std::string 構築など) を評価しないよう、呼び出し側で短絡する。
+#define LN_LOG_IMPL(level, ...) \
+    do { \
+        if (::ln::Logger::shouldLog(level)) { \
+            ::ln::Logger::log(::ln::LogLocation{__FILE__, __LINE__, LN_FUNC_SIG}, level, __VA_ARGS__); \
+        } \
+    } while (0)
+
+#define LN_LOG_TRACE(...)   LN_LOG_IMPL(LN_LOG_LEVEL_TRACE,   __VA_ARGS__)
+#define LN_LOG_DEBUG(...)   LN_LOG_IMPL(LN_LOG_LEVEL_DEBUG,   __VA_ARGS__)
+#define LN_LOG_VERBOSE(...) LN_LOG_IMPL(LN_LOG_LEVEL_VERBOSE, __VA_ARGS__)
+#define LN_LOG_INFO(...)    LN_LOG_IMPL(LN_LOG_LEVEL_INFO,    __VA_ARGS__)
+#define LN_LOG_WARNING(...) LN_LOG_IMPL(LN_LOG_LEVEL_WARNING, __VA_ARGS__)
+#define LN_LOG_ERROR(...)   LN_LOG_IMPL(LN_LOG_LEVEL_ERROR,   __VA_ARGS__)
+#define LN_LOG_FATAL(...)   LN_LOG_IMPL(LN_LOG_LEVEL_FATAL,   __VA_ARGS__)
 
 namespace ln {
 
@@ -62,6 +70,9 @@ class Logger {
 public:
     /** ログ出力レベルフィルタを設定する。設定レベル未満のログは破棄される。 */
     static void setLevel(LNLogLevel level);
+
+    /** 現在のログ出力レベルフィルタを取得する。 */
+    static LNLogLevel level();
 
     /** 指定レベルのログを出力すべきか判定する。 */
     static bool shouldLog(LNLogLevel level);

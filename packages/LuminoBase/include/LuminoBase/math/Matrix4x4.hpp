@@ -10,8 +10,15 @@ struct Matrix4x4 {
     float m[16] = {1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1};
 
     constexpr Matrix4x4() = default;
-    Matrix4x4(float m11, float m12, float m13, float m14, float m21, float m22, float m23, float m24, float m31, float m32, float m33, float m34, float m41, float m42, float m43, float m44);
-    
+
+    /**
+     * 16 個の要素から構築する。
+     *
+     * 引数は glm::mat4 と同じく列単位で並べます。x0,y0,z0,w0 が第 0 列、x1,y1,z1,w1 が第 1 列
+     * ... となり、平行移動成分は最後の x3,y3,z3 に置きます。
+     * 行優先の m11,m12,... 表記で書かれた行列をそのまま転記すると転置になるので注意してください。
+     */
+    Matrix4x4(float x0, float y0, float z0, float w0, float x1, float y1, float z1, float w1, float x2, float y2, float z2, float w2, float x3, float y3, float z3, float w3);
 
     static Matrix4x4 perspectiveRH(float fovY, float aspect, float nearZ, float farZ);
     static Matrix4x4 ortho(float left, float right, float bottom, float top, float nearZ, float farZ);

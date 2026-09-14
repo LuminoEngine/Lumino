@@ -1,7 +1,9 @@
 ﻿#pragma once
 
 #include <atomic>
+#include <cstddef>
 #include <cstdint>
+#include <type_traits>
 #include <utility>
 
 namespace ln {
@@ -16,7 +18,7 @@ public:
 
     void release();
 
-    uint32_t refCount() const { return refCount_.load(std::memory_order_relaxed); }
+    uint32_t refCount() const { return m_refCount.load(std::memory_order_relaxed); }
 
 protected:
     /**
@@ -28,7 +30,7 @@ protected:
 private:
     RefObject(const RefObject&) = delete;
     RefObject& operator=(const RefObject&) = delete;
-    std::atomic<uint32_t> refCount_{1};
+    std::atomic<uint32_t> m_refCount{1};
 };
 
 /**
@@ -44,39 +46,45 @@ public:
     ~Ref() { reset(); }
 
     // Copy
-    Ref(const Ref& o) : ptr_(o.ptr_) {
-        if (ptr_) ptr_->addRef();
+    Ref(const Ref& o) : m_ptr(o.m_ptr) {
+        if (m_ptr) {
+            m_ptr->addRef();
+        }
     }
     Ref& operator=(const Ref& o) {
-        if (this != &o) {
-            reset();
-            ptr_ = o.ptr_;
-            if (ptr_) ptr_->addRef();
+        T* p = o.m_ptr;
+        if (p) {
+            p->addRef();
         }
+        reset();
+        m_ptr = p;
         return *this;
     }
 
     // Move
-    Ref(Ref&& o) noexcept : ptr_(o.ptr_) { o.ptr_ = nullptr; }
+    Ref(Ref&& o) noexcept : m_ptr(o.m_ptr) { o.m_ptr = nullptr; }
     Ref& operator=(Ref&& o) noexcept {
         if (this != &o) {
+            T* p = o.m_ptr;
+            o.m_ptr = nullptr;
             reset();
-            ptr_ = o.ptr_;
-            o.ptr_ = nullptr;
+            m_ptr = p;
         }
         return *this;
     }
 
     // Upcasting
     template <typename U, typename = std::enable_if_t<std::is_base_of_v<T, U>>>
-    Ref(const Ref<U>& o) : ptr_(o.get()) {
-        if (ptr_) ptr_->addRef();
+    Ref(const Ref<U>& o) : m_ptr(o.get()) {
+        if (m_ptr) {
+            m_ptr->addRef();
+        }
     }
 
     /** 生ポインタを引き受ける (既存の参照の所有権を取得し、参照カウントは増やさない)。 */
     static Ref adopt(T* p) {
         Ref r;
-        r.ptr_ = p;
+        r.m_ptr = p;
         return r;
     }
 
@@ -86,29 +94,29 @@ public:
             p->addRef();
         }
         Ref r;
-        r.ptr_ = p;
+        r.m_ptr = p;
         return r;
     }
 
 
     void reset() {
-        if (ptr_) {
-            ptr_->release();
-            ptr_ = nullptr;
+        if (m_ptr) {
+            m_ptr->release();
+            m_ptr = nullptr;
         }
     }
 
-    void detach() { ptr_ = nullptr; }
+    void detach() { m_ptr = nullptr; }
 
-    T* get() const { return ptr_; }
-    T* operator->() const { return ptr_; }
-    explicit operator bool() const { return ptr_ != nullptr; }
+    T* get() const { return m_ptr; }
+    T* operator->() const { return m_ptr; }
+    explicit operator bool() const { return m_ptr != nullptr; }
 
-    bool operator==(const Ref& o) const { return ptr_ == o.ptr_; }
-    bool operator!=(const Ref& o) const { return ptr_ != o.ptr_; }
+    bool operator==(const Ref& o) const { return m_ptr == o.m_ptr; }
+    bool operator!=(const Ref& o) const { return m_ptr != o.m_ptr; }
 
 private:
-    T* ptr_ = nullptr;
+    T* m_ptr = nullptr;
 };
 
 } // namespace ln

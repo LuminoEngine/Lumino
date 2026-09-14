@@ -23,6 +23,10 @@ void Logger::setLevel(LNLogLevel level) {
     g_level.store(level, std::memory_order_relaxed);
 }
 
+LNLogLevel Logger::level() {
+    return g_level.load(std::memory_order_relaxed);
+}
+
 bool Logger::shouldLog(LNLogLevel level) {
     return level >= g_level.load(std::memory_order_relaxed);
 }

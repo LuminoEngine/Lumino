@@ -1,8 +1,8 @@
 # シェーダの書き方
 
 Lumino のシェーダは [Slang](https://shader-slang.org/) で記述します。`.slang` ソースを
-`luminosc`（シェーダコンパイラ）でクロスコンパイルすると、SPIR-V / DXIL / WGSL / Metal の
-全ターゲットを 1 つにまとめた `.lcsh` バイナリが生成され、これを `Material` として読み込みます。
+`luminosc`（シェーダコンパイラ）でクロスコンパイルすると、 SPIR-V / DXIL / WGSL / Metal / GLSL の
+各ターゲットを 1 つにまとめた `.lcsh` バイナリが生成され、これを `Material` として読み込みます。
 
 座標系・行列・ワインディングなどグラフィックスの基本規約は
 [graphics-conventions.md](graphics-conventions.md) を参照してください。本ドキュメントは
@@ -22,15 +22,15 @@ Lumino のシェーダは [Slang](https://shader-slang.org/) で記述します�
 
 ```hlsl
 // MyShader.slang
-import lumino;                                   // (1) 標準ライブラリ
+import lumino;  // (1) 標準ライブラリ
 
 // (2) マテリアルパラメータ
 struct MaterialParams {
     float4 color;
 };
 uniform ConstantBuffer<MaterialParams> u_params;
-uniform Texture2D                      u_baseTexture;
-uniform SamplerState                   u_baseSampler;
+uniform Texture2D u_baseTexture;
+uniform SamplerState u_baseSampler;
 
 // (3) 頂点シェーダの出力
 struct VSOutput {
@@ -122,7 +122,7 @@ struct VSInput {
 };
 ```
 
-### GBuffer ヘルパ
+### GBuffer ヘルパ (実験的)
 
 Deferred / SSR 向けの共通 GBuffer レイアウトと、それをパックする `lnPackGBuffer(...)` /
 `LNGBufferOutput` が用意されています。詳細は

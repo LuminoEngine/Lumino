@@ -28,8 +28,11 @@ static Vector4 mulMV(const Matrix4x4& M, const Vector4& v) {
 }
 
 static bool matNear(const Matrix4x4& a, const Matrix4x4& b, float eps = kEps) {
-    for (int i = 0; i < 16; ++i)
-        if (std::abs(a.m[i] - b.m[i]) > eps) return false;
+    for (int i = 0; i < 16; ++i) {
+        if (std::abs(a.m[i] - b.m[i]) > eps) {
+            return false;
+        }
+    }
     return true;
 }
 
@@ -38,7 +41,9 @@ void printMat(const glm::mat4& mat) {
     std::memcpy(data, &mat, sizeof(data));
     for (int i = 0; i < 16; i++) {
         printf("%.6f, ", data[i]);
-        if ((i + 1) % 4 == 0) printf("\n");
+        if ((i + 1) % 4 == 0) {
+            printf("\n");
+        }
     }
 }
 
@@ -143,9 +148,11 @@ TEST_F(Test_Matrix4x4, TransformCoord_TRS) {
 
 TEST_F(Test_Matrix4x4, Identity) {
     Matrix4x4 m = Matrix4x4::identity();
-    for (int i = 0; i < 4; ++i)
-        for (int j = 0; j < 4; ++j)
+    for (int i = 0; i < 4; ++i) {
+        for (int j = 0; j < 4; ++j) {
             EXPECT_FLOAT_EQ(m.m[i * 4 + j], (i == j) ? 1.0f : 0.0f);
+        }
+    }
 }
 
 TEST_F(Test_Matrix4x4, ColumnMajorLayout) {
@@ -313,8 +320,9 @@ TEST_F(Test_Matrix4x4, TRS_Composition) {
 TEST_F(Test_Matrix4x4, Inverse_Identity) {
     Matrix4x4 id = Matrix4x4::identity();
     Matrix4x4 inv = id.inversed();
-    for (int i = 0; i < 16; ++i)
+    for (int i = 0; i < 16; ++i) {
         EXPECT_NEAR(id.m[i], inv.m[i], 1e-5f);
+    }
 }
 
 TEST_F(Test_Matrix4x4, Inverse_Translation) {
@@ -385,4 +393,30 @@ TEST_F(Test_Matrix4x4, LookAtRH_ForwardMapsToNegZ) {
     EXPECT_NEAR(vtarget.x, 0.0f, kEps);
     EXPECT_NEAR(vtarget.y, 0.0f, kEps);
     EXPECT_TRUE(vtarget.z < 0.0f);
+}
+
+// 上方向が視線方向と平行な場合 (真上からの見下ろし)、軸が縮退してゼロ行列になってはならない。
+TEST_F(Test_Matrix4x4, LookAtRH_UpParallelToForward) {
+    Matrix4x4 V = Matrix4x4::lookAtRH({0, 5, 0}, {0, 0, 0}, {0, 1, 0});
+    EXPECT_TRUE(matNear(V, Matrix4x4::identity()));
+}
+
+// 視点と注視点が同じ場合も同様。
+TEST_F(Test_Matrix4x4, LookAtRH_EyeEqualsTarget) {
+    Matrix4x4 V = Matrix4x4::lookAtRH({1, 2, 3}, {1, 2, 3}, {0, 1, 0});
+    EXPECT_TRUE(matNear(V, Matrix4x4::identity()));
+}
+
+// スケールが小さくても det の絶対値だけで特異と誤判定しないこと。
+// scale(0.0001) の det は 1e-12 になる。
+TEST_F(Test_Matrix4x4, Inversed_SmallScaleIsInvertible) {
+    Matrix4x4 s = Matrix4x4::scale({0.0001f, 0.0001f, 0.0001f});
+    Matrix4x4 inv = s.inversed();
+    EXPECT_TRUE(matNear(s * inv, Matrix4x4::identity(), 1e-3f));
+}
+
+// 本当に特異な行列は単位行列にフォールバックする。
+TEST_F(Test_Matrix4x4, Inversed_SingularFallsBackToIdentity) {
+    Matrix4x4 s = Matrix4x4::scale({1.0f, 0.0f, 1.0f});
+    EXPECT_TRUE(matNear(s.inversed(), Matrix4x4::identity()));
 }

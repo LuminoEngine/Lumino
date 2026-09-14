@@ -3,7 +3,7 @@
 
 Lumino is a platform abstraction library for game development. [Lyric Dragon RPG Editor](https://www.lyridra.com/) is currently our primary client. The documentation is written in Japanese, as it is intended for reference by their development team.
 
-Luminoは、ゲーム開発向けのプラットフォーム抽象化ライブラリです。現在、LYRIDRA社が当社の主要なクライアントです。そちらの開発チームが参照することを想定しているため、ドキュメントは日本語で作成されています。
+Luminoは、ゲーム開発向けのプラットフォーム抽象化ライブラリです。現在、 [Lyric Dragon RPG Editor](https://www.lyridra.com/) が主要なクライアントです。そちらの開発チームが参照することを想定しているため、ドキュメントは日本語で作成されています。
 
 このリポジトリには現在以下のものが含まれています:
 
@@ -21,6 +21,7 @@ Luminoは、ゲーム開発向けのプラットフォーム抽象化ライブ�
 - Graphics
   - Vulkan
   - WebGPU
+  - WebGL2
 
 - Input (TODO)
 - Audio (TODO)
@@ -28,6 +29,7 @@ Luminoは、ゲーム開発向けのプラットフォーム抽象化ライブ�
 ## ドキュメント
 
 - [グラフィックス基本仕様](./docs/graphics-conventions.md)
+- [シェーダ基本仕様](./docs/shader-conventions.md)
 
 ## ビルド
 
