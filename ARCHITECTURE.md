@@ -56,6 +56,41 @@ LuminoC の C-API を呼び出すことも想定しています。サンプル�
 | luminosc-npm / luminosc-x64-windows | `luminosc` の npm 配布パッケージ (ビルド成果物) | - |
 | luminojs-examples | `luminojs` を使った Vite サンプル集 | - |
 
+## パッケージの依存関係
+
+矢印はリンク依存 (`target_link_libraries`) を表し、依存する側から依存される側へ向かっています。
+
+```
+ [luminojs-examples]                  [luminosc]
+          |                               |
+          v                               |
+     [luminojs]                           |
+          |                               |
+          v                               |
+      [LuminoC]                           |
+          |                               |
+          v                               v
+    [LuminoCore] ------------------>[LuminoShader]
+          |                               |
+          +-------->[LuminoBase]<---------+
+```
+
+- `LuminoBase` はグラフィックス API に一切依存しない最下層のリーフです。`LuminoShader` と
+  `LuminoCore` の両方から PUBLIC でリンクされる共有基盤であり、これが `LuminoBase` を独立した
+  パッケージとして維持する理由です。
+- `luminosc` はシェーダコンパイラ CLI で、`LuminoShader` だけをリンクします。この経路に
+  グラフィックス API を持ち込まないことが設計上の制約です。静的ライブラリの PRIVATE 依存は
+  リンク行には伝播する (`$<LINK_ONLY:>`) ため、仮に `LuminoBase` を `LuminoCore` へ統合すると、
+  `LuminoShader` 経由で `luminosc` が Vulkan・Dawn・ANGLE・glfw を引き込むことになります。
+- `LuminoCore` から `LuminoShader` へのリンクは PRIVATE です。`.lcsh` のデシリアライズ
+  (`UnifiedShader2` / `UnifiedShaderSerializer2`) と、デスクトップのランタイムコンパイル経路
+  (`ShaderCompiler2`) にのみ使っており、`LuminoCore` の公開ヘッダには現れません。
+- デスクトップビルドでは `LuminoCore` が組み込みシェーダの生成に `luminosc` を使います
+  (`add_dependencies`)。これはビルド順序の依存であってリンク依存ではないため、上の図には
+  含めていません。
+
+パッケージ名の規則は [docs/coding-rules.md](docs/coding-rules.md) を参照してください。
+
 ## シェーダパイプライン
 
 ```
