@@ -65,7 +65,7 @@ Matrix4x4 Matrix4x4::lookAtRH(const Vector3& position, const Vector3& lookAt_, c
     // 上方向が視線と平行な場合は外積がゼロになる。そのまま進めると全頂点を 1 点に潰す
     // ゼロ行列ができてしまうため、単位行列にフォールバックする。
     if (xaxis.length() <= kAxisEpsilon) {
-        LN_LOG_WARNING("Matrix4x4::lookAtRH: 視線方向と上方向が縮退しているため、単位行列を返します。");
+        LN_LOG_WARNING("Matrix4x4::lookAtRH: view direction and up vector are degenerate; returning identity.");
         return identity();
     }
     xaxis.normalize();
@@ -204,7 +204,7 @@ Matrix4x4 Matrix4x4::inversed() const {
     // 代わりに逆数が有効な有限値になるかどうかだけを見る (0 なら inf、inf なら 0 になる)。
     const float invDet = 1.0f / det;
     if (!std::isfinite(invDet) || invDet == 0.0f) {
-        LN_LOG_WARNING("Matrix4x4::inversed: 逆行列を計算できないため、単位行列を返します。 (det=%g)", static_cast<double>(det));
+        LN_LOG_WARNING("Matrix4x4::inversed: matrix is not invertible; returning identity. (det=%g)", static_cast<double>(det));
         return identity();
     }
 

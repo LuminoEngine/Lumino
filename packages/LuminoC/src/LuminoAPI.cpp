@@ -668,23 +668,23 @@ LNResult LNDebug_GetGraphicsProfiler(LNHandle graphicsContext, LNGraphicsProfile
 //------------------------------------------------------------------------------
 #ifdef __EMSCRIPTEN__
 static_assert(sizeof(LNInstanceInitializeSettings) == 12,
-    "LNInstanceInitializeSettings のレイアウトが変わりました。types.ts の SIZEOF_INSTANCE_INIT_SETTINGS を更新してください");
+    "LNInstanceInitializeSettings layout changed. Update SIZEOF_INSTANCE_INIT_SETTINGS in types.ts");
 static_assert(sizeof(LNColorAttachmentDesc) == 24,
-    "LNColorAttachmentDesc のレイアウトが変わりました。types.ts の SIZEOF_COLOR_ATTACHMENT_DESC を更新してください");
+    "LNColorAttachmentDesc layout changed. Update SIZEOF_COLOR_ATTACHMENT_DESC in types.ts");
 static_assert(sizeof(LNDepthStencilAttachmentDesc) == 20,
-    "LNDepthStencilAttachmentDesc のレイアウトが変わりました。types.ts の SIZEOF_DEPTH_STENCIL_ATTACHMENT_DESC を更新してください");
+    "LNDepthStencilAttachmentDesc layout changed. Update SIZEOF_DEPTH_STENCIL_ATTACHMENT_DESC in types.ts");
 static_assert(sizeof(LNRenderPassDesc) == 128,
-    "LNRenderPassDesc のレイアウトが変わりました。types.ts の SIZEOF_RENDER_PASS_DESC と Renderer.ts の _serializeDesc を更新してください");
+    "LNRenderPassDesc layout changed. Update SIZEOF_RENDER_PASS_DESC in types.ts and _serializeDesc in Renderer.ts");
 static_assert(sizeof(LNVertex) == 64,
-    "LNVertex のレイアウトが変わりました。types.ts の SIZEOF_VERTEX を更新してください");
+    "LNVertex layout changed. Update SIZEOF_VERTEX in types.ts");
 static_assert(sizeof(LNSubMesh) == 12,
-    "LNSubMesh のレイアウトが変わりました。types.ts の SIZEOF_SUBMESH を更新してください");
+    "LNSubMesh layout changed. Update SIZEOF_SUBMESH in types.ts");
 static_assert(sizeof(LNTransform) == 40,
-    "LNTransform のレイアウトが変わりました。types.ts の SIZEOF_TRANSFORM を更新してください");
+    "LNTransform layout changed. Update SIZEOF_TRANSFORM in types.ts");
 static_assert(sizeof(LNMatrix) == 64,
-    "LNMatrix のレイアウトが変わりました。types.ts の SIZEOF_MATRIX を更新してください");
+    "LNMatrix layout changed. Update SIZEOF_MATRIX in types.ts");
 static_assert(sizeof(LNGraphicsProfiler) == 20,
-    "LNGraphicsProfiler のレイアウトが変わりました。バインディング側の読み取り処理を更新してください");
+    "LNGraphicsProfiler layout changed. Update the reader on the binding side");
 #endif // __EMSCRIPTEN__
 
 // LNDebug_GetStructSize はランタイムに依存しない純粋関数のため、wasm32 でも

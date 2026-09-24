@@ -19,15 +19,14 @@ namespace ln {
  */
 template<typename T, std::size_t Capacity>
 class SmallVector {
-    static_assert(std::is_trivially_copyable_v<T>, "SmallVector の要素は trivially copyable な型のみです。");
-    static_assert(Capacity > 0, "SmallVector の Capacity は 1 以上である必要があります。");
+    static_assert(std::is_trivially_copyable_v<T>, "SmallVector element type must be trivially copyable.");
+    static_assert(Capacity > 0, "SmallVector Capacity must be 1 or greater.");
 
 public:
     void push_back(const T& value) {
         assert(m_size < Capacity && "SmallVector capacity exceeded");
         if (m_size >= Capacity) {
-            // assert は NDEBUG で消えるため、ここで弾かないと範囲外書き込みになる。
-            LN_LOG_ERROR("SmallVector: 容量 (%zu) を超えるため要素を追加できません。", Capacity);
+            LN_LOG_ERROR("SmallVector: cannot push_back, capacity (%zu) exceeded.", Capacity);
             return;
         }
         m_data[m_size] = value;
