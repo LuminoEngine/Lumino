@@ -9,13 +9,13 @@
 int main(void) {
     InitializeInstance();
 
-    // 2. Window と GraphicsContext
+    // Window と GraphicsContext
     LNHandle window = LN_NULL_HANDLE;
     LNWindow_Create("LuminoC-RenderTargets", WINDOW_W, WINDOW_H, &window);
     LNHandle graphicsContext = LN_NULL_HANDLE;
     LNWindow_GetGraphicsContext(window, &graphicsContext);
 
-    // 3. レンダーターゲットテクスチャを 2 つ作成 (各 512x512)
+    // レンダーターゲットテクスチャを 2 つ作成 (各 512x512)
     const uint32_t rtWidth = 512;
     const uint32_t rtHeight = 512;
     LNHandle rt1 = LN_NULL_HANDLE;
@@ -27,7 +27,7 @@ int main(void) {
     LNHandle rtDepth = LN_NULL_HANDLE;
     LNTexture2D_CreateDepthStencil(graphicsContext, rtWidth, rtHeight, &rtDepth);
 
-    // 4. 各レンダーターゲットに描画する三角形メッシュを作成
+    // 各レンダーターゲットに描画する三角形メッシュを作成
     LNVertex triVertices[3] = {
         // posX   posY   posZ   nX nY nZ  u    v    r    g    b    a    tX tY tZ tW
         {  0.0f,  0.5f,  0.0f,  0,0,1,  0.5f,0.0f,  1,1,1,1,  1,0,0,0 },
@@ -57,7 +57,7 @@ int main(void) {
     LNMesh_Create(graphicsContext, triVertices, 3, triIndices, 3, &triSub, 1, &triMesh2);
     LNMesh_SetMaterial(triMesh2, 0, matGreen);
 
-    // 5. RT へ描画するためのカメラ (透視投影)
+    // RT へ描画するためのカメラ (透視投影)
     LNHandle camera = LN_NULL_HANDLE;
     LNCamera_Create(&camera);
     LNCamera_SetPerspective(camera,
@@ -69,7 +69,7 @@ int main(void) {
         0.0f, 0.0f, 0.0f,   // 注視点
         0.0f, 1.0f, 0.0f);  // 上方向
 
-    // 6. RT テクスチャをバックバッファに並べて表示するための画面四角形 2 つ
+    // RT テクスチャをバックバッファに並べて表示するための画面四角形 2 つ
     //    左の四角形: [-1, -1] から [0, 1]   右の四角形: [0, -1] から [1, 1]
     LNVertex leftQuadVerts[4] = {
         { -1.0f,  1.0f, 0.0f,  0,0,1,  0.0f, 0.0f,  1,1,1,1,  1,0,0,0 },
@@ -106,7 +106,7 @@ int main(void) {
     LNMesh_Create(graphicsContext, rightQuadVerts, 4, quadIndices, 6, &quadSub, 1, &rightQuadMesh);
     LNMesh_SetMaterial(rightQuadMesh, 0, matRT2);
 
-    // 7. メインループ
+    // メインループ
     LNTransform identity = { 0,0,0,  0,0,0,1,  1,1,1 };
     LNGraphicsProfiler profiler = {};
     LNBool quit = LN_FALSE;
@@ -181,7 +181,7 @@ int main(void) {
         LNGraphicsContext_EndFrame(graphicsContext);
     }
 
-    // 8. 解放
+    // 解放
     LNObject_Release(rightQuadMesh);
     LNObject_Release(leftQuadMesh);
     LNObject_Release(matRT2);

@@ -307,8 +307,7 @@ export class Runtime {
         const m = this.module;
         const cw = m.cwrap.bind(m);
 
-        // Phase 0
-        API.LNHelloTest = cw("LNHelloTest", "number", ["number"]);
+        // BuildInfo
         API.LNBuildInfo_GetBuildTimestamp = cw("LNBuildInfo_GetBuildTimestamp", "number", []);
 
         // Logger

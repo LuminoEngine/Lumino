@@ -52,7 +52,6 @@ int main(void) {
         0.0f, 1.0f, 0.0f);  // 上方向
     
     // メインループ
-    LNGraphicsProfiler profilering = {};
     LNTransform identity = { 0,0,0,  0,0,0,1,  1,1,1 };
     LNBool quit = LN_FALSE;
     while (LNWindow_ProcessEvents(window, &quit) == LN_OK && !quit) {
@@ -69,10 +68,7 @@ int main(void) {
         LNRenderer_DrawMesh(renderer, mesh, &identity, 0);
         LNRenderer_EndRenderPass(renderer);
 
-        LNDebug_GetGraphicsProfiler(graphicsContext, &profilering);
-        LNDebug_Print(graphicsContext, (std::string("FPS: ") + std::to_string(profilering.fps)).c_str());
-        LNDebug_Print(graphicsContext, (std::string("FrameTime(ms): ") + std::to_string(profilering.lastFrameTimeMs)).c_str());
-        LNDebug_Print(graphicsContext, (std::string("DrawCall: ") + std::to_string(profilering.drawCallCount)).c_str());
+        printGraphicsProfilering(graphicsContext);
 
         LNGraphicsContext_EndFrame(graphicsContext);
     }

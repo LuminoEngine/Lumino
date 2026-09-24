@@ -27,6 +27,10 @@
 // 内部ヘルパ
 //------------------------------------------------------------------------------
 
+// ランタイム未初期化なら LN_RUNTIME_UNINITIALIZED を返す。
+// 通過後は ln::CoreInstance::instance() が非 null であることが保証される。
+#define LN_REQUIRE_RUNTIME() do { if (!ln::CoreInstance::instance()) return LN_RUNTIME_UNINITIALIZED; } while (0)
+
 namespace {
 
 #ifdef __EMSCRIPTEN__
@@ -220,9 +224,7 @@ ln::SortMode toLnSortMode(LNSortMode mode) {
     }
 }
 
-
-
-} // 無名名前空間
+} // namespace
 
 //------------------------------------------------------------------------------
 // テスト
@@ -319,11 +321,10 @@ void LNInstance_Terminate() {
 //------------------------------------------------------------------------------
 
 LNResult LNObject_Release(LNHandle handle) {
-    auto* instance = ln::CoreInstance::instance();
-    if (!instance) return LN_RUNTIME_UNINITIALIZED;
+    LN_REQUIRE_RUNTIME();
     if (handle == LN_NULL_HANDLE) return LN_ERROR_INVALID_HANDLE;
 
-    if (!instance->objectRegistry()->release(handle)) {
+    if (!ln::CoreInstance::instance()->objectRegistry()->release(handle)) {
         return LN_ERROR_INVALID_HANDLE;
     }
     return LN_OK;
@@ -341,8 +342,7 @@ LNResult LNTexture2D_Create(
     if (!outHandle) return LN_ERROR_INVALID_ARGUMENT;
     *outHandle = LN_NULL_HANDLE;
 
-    auto* instance = ln::CoreInstance::instance();
-    if (!instance) return LN_RUNTIME_UNINITIALIZED;
+    LN_REQUIRE_RUNTIME();
 
     auto texture = ln::Ref<ln::Texture>::adopt(new ln::Texture(
         width,
@@ -373,8 +373,7 @@ LNResult LNWindow_Create(
     if (!outHandle) return LN_ERROR_INVALID_ARGUMENT;
     *outHandle = LN_NULL_HANDLE;
 
-    auto* instance = ln::CoreInstance::instance();
-    if (!instance) return LN_RUNTIME_UNINITIALIZED;
+    LN_REQUIRE_RUNTIME();
     if (isDeviceLostNow()) return LN_ERROR_DEVICE_LOST;
 
     ln::platform::WindowDesc winDesc;
@@ -383,7 +382,7 @@ LNResult LNWindow_Create(
     winDesc.height = height;
 
     ln::GraphicsContextDesc gfxDesc;
-    auto windowResult = ln::platform::PlatformWindow::create(instance->graphicsModule(),
+    auto windowResult = ln::platform::PlatformWindow::create(ln::CoreInstance::instance()->graphicsModule(),
         winDesc,
         gfxDesc);
     if (!windowResult) return LN_ERROR_UNKNOWN;
@@ -402,8 +401,7 @@ LNResult LNWindow_CreateFromCanvas(
     if (!canvasSelector || !outHandle) return LN_ERROR_INVALID_ARGUMENT;
     *outHandle = LN_NULL_HANDLE;
 
-    auto* instance = ln::CoreInstance::instance();
-    if (!instance) return LN_RUNTIME_UNINITIALIZED;
+    LN_REQUIRE_RUNTIME();
     if (isDeviceLostNow()) return LN_ERROR_DEVICE_LOST;
 
     ln::platform::WindowDesc winDesc;
@@ -413,7 +411,7 @@ LNResult LNWindow_CreateFromCanvas(
 
     ln::GraphicsContextDesc gfxDesc;
     auto windowResult = ln::platform::PlatformWindow::create(
-        instance->graphicsModule(), winDesc, gfxDesc);
+        ln::CoreInstance::instance()->graphicsModule(), winDesc, gfxDesc);
     if (!windowResult) return LN_ERROR_UNKNOWN;
 
     *outHandle = wrapObjectFromCreate(windowResult->get());
@@ -432,8 +430,7 @@ LNResult LNWindow_ProcessEvents(LNHandle handle, LNBool* outQuit) {
     if (!outQuit) return LN_ERROR_INVALID_ARGUMENT;
     *outQuit = LN_FALSE;
 
-    auto* instance = ln::CoreInstance::instance();
-    if (!instance) return LN_RUNTIME_UNINITIALIZED;
+    LN_REQUIRE_RUNTIME();
 
     auto* obj = resolveObject<ln::platform::PlatformWindow>(handle);
     if (!obj) return LN_ERROR_INVALID_HANDLE;
@@ -446,8 +443,7 @@ LNResult LNWindow_GetGraphicsContext(LNHandle window, LNHandle* outHandle) {
     if (!outHandle) return LN_ERROR_INVALID_ARGUMENT;
     *outHandle = LN_NULL_HANDLE;
 
-    auto* instance = ln::CoreInstance::instance();
-    if (!instance) return LN_RUNTIME_UNINITIALIZED;
+    LN_REQUIRE_RUNTIME();
 
     auto* obj = resolveObject<ln::platform::PlatformWindow>(window);
     if (!obj) return LN_ERROR_INVALID_HANDLE;
@@ -475,15 +471,14 @@ LNResult LNGraphicsContext_BeginFrame(
     *outColorBuffer = LN_NULL_HANDLE;
     *outDepthBuffer = LN_NULL_HANDLE;
 
-    auto* instance = ln::CoreInstance::instance();
-    if (!instance) return LN_RUNTIME_UNINITIALIZED;
+    LN_REQUIRE_RUNTIME();
 
     // デバイスロスト中は自動復旧ステートマシンを 1 ステップ進める。
     // 復旧が完了していなければ RHI に触れずに LN_ERROR_DEVICE_LOST を返す。
     // クライアントはフレームループを回し続けるだけで復旧が進行し、
     // 完了後の BeginFrame から LN_OK に戻る。
     if (isDeviceLostNow()) {
-        auto* module = instance->graphicsModule();
+        auto* module = ln::CoreInstance::instance()->graphicsModule();
         module->pumpRecovery();
         if (module->deviceState() != ln::GraphicsModule::DeviceState::Running) {
             return LN_ERROR_DEVICE_LOST;
@@ -536,8 +531,7 @@ LNResult LNGraphicsContext_RequestCaptureBackbuffer(LNHandle graphicsContext) {
     (void)graphicsContext;
     return LN_ERROR_NOT_SUPPORTED;
 #else
-    auto* instance = ln::CoreInstance::instance();
-    if (!instance) return LN_RUNTIME_UNINITIALIZED;
+    LN_REQUIRE_RUNTIME();
     if (isDeviceLostNow()) return LN_ERROR_DEVICE_LOST;
 
     auto* ctx = resolveObject<ln::GraphicsContext>(graphicsContext);
@@ -563,8 +557,7 @@ LNResult LNGraphicsContext_CaptureBackbuffer(
     *outHeight = 0;
     return LN_ERROR_NOT_SUPPORTED;
 #else
-    auto* instance = ln::CoreInstance::instance();
-    if (!instance) return LN_RUNTIME_UNINITIALIZED;
+    LN_REQUIRE_RUNTIME();
     if (isDeviceLostNow()) return LN_ERROR_DEVICE_LOST;
 
     auto* ctx = resolveObject<ln::GraphicsContext>(graphicsContext);
@@ -596,8 +589,7 @@ LNResult LNGraphicsContext_WaitIdle(LNHandle graphicsContext) {
 }
 
 LNResult LNGraphicsContext_EndFrame(LNHandle graphicsContext) {
-    auto* instance = ln::CoreInstance::instance();
-    if (!instance) return LN_RUNTIME_UNINITIALIZED;
+    LN_REQUIRE_RUNTIME();
     if (isDeviceLostNow()) return LN_ERROR_DEVICE_LOST;
     if (graphicsContext == LN_NULL_HANDLE) return LN_ERROR_INVALID_HANDLE;
 
@@ -635,8 +627,7 @@ LNResult LNGraphicsContext_EndFrame(LNHandle graphicsContext) {
 LNResult LNDebug_GetGraphicsProfiler(LNHandle graphicsContext, LNGraphicsProfiler* outProfiler) {
     if (!outProfiler) return LN_ERROR_INVALID_ARGUMENT;
 
-    auto* instance = ln::CoreInstance::instance();
-    if (!instance) return LN_RUNTIME_UNINITIALIZED;
+    LN_REQUIRE_RUNTIME();
 
     auto* ctx = resolveObject<ln::GraphicsContext>(graphicsContext);
     if (!ctx) return LN_ERROR_INVALID_HANDLE;
@@ -721,10 +712,9 @@ LNResult LNDebug_GetStructSize(const char* structName, uint32_t* outSize) {
 }
 
 LNResult LNDebug_SimulateDeviceLost(LNBool deep) {
-    auto* instance = ln::CoreInstance::instance();
-    if (!instance) return LN_RUNTIME_UNINITIALIZED;
+    LN_REQUIRE_RUNTIME();
 
-    auto* device = instance->rhiDevice();
+    auto* device = ln::CoreInstance::instance()->rhiDevice();
     if (!device) return LN_ERROR_UNKNOWN;
 
     device->debugSimulateDeviceLost(deep != LN_FALSE);
@@ -735,8 +725,7 @@ LNResult LNDebug_SimulateDeviceLost(LNBool deep) {
 LNResult LNDebug_Print(LNHandle graphicsContext, const char* str) {
     if (!str) return LN_ERROR_INVALID_ARGUMENT;
 
-    auto* instance = ln::CoreInstance::instance();
-    if (!instance) return LN_RUNTIME_UNINITIALIZED;
+    LN_REQUIRE_RUNTIME();
 
     auto* ctx = resolveObject<ln::GraphicsContext>(graphicsContext);
     if (!ctx) return LN_ERROR_INVALID_HANDLE;
@@ -756,8 +745,7 @@ LNResult LNTexture2D_LoadFromFile(
     if (!outHandle || !filePath) return LN_ERROR_INVALID_ARGUMENT;
     *outHandle = LN_NULL_HANDLE;
 
-    auto* instance = ln::CoreInstance::instance();
-    if (!instance) return LN_RUNTIME_UNINITIALIZED;
+    LN_REQUIRE_RUNTIME();
     if (isDeviceLostNow()) return LN_ERROR_DEVICE_LOST;
 
     auto* ctx = resolveObject<ln::GraphicsContext>(graphicsContext);
@@ -783,8 +771,7 @@ LNResult LNTexture2D_LoadFromMemory(
     if (!outHandle || !data || size == 0) return LN_ERROR_INVALID_ARGUMENT;
     *outHandle = LN_NULL_HANDLE;
 
-    auto* instance = ln::CoreInstance::instance();
-    if (!instance) return LN_RUNTIME_UNINITIALIZED;
+    LN_REQUIRE_RUNTIME();
     if (isDeviceLostNow()) return LN_ERROR_DEVICE_LOST;
 
     auto* ctx = resolveObject<ln::GraphicsContext>(graphicsContext);
@@ -879,8 +866,7 @@ LNResult LNShader_CreateFromCompiledShader(LNHandle graphicsContext, const void*
     if (!data || !outHandle) return LN_ERROR_INVALID_ARGUMENT;
     *outHandle = LN_NULL_HANDLE;
 
-    auto* instance = ln::CoreInstance::instance();
-    if (!instance) return LN_RUNTIME_UNINITIALIZED;
+    LN_REQUIRE_RUNTIME();
     if (isDeviceLostNow()) return LN_ERROR_DEVICE_LOST;
 
     auto* ctx = resolveObject<ln::GraphicsContext>(graphicsContext);
@@ -896,8 +882,7 @@ LNResult LNShader_CreateFromShaderSourceFile(LNHandle graphicsContext, const cha
     if (!shaderFilePath || !outHandle) return LN_ERROR_INVALID_ARGUMENT;
     *outHandle = LN_NULL_HANDLE;
 
-    auto* instance = ln::CoreInstance::instance();
-    if (!instance) return LN_RUNTIME_UNINITIALIZED;
+    LN_REQUIRE_RUNTIME();
     if (isDeviceLostNow()) return LN_ERROR_DEVICE_LOST;
 
     auto* ctx = resolveObject<ln::GraphicsContext>(graphicsContext);
@@ -920,8 +905,7 @@ LNResult LNMaterial_CreateFromBuiltinShader(LNHandle graphicsContext, LNBuiltinS
     if (!outHandle) return LN_ERROR_INVALID_ARGUMENT;
     *outHandle = LN_NULL_HANDLE;
 
-    auto* instance = ln::CoreInstance::instance();
-    if (!instance) return LN_RUNTIME_UNINITIALIZED;
+    LN_REQUIRE_RUNTIME();
     if (isDeviceLostNow()) return LN_ERROR_DEVICE_LOST;
 
     auto* ctx = resolveObject<ln::GraphicsContext>(graphicsContext);
@@ -950,11 +934,10 @@ LNResult LNMaterial_CreateFromShader(LNHandle shader, LNHandle* outHandle) {
     if (!outHandle) return LN_ERROR_INVALID_ARGUMENT;
     *outHandle = LN_NULL_HANDLE;
 
-    auto* instance = ln::CoreInstance::instance();
-    if (!instance) return LN_RUNTIME_UNINITIALIZED;
+    LN_REQUIRE_RUNTIME();
     if (isDeviceLostNow()) return LN_ERROR_DEVICE_LOST;
 
-    auto* module = instance->graphicsModule();
+    auto* module = ln::CoreInstance::instance()->graphicsModule();
     if (!module) return LN_RUNTIME_UNINITIALIZED;
 
     auto* sh = resolveObject<ln::Shader>(shader);
@@ -977,8 +960,7 @@ LNResult LNMaterial_CreateFromCompiledShader(LNHandle graphicsContext, const voi
     if (!data || !outHandle) return LN_ERROR_INVALID_ARGUMENT;
     *outHandle = LN_NULL_HANDLE;
 
-    auto* instance = ln::CoreInstance::instance();
-    if (!instance) return LN_RUNTIME_UNINITIALIZED;
+    LN_REQUIRE_RUNTIME();
     if (isDeviceLostNow()) return LN_ERROR_DEVICE_LOST;
 
     auto* ctx = resolveObject<ln::GraphicsContext>(graphicsContext);
@@ -994,8 +976,7 @@ LNResult LNMaterial_CreateFromShaderSourceFile(LNHandle graphicsContext, const c
     if (!shaderFilePath || !outHandle) return LN_ERROR_INVALID_ARGUMENT;
     *outHandle = LN_NULL_HANDLE;
 
-    auto* instance = ln::CoreInstance::instance();
-    if (!instance) return LN_RUNTIME_UNINITIALIZED;
+    LN_REQUIRE_RUNTIME();
     if (isDeviceLostNow()) return LN_ERROR_DEVICE_LOST;
 
     auto* ctx = resolveObject<ln::GraphicsContext>(graphicsContext);
@@ -1011,8 +992,7 @@ LNResult LNMaterial_CreateFromShaderSourceFile(LNHandle graphicsContext, const c
 }
 
 LNResult LNMaterial_SetColor(LNHandle material, float r, float g, float b, float a) {
-    auto* instance = ln::CoreInstance::instance();
-    if (!instance) return LN_RUNTIME_UNINITIALIZED;
+    LN_REQUIRE_RUNTIME();
 
     auto* mat = resolveObject<ln::Material>(material);
     if (!mat) return LN_ERROR_INVALID_HANDLE;
@@ -1026,8 +1006,7 @@ LNResult LNMaterial_SetColor(LNHandle material, float r, float g, float b, float
 }
 
 LNResult LNMaterial_SetMainTexture(LNHandle material, LNHandle texture) {
-    auto* instance = ln::CoreInstance::instance();
-    if (!instance) return LN_RUNTIME_UNINITIALIZED;
+    LN_REQUIRE_RUNTIME();
 
     auto* mat = resolveObject<ln::Material>(material);
     if (!mat) return LN_ERROR_INVALID_HANDLE;
@@ -1186,8 +1165,7 @@ LNResult LNMesh_Create(
     if (vertexCount == 0 || indexCount == 0 || submeshCount == 0) return LN_ERROR_INVALID_ARGUMENT;
     *outHandle = LN_NULL_HANDLE;
 
-    auto* instance = ln::CoreInstance::instance();
-    if (!instance) return LN_RUNTIME_UNINITIALIZED;
+    LN_REQUIRE_RUNTIME();
     if (isDeviceLostNow()) return LN_ERROR_DEVICE_LOST;
 
     auto* ctx = resolveObject<ln::GraphicsContext>(graphicsContext);
@@ -1231,8 +1209,7 @@ LNResult LNMesh_CreateDynamic(
     if (maxVertexCount == 0 || maxIndexCount == 0) return LN_ERROR_INVALID_ARGUMENT;
     *outHandle = LN_NULL_HANDLE;
 
-    auto* instance = ln::CoreInstance::instance();
-    if (!instance) return LN_RUNTIME_UNINITIALIZED;
+    LN_REQUIRE_RUNTIME();
     if (isDeviceLostNow()) return LN_ERROR_DEVICE_LOST;
 
     auto* ctx = resolveObject<ln::GraphicsContext>(graphicsContext);
@@ -1251,8 +1228,7 @@ LNResult LNMesh_UpdateVertices(
     uint32_t count) {
     if (!vertices || count == 0) return LN_ERROR_INVALID_ARGUMENT;
 
-    auto* instance = ln::CoreInstance::instance();
-    if (!instance) return LN_RUNTIME_UNINITIALIZED;
+    LN_REQUIRE_RUNTIME();
     if (isDeviceLostNow()) return LN_ERROR_DEVICE_LOST;
 
     auto* mesh = resolveObject<ln::Mesh>(meshHandle);
@@ -1286,8 +1262,7 @@ LNResult LNMesh_UpdateIndices(
     uint32_t count) {
     if (!indices || count == 0) return LN_ERROR_INVALID_ARGUMENT;
 
-    auto* instance = ln::CoreInstance::instance();
-    if (!instance) return LN_RUNTIME_UNINITIALIZED;
+    LN_REQUIRE_RUNTIME();
     if (isDeviceLostNow()) return LN_ERROR_DEVICE_LOST;
 
     auto* mesh = resolveObject<ln::Mesh>(meshHandle);
@@ -1308,8 +1283,7 @@ LNResult LNMesh_SetSubMeshes(
     uint32_t submeshCount) {
     if (!submeshes || submeshCount == 0) return LN_ERROR_INVALID_ARGUMENT;
 
-    auto* instance = ln::CoreInstance::instance();
-    if (!instance) return LN_RUNTIME_UNINITIALIZED;
+    LN_REQUIRE_RUNTIME();
 
     auto* mesh = resolveObject<ln::Mesh>(meshHandle);
     if (!mesh) return LN_ERROR_INVALID_HANDLE;
@@ -1329,8 +1303,7 @@ LNResult LNMesh_SetSubMeshes(
 }
 
 LNResult LNMesh_SetMaterial(LNHandle meshHandle, uint32_t materialIndex, LNHandle materialHandle) {
-    auto* instance = ln::CoreInstance::instance();
-    if (!instance) return LN_RUNTIME_UNINITIALIZED;
+    LN_REQUIRE_RUNTIME();
 
     auto* mesh = resolveObject<ln::Mesh>(meshHandle);
     if (!mesh) return LN_ERROR_INVALID_HANDLE;
@@ -1364,8 +1337,7 @@ LNResult LNCamera_Create(LNHandle* outHandle) {
     if (!outHandle) return LN_ERROR_INVALID_ARGUMENT;
     *outHandle = LN_NULL_HANDLE;
 
-    auto* instance = ln::CoreInstance::instance();
-    if (!instance) return LN_RUNTIME_UNINITIALIZED;
+    LN_REQUIRE_RUNTIME();
 
     auto camObj = ln::Ref<CameraObject>::adopt(new CameraObject());
     *outHandle = wrapObjectFromCreate(camObj.get());
@@ -1374,8 +1346,7 @@ LNResult LNCamera_Create(LNHandle* outHandle) {
 
 LNResult LNCamera_SetPerspective(
     LNHandle camera, float fovY, float aspect, float nearClip, float farClip) {
-    auto* instance = ln::CoreInstance::instance();
-    if (!instance) return LN_RUNTIME_UNINITIALIZED;
+    LN_REQUIRE_RUNTIME();
 
     auto* camObj = resolveObject<CameraObject>(camera);
     if (!camObj) return LN_ERROR_INVALID_HANDLE;
@@ -1386,8 +1357,7 @@ LNResult LNCamera_SetPerspective(
 
 LNResult LNCamera_SetOrthographic(
     LNHandle camera, float width, float height, float nearClip, float farClip) {
-    auto* instance = ln::CoreInstance::instance();
-    if (!instance) return LN_RUNTIME_UNINITIALIZED;
+    LN_REQUIRE_RUNTIME();
 
     auto* camObj = resolveObject<CameraObject>(camera);
     if (!camObj) return LN_ERROR_INVALID_HANDLE;
@@ -1399,8 +1369,7 @@ LNResult LNCamera_SetOrthographic(
 LNResult LNCamera_SetOrthographic2D(
     LNHandle camera, float width, float height, float nearClip, float farClip,
     float pivotX, float pivotY) {
-    auto* instance = ln::CoreInstance::instance();
-    if (!instance) return LN_RUNTIME_UNINITIALIZED;
+    LN_REQUIRE_RUNTIME();
 
     auto* camObj = resolveObject<CameraObject>(camera);
     if (!camObj) return LN_ERROR_INVALID_HANDLE;
@@ -1414,8 +1383,7 @@ LNResult LNCamera_SetLookAt(
     float eyeX, float eyeY, float eyeZ,
     float targetX, float targetY, float targetZ,
     float upX, float upY, float upZ) {
-    auto* instance = ln::CoreInstance::instance();
-    if (!instance) return LN_RUNTIME_UNINITIALIZED;
+    LN_REQUIRE_RUNTIME();
 
     auto* camObj = resolveObject<CameraObject>(camera);
     if (!camObj) return LN_ERROR_INVALID_HANDLE;
@@ -1429,8 +1397,7 @@ LNResult LNCamera_SetLookAt(
 
 LNResult LNCamera_SetMatrices(
     LNHandle camera, const float* viewMatrix, const float* projMatrix, LNBool is2D) {
-    auto* instance = ln::CoreInstance::instance();
-    if (!instance) return LN_RUNTIME_UNINITIALIZED;
+    LN_REQUIRE_RUNTIME();
 
     auto* camObj = resolveObject<CameraObject>(camera);
     if (!camObj) return LN_ERROR_INVALID_HANDLE;
@@ -1458,8 +1425,7 @@ LNResult LNRenderer_BeginRenderPass(
     // 超過はここで弾く。
     if (desc->colorAttachmentCount > LN_MAX_COLOR_ATTACHMENTS) return LN_ERROR_INVALID_ARGUMENT;
 
-    auto* instance = ln::CoreInstance::instance();
-    if (!instance) return LN_RUNTIME_UNINITIALIZED;
+    LN_REQUIRE_RUNTIME();
     if (isDeviceLostNow()) return LN_ERROR_DEVICE_LOST;
 
     auto* ren = resolveObject<ln::Renderer>(renderer);
@@ -1552,8 +1518,7 @@ LNResult LNRenderer_BeginRenderPass(
 }
 
 LNResult LNRenderer_EndRenderPass(LNHandle renderer) {
-    auto* instance = ln::CoreInstance::instance();
-    if (!instance) return LN_RUNTIME_UNINITIALIZED;
+    LN_REQUIRE_RUNTIME();
     if (isDeviceLostNow()) return LN_ERROR_DEVICE_LOST;
 
     auto* r = resolveObject<ln::Renderer>(renderer);
@@ -1565,8 +1530,7 @@ LNResult LNRenderer_EndRenderPass(LNHandle renderer) {
 LNResult LNRenderer_DrawMesh(
     LNHandle renderer, LNHandle meshHandle, const LNTransform* transform,
     int32_t zIndex) {
-    auto* instance = ln::CoreInstance::instance();
-    if (!instance) return LN_RUNTIME_UNINITIALIZED;
+    LN_REQUIRE_RUNTIME();
     if (isDeviceLostNow()) return LN_ERROR_DEVICE_LOST;
 
     auto* ren = resolveObject<ln::Renderer>(renderer);
@@ -1585,8 +1549,7 @@ LNResult LNRenderer_DrawMesh(
 
 LNResult LNRenderer_DrawMeshImmediate(
     LNHandle renderer, LNHandle meshHandle, const LNTransform* transform) {
-    auto* instance = ln::CoreInstance::instance();
-    if (!instance) return LN_RUNTIME_UNINITIALIZED;
+    LN_REQUIRE_RUNTIME();
     if (isDeviceLostNow()) return LN_ERROR_DEVICE_LOST;
 
     auto* ren = resolveObject<ln::Renderer>(renderer);
@@ -1607,8 +1570,7 @@ LNResult LNRenderer_DrawMeshImmediate(
 
 LNResult LNRenderer_DrawMeshImmediateWithMaterial(
     LNHandle renderer, LNHandle meshHandle, const LNTransform* transform, LNHandle materialHandle) {
-    auto* instance = ln::CoreInstance::instance();
-    if (!instance) return LN_RUNTIME_UNINITIALIZED;
+    LN_REQUIRE_RUNTIME();
     if (isDeviceLostNow()) return LN_ERROR_DEVICE_LOST;
 
     auto* ren = resolveObject<ln::Renderer>(renderer);
@@ -1635,8 +1597,7 @@ LNResult LNRenderer_DrawMeshImmediateWithMaterial(
 }
 
 LNResult LNRenderer_DrawScreenRect(LNHandle renderer, LNHandle materialHandle) {
-    auto* instance = ln::CoreInstance::instance();
-    if (!instance) return LN_RUNTIME_UNINITIALIZED;
+    LN_REQUIRE_RUNTIME();
     if (isDeviceLostNow()) return LN_ERROR_DEVICE_LOST;
 
     auto* ren = resolveObject<ln::Renderer>(renderer);
@@ -1663,8 +1624,7 @@ LNResult LNRenderer_DrawSprite(
     float pivotX, float pivotY,
     float uvX, float uvY, float uvW, float uvH,
     float colorR, float colorG, float colorB, float colorA) {
-    auto* instance = ln::CoreInstance::instance();
-    if (!instance) return LN_RUNTIME_UNINITIALIZED;
+    LN_REQUIRE_RUNTIME();
     if (isDeviceLostNow()) return LN_ERROR_DEVICE_LOST;
 
     auto* ren = resolveObject<ln::Renderer>(renderer);
@@ -1692,8 +1652,7 @@ LNResult LNRenderer_DrawSprite(
 LNResult LNRenderer_PushStencilMask(
     LNHandle renderer, LNHandle meshHandle,
     const LNTransform* transform, LNHandle materialHandle) {
-    auto* instance = ln::CoreInstance::instance();
-    if (!instance) return LN_RUNTIME_UNINITIALIZED;
+    LN_REQUIRE_RUNTIME();
     if (isDeviceLostNow()) return LN_ERROR_DEVICE_LOST;
 
     auto* ren = resolveObject<ln::Renderer>(renderer);
@@ -1727,8 +1686,7 @@ LNResult LNRenderer_PushStencilMask(
 }
 
 LNResult LNRenderer_PopStencilMask(LNHandle renderer) {
-    auto* instance = ln::CoreInstance::instance();
-    if (!instance) return LN_RUNTIME_UNINITIALIZED;
+    LN_REQUIRE_RUNTIME();
     if (isDeviceLostNow()) return LN_ERROR_DEVICE_LOST;
 
     auto* ren = resolveObject<ln::Renderer>(renderer);
@@ -1753,8 +1711,7 @@ LNResult LNTexture2D_CreateRenderTarget(
     if (width == 0 || height == 0) return LN_ERROR_INVALID_ARGUMENT;
     *outHandle = LN_NULL_HANDLE;
 
-    auto* instance = ln::CoreInstance::instance();
-    if (!instance) return LN_RUNTIME_UNINITIALIZED;
+    LN_REQUIRE_RUNTIME();
     if (isDeviceLostNow()) return LN_ERROR_DEVICE_LOST;
 
     auto* ctx = resolveObject<ln::GraphicsContext>(graphicsContext);
@@ -1781,8 +1738,7 @@ LNResult LNTexture2D_CreateRenderTargetEx(
     if (width == 0 || height == 0) return LN_ERROR_INVALID_ARGUMENT;
     *outHandle = LN_NULL_HANDLE;
 
-    auto* instance = ln::CoreInstance::instance();
-    if (!instance) return LN_RUNTIME_UNINITIALIZED;
+    LN_REQUIRE_RUNTIME();
     if (isDeviceLostNow()) return LN_ERROR_DEVICE_LOST;
 
     auto* ctx = resolveObject<ln::GraphicsContext>(graphicsContext);
@@ -1809,8 +1765,7 @@ LNResult LNTexture2D_CreateDepthStencil(
     if (width == 0 || height == 0) return LN_ERROR_INVALID_ARGUMENT;
     *outHandle = LN_NULL_HANDLE;
 
-    auto* instance = ln::CoreInstance::instance();
-    if (!instance) return LN_RUNTIME_UNINITIALIZED;
+    LN_REQUIRE_RUNTIME();
     if (isDeviceLostNow()) return LN_ERROR_DEVICE_LOST;
 
     auto* ctx = resolveObject<ln::GraphicsContext>(graphicsContext);

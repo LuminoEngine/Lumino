@@ -36,8 +36,6 @@ int main() {
 
     printf("Lumino HelloSprite: drawing one sprite at the screen center.\n");
 
-    LNMatrix identity = { { 1, 0, 0, 0,  0, 1, 0, 0,  0, 0, 1, 0,  0, 0, 0, 1 } };
-
     int frame = 0;
     LNBool quit = LN_FALSE;
     while (LNWindow_ProcessEvents(window, &quit) == LN_OK && !quit) {
@@ -55,7 +53,7 @@ int main() {
         // スプライトを 1 枚、画面中央に描画する (このカメラでは原点が画面中央)。
         LNRenderer_DrawSprite(
             renderer, material, 0,
-            &identity,
+            NULL,
             0.0f, 0.0f,         // offset (スプライトの位置)
             128.0f, 128.0f,     // サイズ
             0.5f, 0.5f,         // pivot (中央)
@@ -64,7 +62,7 @@ int main() {
 
          LNRenderer_DrawSprite(
             renderer, material, 0,
-            &identity,
+            NULL,
             50.0f, 0.0f,         // offset (スプライトの位置)
             128.0f, 128.0f,     // サイズ
             0.5f, 0.5f,         // pivot (中央)

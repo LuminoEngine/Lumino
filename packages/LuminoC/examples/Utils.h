@@ -20,20 +20,12 @@ void InitializeInstance() {
 }
 
 void printGraphicsProfilering(LNHandle graphicsContext) {
-    LNGraphicsProfiler profilering = {};
-    LNDebug_GetGraphicsProfiler(graphicsContext, &profilering);
-    LNDebug_Print(
-        graphicsContext,
-        (std::string("FPS: ") + std::to_string(profilering.fps)).c_str());
-    LNDebug_Print(
-        graphicsContext,
-        (std::string("FrameTime(ms): ") +
-         std::to_string(profilering.lastFrameTimeMs))
-            .c_str());
-    LNDebug_Print(
-        graphicsContext,
-        (std::string("DrawCall: ") + std::to_string(profilering.drawCallCount))
-            .c_str());
+    LNGraphicsProfiler p = {};
+    LNDebug_GetGraphicsProfiler(graphicsContext, &p);
+    LNDebug_Print(graphicsContext, (std::string("FPS: ") + std::to_string(p.fps)).c_str());
+    LNDebug_Print(graphicsContext, (std::string("FrameTime(ms): ") + std::to_string(p.lastFrameTimeMs)).c_str());
+    LNDebug_Print(graphicsContext, (std::string("DrawCall: ") + std::to_string(p.drawCallCount)).c_str());
+    LNDebug_Print(graphicsContext, (std::string("ShaderPass: ") + std::to_string(p.shaderPassCount)).c_str());
 }
 
 std::vector<unsigned char> loadFile(const char* path) {

@@ -173,10 +173,6 @@ TEST_F(Test_Graphics, HelloTexture) {
     LNObject_Release(texture);
 }
 
-
-
-
-
 TEST_F(Test_Graphics, SpriteOrder) {
     LNHandle redTexture = LN_NULL_HANDLE;
     LNHandle redMaterial = LN_NULL_HANDLE;
