@@ -1,7 +1,7 @@
 ﻿#pragma once
+#include <LuminoCore/Common.hpp>
 #include <LuminoCore/Graphics/rhi/Rhi.hpp>
 #include <webgpu/webgpu.h>
-#include <vector>
 
 namespace ln::rhi::webgpu {
 

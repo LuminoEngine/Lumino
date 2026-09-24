@@ -1,15 +1,9 @@
 ﻿#pragma once
-#include <LuminoBase/math/Math.hpp>
-#include <LuminoCore/Object.hpp>
-#include <LuminoBase/Result.hpp>
-#include <LuminoCore/Graphics/rhi/Rhi.hpp>
-#include <LuminoCore/Graphics/Vertex.hpp>
-#include <LuminoCore/Graphics/ShaderPass.hpp>
-#include <functional>
-#include <string>
-#include <string_view>
-#include <vector>
-#include <unordered_map>
+#include "../Common.hpp"
+#include "../Object.hpp"
+#include "rhi/Rhi.hpp"
+#include "Vertex.hpp"
+#include "ShaderPass.hpp"
 
 namespace ln {
 

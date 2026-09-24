@@ -1,11 +1,7 @@
 ﻿#pragma once
 
-#include <memory>
-#include <vector>
-#include <LuminoBase/Types.hpp>
-#include <LuminoBase/Result.hpp>
-#include <LuminoBase/RefObject.hpp>
-#include <LuminoCore/Graphics/rhi/Rhi.hpp>
+#include "../Common.hpp"
+#include "rhi/Rhi.hpp"
 
 namespace ln {
 

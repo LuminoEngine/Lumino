@@ -1,15 +1,13 @@
 ﻿#pragma once
-#include <memory>
-#include <chrono>
-#include <LuminoBase/Result.hpp>
-#include <LuminoCore/Object.hpp>
-#include <LuminoCore/Graphics/rhi/Rhi.hpp>
-#include <LuminoCore/Graphics/PipelineCache.hpp>
-#include <LuminoCore/Graphics/Renderer.hpp>
+#include "../Common.hpp"
+#include "../Object.hpp"
+#include "rhi/Rhi.hpp"
+#include "PipelineCache.hpp"
+#include "Renderer.hpp"
 #if !defined(__EMSCRIPTEN__)
-#include <LuminoCore/Graphics/DebugPrint.hpp>
+#include "DebugPrint.hpp"
 #endif
-#include <LuminoCore/Platform/Window.hpp>
+#include "../Platform/Window.hpp"
 
 namespace ln {
 class GraphicsModule;

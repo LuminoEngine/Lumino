@@ -1,4 +1,5 @@
 ﻿#pragma once
+#include <LuminoCore/Common.hpp>
 #include "WebGL2Common.hpp"
 #if defined(__EMSCRIPTEN__)
 #include <emscripten/html5_webgl.h>
@@ -10,7 +11,6 @@
 #endif
 #include <EGL/egl.h>
 #endif
-#include <string>
 
 namespace ln::rhi::webgl2 {
 

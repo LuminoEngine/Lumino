@@ -1,10 +1,8 @@
 ﻿#pragma once
-#include <array>
-#include <string_view>
-#include <LuminoBase/Result.hpp>
-#include <LuminoCore/Object.hpp>
-#include <LuminoCore/Graphics/Mesh.hpp>
-#include <LuminoCore/Graphics/Material.hpp>
+#include "../Common.hpp"
+#include "../Object.hpp"
+#include "Mesh.hpp"
+#include "Material.hpp"
 
 namespace ln {
 

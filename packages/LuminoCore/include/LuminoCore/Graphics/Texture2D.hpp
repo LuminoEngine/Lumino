@@ -1,10 +1,8 @@
 ﻿#pragma once
 
-#include <LuminoCore/Object.hpp>
-#include <LuminoBase/Result.hpp>
-#include <LuminoBase/RefObject.hpp>
-#include <LuminoCore/Graphics/rhi/Rhi.hpp>
-#include <cstdint>
+#include "../Common.hpp"
+#include "../Object.hpp"
+#include "rhi/Rhi.hpp"
 
 namespace ln {
 

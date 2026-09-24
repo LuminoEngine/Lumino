@@ -1,9 +1,8 @@
 ﻿#pragma once
-#include <vector>
-#include <LuminoBase/Result.hpp>
-#include <LuminoCore/Object.hpp>
-#include <LuminoCore/Graphics/Vertex.hpp>
-#include <LuminoCore/Graphics/Material.hpp>
+#include "../Common.hpp"
+#include "../Object.hpp"
+#include "Vertex.hpp"
+#include "Material.hpp"
 
 namespace ln {
 

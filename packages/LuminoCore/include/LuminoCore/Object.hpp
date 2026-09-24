@@ -1,7 +1,6 @@
 ﻿#pragma once
 
-#include <LuminoBase/RefObject.hpp>
-#include <cstdint>
+#include "Common.hpp"
 
 namespace ln {
 

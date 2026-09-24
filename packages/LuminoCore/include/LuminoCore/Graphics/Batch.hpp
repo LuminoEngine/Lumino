@@ -1,12 +1,8 @@
 ﻿#pragma once
-#include <vector>
-#include <memory>
-#include <cstring>
-#include <LuminoBase/Result.hpp>
-#include <LuminoBase/math/Math.hpp>
-#include <LuminoCore/Graphics/Vertex.hpp>
-#include <LuminoCore/Graphics/Transform.hpp>
-#include <LuminoCore/Graphics/Mesh.hpp>
+#include "../Common.hpp"
+#include "Vertex.hpp"
+#include "Transform.hpp"
+#include "Mesh.hpp"
 
 namespace ln {
 

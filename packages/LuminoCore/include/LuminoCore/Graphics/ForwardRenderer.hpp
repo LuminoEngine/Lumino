@@ -1,13 +1,10 @@
 ﻿#pragma once
-#include <memory>
-#include <vector>
-#include <LuminoBase/Result.hpp>
-#include <LuminoBase/RefObject.hpp>
-#include <LuminoCore/Graphics/Camera.hpp>
-#include <LuminoCore/Graphics/Material.hpp>
-#include <LuminoCore/Graphics/Mesh.hpp>
-#include <LuminoCore/Graphics/Renderer.hpp>
-#include <LuminoCore/Graphics/Transform.hpp>
+#include "../Common.hpp"
+#include "Camera.hpp"
+#include "Material.hpp"
+#include "Mesh.hpp"
+#include "Renderer.hpp"
+#include "Transform.hpp"
 
 namespace ln {
 

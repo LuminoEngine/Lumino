@@ -1,5 +1,5 @@
 ﻿#pragma once
-#include "../Types.hpp"
+#include "../Common.hpp"
 
 namespace ln {
 struct Vector3;

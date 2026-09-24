@@ -1,8 +1,6 @@
 ﻿#pragma once
 
-#include <functional>
-#include <vector>
-#include <LuminoBase/RefObject.hpp>
+#include "../../Common.hpp"
 
 namespace ln::rhi {
 

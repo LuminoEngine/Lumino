@@ -1,8 +1,8 @@
 ﻿#pragma once
 // Ref<> のデストラクタを実体化するため、保持する型の定義まで取り込む。
+#include <LuminoCore/Common.hpp>
 #include "WebGL2CommandBuffer.hpp"
 #include "WebGL2Device.hpp"
-#include <string>
 
 namespace ln::rhi::webgl2 {
 

@@ -1,17 +1,13 @@
 ﻿#pragma once
-#include <memory>
-#include <array>
-#include <unordered_map>
-#include <unordered_set>
-#include <LuminoBase/Result.hpp>
-#include <LuminoCore/Object.hpp>
-#include <LuminoCore/Graphics/rhi/Rhi.hpp>
-#include <LuminoCore/Graphics/Camera.hpp>
-#include <LuminoCore/Graphics/Material.hpp>
-#include <LuminoCore/Graphics/Mesh.hpp>
-#include <LuminoCore/Graphics/Transform.hpp>
-#include <LuminoCore/Graphics/DynamicUniformAllocator.hpp>
-#include <LuminoCore/Graphics/Batch.hpp>
+#include "../Common.hpp"
+#include "../Object.hpp"
+#include "rhi/Rhi.hpp"
+#include "Camera.hpp"
+#include "Material.hpp"
+#include "Mesh.hpp"
+#include "Transform.hpp"
+#include "DynamicUniformAllocator.hpp"
+#include "Batch.hpp"
 
 namespace ln {
 

@@ -1,11 +1,7 @@
 ﻿#pragma once
 
-#include <LuminoBase/Types.hpp>
-#include <LuminoBase/Result.hpp>
-#include <LuminoBase/RefObject.hpp>
-#include <LuminoCore/Object.hpp>
-#include <functional>
-#include <string>
+#include "../Common.hpp"
+#include "../Object.hpp"
 
 namespace ln {
 class GraphicsModule;

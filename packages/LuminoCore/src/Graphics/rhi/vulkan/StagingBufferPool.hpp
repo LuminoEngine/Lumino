@@ -12,7 +12,7 @@
  * 現状は同期転送のみ。非同期パイプライン化したステージングは必要になれば追加できる。
  */
 
-#include <vector>
+#include <LuminoCore/Common.hpp>
 #include "VulkanCommon.hpp"
 
 namespace ln::rhi::vulkan {

@@ -1,7 +1,6 @@
 ﻿#pragma once
 
-#include <LuminoBase/Types.hpp>
-#include <LuminoBase/SmallVector.hpp>
+#include <LuminoCore/Common.hpp>
 #include <LuminoCore/Graphics/rhi/Rhi.hpp>
 #include "VulkanLoader.hpp"
 

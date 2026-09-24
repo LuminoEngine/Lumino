@@ -14,11 +14,7 @@
  * 同じフレームインデックスが再び beginFrame() に現れた後だけです。
  */
 
-#include <LuminoBase/Types.hpp>
-
-#include <array>
-#include <functional>
-#include <vector>
+#include <LuminoCore/Common.hpp>
 
 namespace ln::rhi::vulkan {
 

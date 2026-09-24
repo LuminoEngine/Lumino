@@ -1,7 +1,7 @@
 ﻿#pragma once
+#include <LuminoCore/Common.hpp>
 #include <LuminoCore/Graphics/rhi/Rhi.hpp>
 #include <LuminoShader/UnifiedShader2.hpp>
-#include <string>
 
 namespace ln {
 namespace detail {

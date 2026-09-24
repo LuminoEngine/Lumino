@@ -1,10 +1,7 @@
 ﻿#pragma once
-#include <LuminoBase/Result.hpp>
-#include <LuminoCore/Object.hpp>
-#include <LuminoCore/Graphics/ShaderPass.hpp>
-#include <string>
-#include <string_view>
-#include <vector>
+#include "../Common.hpp"
+#include "../Object.hpp"
+#include "ShaderPass.hpp"
 
 namespace ln {
 

@@ -1,7 +1,6 @@
 ﻿// 数学関連の型をまとめて取り込むためのヘッダ
 #pragma once
-#include <cmath>
-#include "../Types.hpp"
+#include "../Common.hpp"
 #include "Matrix4x4.hpp"
 
 namespace ln {

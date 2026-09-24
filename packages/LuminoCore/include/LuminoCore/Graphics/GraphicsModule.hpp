@@ -1,9 +1,7 @@
 ﻿#pragma once
+#include "../Common.hpp"
 #include "rhi/Rhi.hpp"
 #include "ShaderPass.hpp"
-#include <array>
-#include <string>
-#include <vector>
 
 namespace ln {
 

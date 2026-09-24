@@ -1,5 +1,5 @@
 ﻿#pragma once
-#include <vector>
+#include <LuminoCore/Common.hpp>
 #include "VulkanCommon.hpp"
 #include "DescriptorPoolManager.hpp"
 

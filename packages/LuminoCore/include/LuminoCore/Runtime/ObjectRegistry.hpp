@@ -1,10 +1,7 @@
 ﻿#pragma once
 
-#include <LuminoCore/Object.hpp>
-#include <LuminoBase/RefObject.hpp>
-#include <cstdint>
-#include <mutex>
-#include <vector>
+#include "../Common.hpp"
+#include "../Object.hpp"
 
 namespace ln {
 

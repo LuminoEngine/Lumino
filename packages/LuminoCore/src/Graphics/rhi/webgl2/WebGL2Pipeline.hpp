@@ -1,7 +1,6 @@
 ﻿#pragma once
+#include <LuminoCore/Common.hpp>
 #include "WebGL2Common.hpp"
-#include <LuminoBase/SmallVector.hpp>
-#include <vector>
 
 namespace ln::rhi::webgl2 {
 

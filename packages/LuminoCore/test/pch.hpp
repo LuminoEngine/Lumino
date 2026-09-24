@@ -1,4 +1,3 @@
 ﻿#pragma once
-#include <LuminoC/lumino_types.h>
-#include <LuminoBase.hpp>
+#include <LuminoCore/Common.hpp>
 #include <gtest/gtest.h>

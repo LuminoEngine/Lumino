@@ -1,7 +1,6 @@
 ﻿#pragma once
-#include <LuminoBase/Types.hpp>
-#include <LuminoBase/math/Math.hpp>
-#include <LuminoCore/Graphics/rhi/Rhi.hpp>
+#include "../Common.hpp"
+#include "rhi/Rhi.hpp"
 
 namespace ln {
 

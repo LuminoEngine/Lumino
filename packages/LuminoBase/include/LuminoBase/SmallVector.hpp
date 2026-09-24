@@ -1,8 +1,6 @@
 ﻿#pragma once
-#include <cstddef>
-#include <cassert>
-#include <type_traits>
-#include <LuminoBase/Logger.hpp>
+#include "Common.hpp"
+#include "Logger.hpp"
 
 namespace ln {
 

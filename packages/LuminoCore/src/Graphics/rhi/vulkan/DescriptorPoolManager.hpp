@@ -13,11 +13,9 @@
  * VK_DESCRIPTOR_POOL_CREATE_FREE_DESCRIPTOR_SET_BIT を付けて作成する。
  */
 
-#include <LuminoBase/Types.hpp>
+#include <LuminoCore/Common.hpp>
 
 #include <iterator>
-#include <utility>
-#include <vector>
 #include "VulkanLoader.hpp"
 
 namespace ln::rhi::vulkan {

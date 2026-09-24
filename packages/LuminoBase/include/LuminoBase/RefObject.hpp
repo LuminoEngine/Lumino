@@ -1,10 +1,5 @@
 ﻿#pragma once
-
-#include <atomic>
-#include <cstddef>
-#include <cstdint>
-#include <type_traits>
-#include <utility>
+#include "Common.hpp"
 
 namespace ln {
 

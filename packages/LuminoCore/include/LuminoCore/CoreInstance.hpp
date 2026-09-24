@@ -1,6 +1,6 @@
 ﻿#pragma once
-#include <memory>
-#include <LuminoCore/Graphics/rhi/Rhi.hpp>
+#include "Common.hpp"
+#include "Graphics/rhi/Rhi.hpp"
 
 namespace ln {
 class GraphicsModule;

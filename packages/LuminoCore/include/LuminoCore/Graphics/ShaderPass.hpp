@@ -1,9 +1,6 @@
 ﻿#pragma once
-#include <LuminoBase/Result.hpp>
-#include <LuminoBase/RefObject.hpp>
-#include <LuminoCore/Graphics/rhi/Rhi.hpp>
-#include <string>
-#include <vector>
+#include "../Common.hpp"
+#include "rhi/Rhi.hpp"
 
 namespace ln {
 namespace shader { class UnifiedShader2; }

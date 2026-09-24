@@ -1,11 +1,6 @@
 ﻿#pragma once
-#include <memory>
-#include <unordered_map>
-#include <unordered_set>
-#include <string>
-#include <LuminoBase/Result.hpp>
-#include <LuminoBase/RefObject.hpp>
-#include <LuminoCore/Graphics/rhi/Rhi.hpp>
+#include "../Common.hpp"
+#include "rhi/Rhi.hpp"
 
 namespace ln {
 

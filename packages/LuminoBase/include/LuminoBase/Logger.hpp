@@ -1,5 +1,5 @@
 ﻿#pragma once
-#include <LuminoC/lumino_types.h>
+#include "Common.hpp"
 
 #ifdef _MSC_VER
 #define LN_FUNC_SIG __FUNCTION__

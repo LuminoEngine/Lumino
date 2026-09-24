@@ -1,9 +1,6 @@
 ﻿#pragma once
+#include <LuminoCore/Common.hpp>
 #include "VulkanCommon.hpp"
-
-#include <vector>
-#include <unordered_map>
-#include <mutex>
 
 #include "VulkanCacheKeys.hpp"
 #include "DescriptorPoolManager.hpp"

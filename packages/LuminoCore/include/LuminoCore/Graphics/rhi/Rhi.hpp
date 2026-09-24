@@ -12,17 +12,8 @@
  *     はバックエンド内部に隠蔽する。
  */
 
-#include <LuminoBase/Types.hpp>
-#include <LuminoBase/Result.hpp>
-#include <LuminoBase/RefObject.hpp>
-#include <LuminoBase/math/Math.hpp>
-#include <LuminoBase/math/Matrix4x4.hpp>
-#include <LuminoBase/SmallVector.hpp>
+#include "../../Common.hpp"
 #include "RHIObject.hpp"
-
-#include <atomic>
-#include <string>
-#include <vector>
 
 namespace ln::rhi {
 static const int kMaxMultiRenderTargets = 8;

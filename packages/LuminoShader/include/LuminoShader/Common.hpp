@@ -8,7 +8,7 @@
 #include <functional>
 #include <LuminoBase/Result.hpp>
 #include <LuminoBase/RefObject.hpp>
-#include <LuminoBase/Types.hpp>
+#include <LuminoBase/Common.hpp>
 
 namespace ln {
 namespace shader {
