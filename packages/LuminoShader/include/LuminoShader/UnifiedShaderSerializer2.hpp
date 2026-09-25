@@ -21,7 +21,9 @@ public:
     };
     static constexpr const char* FileExt = "lcsh";
 
+#ifndef __EMSCRIPTEN__  // WASM ランタイムではファイル書き出しを行わない
     static VoidResult saveToFile(const UnifiedShader2* shader, const std::filesystem::path& filePath);
+#endif
 
     /**
      * .lcsh のバイナリから UnifiedShader2 を復元する。

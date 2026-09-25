@@ -148,6 +148,7 @@ void readBindingLayout2(BinaryReader2& reader, TargetBindingLayout2& layout, int
 //----------------------------------------------------------------------
 // UnifiedShaderSerializer2
 
+#ifndef __EMSCRIPTEN__  // WASM ランタイムではファイル書き出しを行わない
 VoidResult UnifiedShaderSerializer2::saveToFile(const UnifiedShader2* shader, const std::filesystem::path& filePath) {
     std::ofstream fs(filePath, std::ios::binary | std::ios::trunc);
     if (!fs) {
@@ -254,6 +255,7 @@ VoidResult UnifiedShaderSerializer2::saveToFile(const UnifiedShader2* shader, co
 
     return LNSHADER_OK();
 }
+#endif // __EMSCRIPTEN__
 
 Result<Ref<UnifiedShader2>> UnifiedShaderSerializer2::loadFromData(
     const void* data, size_t length, ShaderTarget target) {

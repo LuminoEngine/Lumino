@@ -25,10 +25,11 @@ import { makePng } from "./make-png.mjs";
 // このファイルは test/smoke/ にあるため、../../ が luminojs パッケージルート。
 const packageRoot = path.resolve(fileURLToPath(new URL("../../", import.meta.url)));
 
-// コンパイル済みシェーダ (.lcsh)。GoogleTest と同じテストデータを使い、
+// コンパイル済みシェーダ (.lcsh)。GoogleTest (LN_TEST_UNLIT_LCSH) と同じく、
+// デスクトップの CMake ビルドで luminosc が生成するものを読み、
 // WebGPU (WGSL) ターゲットのカスタムシェーダ経路を検証する。
 const COMPILED_SHADER = fs.readFileSync(
-    path.resolve(packageRoot, "../LuminoC/test/Data/Unlit.lcsh"));
+    path.resolve(packageRoot, "../LuminoCore/shaders/Unlit.lcsh"));
 
 // 既知のピクセル値を持つ 2x2 PNG。上から下、左から右の順に並ぶ RGBA8。
 //   (0,0)=赤  (1,0)=緑
