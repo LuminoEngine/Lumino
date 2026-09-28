@@ -300,9 +300,9 @@ export const SIZEOF_TRANSFORM = 40;
 export const SIZEOF_MATRIX = 64;
 
 /** wasm メモリ上の `LNGraphicsProfiler` のバイトサイズ。 */
-export const SIZEOF_GRAPHICS_PROFILER = 20;
+export const SIZEOF_GRAPHICS_PROFILER = 24;
 // レイアウト: drawCallCount(i32,0) fps(f32,4) lastFrameTimeMs(f32,8)
-//         shaderPassCount(i32,12) materialCacheCount(i32,16)
+//         shaderPassCount(i32,12) materialCacheCount(i32,16) frameCount(u32,20)
 
 /**
  * 標準頂点データ (C の `LNVertex` に対応、64 bytes)。
@@ -325,7 +325,7 @@ export interface SubMesh {
 }
 
 /**
- * グラフィックスのプロファイリング情報 (C の `LNGraphicsProfiler` に対応、20 bytes)。
+ * グラフィックスのプロファイリング情報 (C の `LNGraphicsProfiler` に対応、24 bytes)。
  * `GraphicsContext.getProfiler()` で取得します。
  */
 export interface GraphicsProfiler {
@@ -360,6 +360,15 @@ export interface GraphicsProfiler {
      * どこかで保持されたままになっています。
      */
     materialCacheCount: number;
+    /**
+     * `endFrame()` を完了したフレームの累計数 (フレームでリセットされません)。
+     * `beginFrame()` が `null` を返したフレームは数えません。
+     *
+     * フレームが処理されたことを確かめるには、この値の増分を使ってください。
+     * `lastFrameTimeMs` は `performance.now()` の分解能 (cross-origin isolated でない
+     * ページでは 100us) に丸められるため、軽いフレームでは 0 になることがあります。
+     */
+    frameCount: number;
 }
 
 /**

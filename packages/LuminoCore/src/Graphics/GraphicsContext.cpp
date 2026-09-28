@@ -164,6 +164,7 @@ void GraphicsContext::endFrame() {
     }
 
     m_swapChain->present();
+    ++m_frameCount;
 
     auto now = Clock::now();
     auto elapsedUs = std::chrono::duration_cast<std::chrono::microseconds>(now - m_frameBeginTime).count();

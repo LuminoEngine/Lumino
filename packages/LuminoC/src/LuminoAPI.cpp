@@ -641,6 +641,7 @@ LNResult LNDebug_GetGraphicsProfiler(LNHandle graphicsContext, LNGraphicsProfile
     outProfiler->shaderPassCount = ln::ShaderPass::liveCount();
     outProfiler->materialCacheCount =
         renderer ? static_cast<int32_t>(renderer->materialCacheSize()) : 0;
+    outProfiler->frameCount = ctx->frameCount();
     return LN_OK;
 }
 
@@ -674,7 +675,7 @@ static_assert(sizeof(LNTransform) == 40,
     "LNTransform layout changed. Update SIZEOF_TRANSFORM in types.ts");
 static_assert(sizeof(LNMatrix) == 64,
     "LNMatrix layout changed. Update SIZEOF_MATRIX in types.ts");
-static_assert(sizeof(LNGraphicsProfiler) == 20,
+static_assert(sizeof(LNGraphicsProfiler) == 24,
     "LNGraphicsProfiler layout changed. Update the reader on the binding side");
 #endif // __EMSCRIPTEN__
 

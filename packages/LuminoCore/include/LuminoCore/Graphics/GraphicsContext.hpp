@@ -157,6 +157,12 @@ public:
     /** 秒間フレーム数 (直前に完了したフレームから算出)。 */
     float fps() const { return m_fps; }
 
+    /**
+     * endFrame() を完了したフレームの累計数 (フレームでリセットされません)。
+     * beginFrame() が null を返したフレームは数えません。
+     */
+    uint32_t frameCount() const { return m_frameCount; }
+
     // フレームスコープの一時状態 (BeginFrame~EndFrame 間有効)
     rhi::CommandBuffer*        m_currentCmd         = nullptr;
     rhi::RenderPass*           m_currentPass        = nullptr;
@@ -183,6 +189,7 @@ private:
     bool              m_firstFrame     = true;
     float             m_lastFrameTimeMs = 0.0f;
     float             m_fps             = 0.0f;
+    uint32_t          m_frameCount      = 0;
     bool                 m_captureRequested = false; // 今フレームのキャプチャ要求
     bool                 m_captureValid     = false; // m_captureBuffer に有効な内容があるか
     std::vector<uint8_t> m_captureBuffer;

@@ -14,10 +14,10 @@ luminojs が実際にロードする WASM バイナリ (`lib/LuminoC.wasm`) を�
 5. `Runtime.decodeImage()` が小さな PNG を期待どおりの RGBA8 ピクセルにデコードする
    (GPU 非依存の純 CPU 経路)
 6. `LNDebug_GetGraphicsProfiler` が WASM にエクスポートされている (GPU 非依存)。
-   実バイナリが報告する `sizeof(LNGraphicsProfiler)` が 16 バイトであること、
+   実バイナリが報告する `sizeof(LNGraphicsProfiler)` が 24 バイトであること、
    無効ハンドルでの呼び出しが `LN_ERROR_INVALID_HANDLE` を返すことを確認します。
 7. `GraphicsContext.getProfiler()` が `drawCallCount` / `fps` / `lastFrameTimeMs` /
-   `shaderPassCount` を返す (WebGPU 必須)。同一マテリアルのスプライト 16 枚が
+   `shaderPassCount` / `frameCount` を返す (WebGPU 必須)。同一マテリアルのスプライト 16 枚が
    バッチングされ、`drawCallCount` が枚数に比例して増えないことも確認します。
 8. 1 つの `Shader` から作った `Material` 群が GPU シェーダモジュール / パイプライン
    レイアウトを共有する (WebGPU 必須)。`.lcsh` (GoogleTest と共有のテストデータ

@@ -1346,6 +1346,9 @@ TEST_F(Test_Graphics, GraphicsProfiler) {
     EXPECT_GT(many.lastFrameTimeMs, 0.0f);
     EXPECT_GT(many.fps, 0.0f);
 
+    // EndFrame を完了するたびに frameCount が 1 ずつ増える。
+    EXPECT_EQ(many.frameCount, one.frameCount + 1);
+
     // NULL 引数は弾く。
     EXPECT_EQ(LN_ERROR_INVALID_ARGUMENT,
               LNDebug_GetGraphicsProfiler(graphicsContext, nullptr));

@@ -50,6 +50,7 @@ describe("readGraphicsProfiler", () => {
         view.setFloat32(8, 16.75, true);  // lastFrameTimeMs
         view.setInt32(12, 7, true);       // shaderPassCount
         view.setInt32(16, 3, true);       // materialCacheCount
+        view.setUint32(20, 42, true);     // frameCount
 
         const p = readGraphicsProfiler(view);
 
@@ -58,11 +59,12 @@ describe("readGraphicsProfiler", () => {
         expect(p.lastFrameTimeMs).toBeCloseTo(16.75, 6);
         expect(p.shaderPassCount).toBe(7);
         expect(p.materialCacheCount).toBe(3);
+        expect(p.frameCount).toBe(42);
     });
 
     it("ゼロクリアされたバッファからは全て 0 が読める", () => {
         const p = readGraphicsProfiler(makeView(SIZEOF_GRAPHICS_PROFILER));
-        expect(p).toEqual({ drawCallCount: 0, fps: 0, lastFrameTimeMs: 0, shaderPassCount: 0, materialCacheCount: 0 });
+        expect(p).toEqual({ drawCallCount: 0, fps: 0, lastFrameTimeMs: 0, shaderPassCount: 0, materialCacheCount: 0, frameCount: 0 });
     });
 
     // drawCallCount は C 側で int32_t。符号付きとして読めていることを固定する
@@ -71,6 +73,13 @@ describe("readGraphicsProfiler", () => {
         const view = makeView(SIZEOF_GRAPHICS_PROFILER);
         view.setInt32(0, -1, true);
         expect(readGraphicsProfiler(view).drawCallCount).toBe(-1);
+    });
+
+    // frameCount は C 側で uint32_t。長時間の実行で 2^31 を超えても負にならないことを固定する。
+    it("frameCount は符号なし 32bit として読む", () => {
+        const view = makeView(SIZEOF_GRAPHICS_PROFILER);
+        view.setUint32(20, 0xFFFFFFFF, true);
+        expect(readGraphicsProfiler(view).frameCount).toBe(4294967295);
     });
 });
 

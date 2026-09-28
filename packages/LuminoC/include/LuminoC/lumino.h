@@ -1190,6 +1190,14 @@ typedef struct LNGraphicsProfiler {
      * どこかで保持されたままになっています。
      */
     int32_t materialCacheCount;
+
+    /**
+     * LNGraphicsContext_EndFrame を完了したフレームの累計数 (フレームでリセットされません)。
+     * LNGraphicsContext_BeginFrame が失敗したフレームは数えません。
+     * フレームが処理されたことの確認には、タイマーの分解能に左右される
+     * lastFrameTimeMs ではなく、この値の増分を使ってください。
+     */
+    uint32_t frameCount;
 } LNGraphicsProfiler;
 
 /**

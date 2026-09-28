@@ -468,16 +468,16 @@ test("LNDebug_GetGraphicsProfiler が WASM にエクスポートされている"
 
     // LNDebug_GetStructSize が LNGraphicsProfiler を認識する (LN_OK = 0)。
     expect(result.profilerExport.sizeRc).toBe(0);
-    // wasm32 での sizeof(LNGraphicsProfiler) = int32 + float + float + int32 + int32。
+    // wasm32 での sizeof(LNGraphicsProfiler) = int32 + float + float + int32 + int32 + uint32。
     // types.ts の SIZEOF_GRAPHICS_PROFILER と一致していなければならない。
-    expect(result.profilerExport.wasmSize).toBe(20);
+    expect(result.profilerExport.wasmSize).toBe(24);
 
     // 無効ハンドルでの呼び出しが LN_ERROR_INVALID_HANDLE (-4) を返す
     // = 関数が実バイナリに存在し、ブラウザから呼び出せている。
     expect(result.profilerExport.invalidRc).toBe(-4);
 });
 
-test("getProfiler() が WASM (WebGPU) 経路で drawCallCount / fps / lastFrameTimeMs を返す", () => {
+test("getProfiler() が WASM (WebGPU) 経路で drawCallCount / fps / lastFrameTimeMs / frameCount を返す", () => {
     test.skip(
         SKIP_INITIALIZE_WHEN_NO_WEBGPU && !result.webgpuAvailable,
         "WebGPU アダプタが利用できない環境のため skip (SKIP_INITIALIZE_WHEN_NO_WEBGPU=true)");
@@ -488,7 +488,7 @@ test("getProfiler() が WASM (WebGPU) 経路で drawCallCount / fps / lastFrameT
 
     // LNGraphicsProfiler の全項目が公開されている (Object.keys().sort() で比較)。
     expect(result.profiler.keys).toEqual(
-        ["drawCallCount", "fps", "lastFrameTimeMs", "materialCacheCount", "shaderPassCount"]);
+        ["drawCallCount", "fps", "frameCount", "lastFrameTimeMs", "materialCacheCount", "shaderPassCount"]);
 
     const { one, many } = result.profiler;
 
@@ -496,9 +496,12 @@ test("getProfiler() が WASM (WebGPU) 経路で drawCallCount / fps / lastFrameT
     expect(Number.isInteger(one.drawCallCount)).toBe(true);
     expect(one.drawCallCount).toBeGreaterThan(0);
 
-    // endFrame の後に読んでいるので、フレーム時間と FPS は正の実測値になる。
-    expect(one.lastFrameTimeMs).toBeGreaterThan(0);
-    expect(one.fps).toBeGreaterThan(0);
+    // endFrame を完了するたびに frameCount が 1 ずつ増える。
+    // (lastFrameTimeMs / fps は performance.now() の分解能 (cross-origin isolated でない
+    //  ページでは 100us) に丸められ、軽いフレームでは 0 になり得るため、
+    //  フレームが処理されたことの確認には使わない)
+    expect(many.frameCount).toBe(one.frameCount + 1);
+    expect(one.lastFrameTimeMs).toBeGreaterThanOrEqual(0);
 
     // 同一マテリアルのスプライト 16 枚がバッチングされ、ドローコールが
     // 枚数に比例して増えないこと (クライアントが確認したかった性質)。

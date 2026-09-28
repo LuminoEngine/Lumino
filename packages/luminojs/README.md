@@ -88,7 +88,8 @@ bloom.setNamedSamplerState("u_noiseTexture", TextureFilterMode.Nearest, TextureA
 ### プロファイリング
 
 `GraphicsContext.getProfiler()` で、ドローコール数、FPS、フレーム時間、シェーダパス数を
-取得できます (C-API の `LNGraphicsProfiler` に対応)。
+取得できます。各値の意味と呼び出しタイミングの注意点は `getProfiler()` と
+`GraphicsProfiler` の JSDoc を参照してください。
 
 ```ts
 import type { GraphicsProfiler } from "luminojs";
@@ -108,24 +109,8 @@ function frame() {
 }
 ```
 
-| プロパティ | 意味 |
-| --- | --- |
-| `drawCallCount` | ドローコール数。`beginFrame()` でリセットされ、描画のたびに加算されます。 |
-| `fps` | 実際のフレームレート。直前フレームの所要時間から算出した瞬間値です。 |
-| `lastFrameTimeMs` | 直前フレームの所要時間 (ミリ秒)。 |
-| `shaderPassCount` | 生存しているシェーダパス数 (プロセス全体)。1 パス = GPU シェーダモジュール 2 個 + パイプラインレイアウト 1 個。フレームではリセットされません。 |
-
-**呼び出しタイミングに注意してください。** `fps` と `lastFrameTimeMs` は `endFrame()` の
-中で更新されるため、`beginFrame()` - `endFrame()` の間に読むと 1 フレーム古い値になります。
-また `drawCallCount` は `beginFrame()` でリセットされるので、フレームの途中で読むと
-その時点までの途中経過になります。
-
-スプライトのバッチングが効いているかは `drawCallCount` で直接確認できます。同一マテリアルの
-スプライトがバッチングされていれば、描画枚数を増やしてもこの値はほとんど増えません。
-
-`shaderPassCount` は、1 つの `Shader` から作った Material 群が GPU シェーダモジュールを
-共有できているかの確認に使います。ビルトインシェーダの分も含まれるため、絶対値ではなく
-**Material を増やしたときの増分**を見てください。
+Material が Shader を共有できているかは、Material を増やしたときの `shaderPassCount` の
+増分で確認します。
 
 ```ts
 const before = ctx.getProfiler().shaderPassCount;
