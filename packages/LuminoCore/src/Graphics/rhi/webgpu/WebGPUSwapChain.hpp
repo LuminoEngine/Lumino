@@ -45,17 +45,6 @@ private:
     // 現在フレームのテクスチャ (wgpuSurfaceGetCurrentTexture で取得したもの)
     WGPUTexture m_currentTexture = nullptr;
     WGPUTextureView m_currentTextureView = nullptr;
-
-    // バックバッファのキャプチャ用 (非 Emscripten のみ)。
-    // サーフェステクスチャは present 後に破棄され readback できないため、
-    // present 直前にここへコピーしておき、readbackTexture はこの永続テクスチャを読む。
-    WGPUTexture m_captureTexture = nullptr;
-
-#if !defined(__EMSCRIPTEN__)
-    void releaseCaptureTexture();
-    VoidResult recreateCaptureTexture();
-    void copyBackbufferToCaptureTexture();
-#endif
 };
 
 } // namespace ln::rhi::webgpu

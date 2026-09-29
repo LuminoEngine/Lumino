@@ -149,6 +149,7 @@ void GraphicsModule::teardownDeviceResources() {
     // 旧デバイスを retired リストへ移す。クライアントが保持している stale
     // リソースの解放が旧デバイスの API を呼ぶため、破棄せずに生存させる。
     if (m_device) {
+        m_device->retire();
         m_retiredDevices.push_back(m_device);
         m_device.reset();
     }

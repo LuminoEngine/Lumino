@@ -690,6 +690,10 @@ public:
         markDeviceLost("simulated");
     }
 
+    /** デバイスロスト復旧で旧デバイスが retired リストへ移されるときに呼ばれる。
+        以降このデバイスには stale リソースの解放しか行われない。既定実装は何もしない。 */
+    virtual void retire() {}
+
 private:
     std::atomic<bool> m_deviceLostGuard{false};
     std::atomic<bool> m_deviceLost{false};

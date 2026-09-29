@@ -41,6 +41,7 @@ public:
     void waitIdle() override;
     Backend backend() const override { return Backend::WebGPU; }
     void debugSimulateDeviceLost(bool deep) override;
+    void retire() override;
 
     // 内部用アクセサ
     WGPUInstance wgpuInstance() const { return m_instance; }

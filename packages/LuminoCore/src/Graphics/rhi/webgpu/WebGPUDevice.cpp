@@ -604,4 +604,13 @@ void WebGPUDevice::debugSimulateDeviceLost(bool deep) {
     }
 }
 
+void WebGPUDevice::retire() {
+    // 旧デバイスを破棄する。Dawn (D3D12) は生存中のデバイスが HWND のスワップチェーンを
+    // 保持し続けるため、破棄しないと新デバイスが同じ HWND にスワップチェーンを作れない
+    // (E_ACCESSDENIED)。破棄後も wgpu*Release は有効なので stale リソースの解放は行える。
+    if (m_device) {
+        wgpuDeviceDestroy(m_device);
+    }
+}
+
 } // namespace ln::rhi::webgpu
