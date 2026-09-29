@@ -412,6 +412,24 @@ VoidResult WebGL2Device::writeBuffer(Buffer* dst, uint64_t dstOffset, const void
     return LN_MAKE_SUCCESS();
 }
 
+VoidResult WebGL2Device::writeTexture(Texture* dst, uint32_t x, uint32_t y, uint32_t width, uint32_t height,
+                                      const void* data, uint64_t size) {
+    // writeBuffer と同じく、描画コマンドは submit() まで発行されないため即時に書き込んでよい。
+    (void)size;
+    auto* tex = static_cast<WebGL2Texture*>(dst);
+    const GLFormatInfo fmt = toGLFormat(tex->format());
+    if (!fmt.supported) {
+        return LN_MAKE_ERROR("Unsupported TextureFormat on WebGL2: %d", static_cast<int>(tex->format()));
+    }
+    glBindTexture(GL_TEXTURE_2D, tex->handle());
+    glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+    glTexSubImage2D(GL_TEXTURE_2D, 0, static_cast<GLint>(x), static_cast<GLint>(y),
+                    static_cast<GLsizei>(width), static_cast<GLsizei>(height),
+                    fmt.format, fmt.type, data);
+    glBindTexture(GL_TEXTURE_2D, 0);
+    return LN_MAKE_SUCCESS();
+}
+
 Result<std::vector<uint8_t>> WebGL2Device::readbackTexture(TextureView* view) {
     auto* glView = static_cast<WebGL2TextureView*>(view);
     if (!glView || glView->textureHandle() == 0) {

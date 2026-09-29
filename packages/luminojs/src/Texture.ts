@@ -10,11 +10,26 @@ type TextureSource =
     | { kind: "ds" }                         // DepthStencil: 生成情報のみ保持 (内容は揮発)
     | { kind: "external" };                  // その他 (Residency / 復旧の対象外)
 
+/** writePixels で書き込まれ、まだ GPU へ反映していない範囲 (右端・下端は含まない)。 */
+type PendingRegion = { left: number; top: number; right: number; bottom: number };
+
+/** 1 ピクセルあたりのバイト数。 */
+function bytesPerPixel(format: TextureFormat): number {
+    switch (format) {
+        case TextureFormat.R8_UNORM:     return 1;
+        case TextureFormat.RG8_UNORM:    return 2;
+        case TextureFormat.RGBA16_FLOAT: return 8;
+        case TextureFormat.RGBA32_FLOAT: return 16;
+        default:                         return 4;
+    }
+}
+
 export class Texture extends LuminoObject implements ResidentResource {
     private _source: TextureSource = { kind: "external" };
     private _width = 0;
     private _height = 0;
     private _dirty = false;
+    private _pendingRegion: PendingRegion | null = null;
     private _lastUsedFrame = 0;
     private _isResidencyTarget = false;
     // RT / DS の場合のみ: デバイスロスト復旧時の再作成用 (non-owning)
@@ -111,6 +126,9 @@ export class Texture extends LuminoObject implements ResidentResource {
 
     /**
      * デコード済みの生ピクセルデータ (createImageBitmap の結果など) からテクスチャを定義します。
+     *
+     * data はコピーせずにテクスチャが所有します。GPU へのアップロードやデバイスロストからの復旧に使うためです。
+     * 呼び出し後は data の内容を書き換えないでください。また writePixels はこの配列へ書き込みます。
      * @param data   生ピクセルデータ (format で指定されたフォーマットに従う)
      * @param width  幅 (ピクセル)
      * @param height 高さ (ピクセル)
@@ -131,6 +149,57 @@ export class Texture extends LuminoObject implements ResidentResource {
         return tex;
     }
 
+    /**
+     * テクスチャの矩形領域へピクセルデータを書き込みます。引数の並びは WebGPU の queue.writeTexture に合わせています。
+     * createFromPixels / loadFromMemory / loadFromURL で作成したテクスチャが対象です。
+     *
+     * 書き込みは保持しているピクセルデータへ反映し、GPU へは次に描画で使われたときにまとめてアップロードします。
+     * 1 フレームに何度書き込んでも、アップロードは書き込んだ範囲を囲む矩形の 1 回だけです。
+     * data はコピーされるため、呼び出し後に再利用して構いません。
+     * @param x      書き込み先矩形の左端 (ピクセル)
+     * @param y      書き込み先矩形の上端 (ピクセル)
+     * @param width  書き込み先矩形の幅 (ピクセル)
+     * @param height 書き込み先矩形の高さ (ピクセル)
+     * @param data   ピクセルデータ (テクスチャのフォーマットに従い、行は上から下へ詰めて並べる)
+     */
+    writePixels(x: number, y: number, width: number, height: number, data: Uint8Array): void {
+        const src = this._source;
+        if (src.kind !== "pixels") {
+            throw new Error("writePixels is only supported for textures created from pixels or images.");
+        }
+        if (width <= 0 || height <= 0 || x < 0 || y < 0 || x + width > src.width || y + height > src.height) {
+            throw new Error(
+                `Write region (${x}, ${y}, ${width}, ${height}) is out of texture bounds (${src.width} x ${src.height}).`);
+        }
+        const bpp = bytesPerPixel(src.format);
+        const rowBytes = width * bpp;
+        if (data.byteLength !== rowBytes * height) {
+            throw new Error(`Pixel data size mismatch. (expected: ${rowBytes * height}, actual: ${data.byteLength})`);
+        }
+
+        // 保持しているピクセルデータへ行ごとに反映する。
+        const stride = src.width * bpp;
+        if (x === 0 && width === src.width) {
+            src.data.set(data, y * stride);
+        } else {
+            for (let row = 0; row < height; row++) {
+                src.data.set(data.subarray(row * rowBytes, (row + 1) * rowBytes), (y + row) * stride + x * bpp);
+            }
+        }
+
+        // まだ GPU 側が無い場合は、次の ensure で保持データから作られるので範囲を記録しなくてよい。
+        if (this._handle === 0) return;
+        const r = this._pendingRegion;
+        this._pendingRegion = r
+            ? {
+                left: Math.min(r.left, x),
+                top: Math.min(r.top, y),
+                right: Math.max(r.right, x + width),
+                bottom: Math.max(r.bottom, y + height),
+            }
+            : { left: x, top: y, right: x + width, bottom: y + height };
+    }
+
     /** URL から画像を取得してテクスチャを定義します。 */
     static async loadFromURL(url: string): Promise<Texture> {
         const resp = await fetch(url);
@@ -146,6 +215,7 @@ export class Texture extends LuminoObject implements ResidentResource {
     ensure(ctx: GraphicsContext): void {
         if (!this._isResidencyTarget) return;
         if (this._handle !== 0 && !this._dirty) {
+            if (this._pendingRegion) this._uploadPendingRegion(ctx);
             this._lastUsedFrame = ctx.currentFrame;
             return;
         }
@@ -175,8 +245,44 @@ export class Texture extends LuminoObject implements ResidentResource {
         }
 
         this._dirty = false;
+        this._pendingRegion = null;
         this._lastUsedFrame = ctx.currentFrame;
         ctx.residencyManager.register(this);
+    }
+
+    /** writePixels で書き込まれた範囲を、既存の GPU テクスチャへ書き込む。 */
+    private _uploadPendingRegion(ctx: GraphicsContext): void {
+        const src = this._source;
+        const r = this._pendingRegion!;
+        this._pendingRegion = null;
+        if (src.kind !== "pixels") return;
+
+        const bpp = bytesPerPixel(src.format);
+        const stride = src.width * bpp;
+        const width = r.right - r.left;
+        const height = r.bottom - r.top;
+        const rowBytes = width * bpp;
+        const size = rowBytes * height;
+
+        const m = Runtime.module;
+        const ptr = m._malloc(size);
+        try {
+            if (width === src.width) {
+                m.HEAPU8.set(src.data.subarray(r.top * stride, r.bottom * stride), ptr);
+            } else {
+                for (let row = 0; row < height; row++) {
+                    const begin = (r.top + row) * stride + r.left * bpp;
+                    m.HEAPU8.set(src.data.subarray(begin, begin + rowBytes), ptr + row * rowBytes);
+                }
+            }
+            Runtime.safeCall(() =>
+                (API.LNTexture2D_WritePixels as (
+                    ctx: number, tex: number, x: number, y: number, w: number, h: number,
+                    pix: number, size: number,
+                ) => number)(ctx.handle, this._handle, r.left, r.top, width, height, ptr, size));
+        } finally {
+            m._free(ptr);
+        }
     }
 
     /**

@@ -448,6 +448,26 @@ VoidResult WebGPUDevice::writeBuffer(Buffer* dst, uint64_t dstOffset, const void
     return LN_MAKE_SUCCESS();
 }
 
+VoidResult WebGPUDevice::writeTexture(Texture* dst, uint32_t x, uint32_t y, uint32_t width, uint32_t height,
+                                      const void* data, uint64_t size) {
+    auto* tex = static_cast<WebGPUTexture*>(dst);
+
+    WGPUTexelCopyTextureInfo dstInfo = WGPU_TEXEL_COPY_TEXTURE_INFO_INIT;
+    dstInfo.texture = tex->handle();
+    dstInfo.mipLevel = 0;
+    dstInfo.origin = {x, y, 0};
+    dstInfo.aspect = WGPUTextureAspect_All;
+
+    WGPUTexelCopyBufferLayout layout = WGPU_TEXEL_COPY_BUFFER_LAYOUT_INIT;
+    layout.offset = 0;
+    layout.bytesPerRow = width * bytesPerPixel(tex->format());
+    layout.rowsPerImage = height;
+
+    WGPUExtent3D writeSize = {width, height, 1};
+    wgpuQueueWriteTexture(m_queue, &dstInfo, data, static_cast<size_t>(size), &layout, &writeSize);
+    return LN_MAKE_SUCCESS();
+}
+
 Result<std::vector<uint8_t>> WebGPUDevice::readbackTexture(TextureView* view) {
     auto* wgpuView = static_cast<WebGPUTextureView*>(view);
     if (!wgpuView) {

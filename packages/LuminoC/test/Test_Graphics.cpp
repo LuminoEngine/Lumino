@@ -4,6 +4,7 @@
 #include <vector>
 #include <string>
 #include <cstdio>
+#include <cstring>
 
 #define TEST_W 320
 #define TEST_H 240
@@ -1479,6 +1480,121 @@ TEST_F(Test_Graphics, MaterialTextureSwapAcrossFrames) {
     LNObject_Release(material);
     LNObject_Release(greenTex);
     LNObject_Release(redTex);
+}
+
+// LNTexture2D_WritePixels でテクスチャ全体を書き換えたときに、各フレームで新しい内容が出ることを確認する。
+// フレームスロット 2 枚を 2 巡させ、前のフレームの内容が残らないことも見る。
+TEST_F(Test_Graphics, TextureWritePixelsAcrossFrames) {
+    const uint8_t redPixel[4]   = { 255, 0, 0, 255 };
+    const uint8_t greenPixel[4] = { 0, 255, 0, 255 };
+    LNHandle texture = LN_NULL_HANDLE;
+    ASSERT_EQ(LN_OK, LNTexture2D_CreateFromPixels(
+        graphicsContext, 1, 1, LN_TEXTURE_FORMAT_RGBA8_UNORM, redPixel, sizeof(redPixel), &texture));
+
+    LNHandle material = LN_NULL_HANDLE;
+    ASSERT_EQ(LN_OK, LNMaterial_CreateFromBuiltinShader(graphicsContext, LN_BUILTIN_SHADER_UNLIT, &material));
+    ASSERT_EQ(LN_OK, LNMaterial_SetMainTexture(material, texture));
+
+    LNHandle camera = LN_NULL_HANDLE;
+    createOrthoCamera(&camera);
+
+    // 緑 -> 赤 -> 緑 -> 赤。
+    for (int i = 0; i < 4; i++) {
+        const bool useGreen = (i % 2) == 0;
+        ASSERT_EQ(LN_OK, LNTexture2D_WritePixels(
+            graphicsContext, texture, 0, 0, 1, 1, useGreen ? greenPixel : redPixel, sizeof(redPixel)));
+        uint8_t rgb[3] = {};
+        drawFullscreenSpriteAndSample(material, camera, TEST_W / 2, TEST_H / 2, rgb);
+        if (useGreen) {
+            EXPECT_GT((int)rgb[1], 200) << "frame " << i << ": 書き込んだ緑が反映されていません。";
+            EXPECT_LT((int)rgb[0], 60) << "frame " << i << ": 書き込む前の赤が残っています。";
+        } else {
+            EXPECT_GT((int)rgb[0], 200) << "frame " << i << ": 書き込んだ赤が反映されていません。";
+            EXPECT_LT((int)rgb[1], 60) << "frame " << i << ": 書き込む前の緑が残っています。";
+        }
+    }
+
+    LNObject_Release(camera);
+    LNObject_Release(material);
+    LNObject_Release(texture);
+}
+
+// LNTexture2D_WritePixels で矩形の一部だけを書き換えたときに、その範囲だけが変わることを確認する。
+// 書き込み位置の Y の向き (行 0 が上) と、幅が 2 以上の矩形の行の詰め方もここで検証する。
+TEST_F(Test_Graphics, TextureWritePixelsRegion) {
+    // 2x2 の全面赤。
+    const uint8_t red[4] = { 255, 0, 0, 255 };
+    uint8_t pixels[2 * 2 * 4];
+    for (int i = 0; i < 4; i++) std::memcpy(pixels + i * 4, red, 4);
+    LNHandle texture = LN_NULL_HANDLE;
+    ASSERT_EQ(LN_OK, LNTexture2D_CreateFromPixels(
+        graphicsContext, 2, 2, LN_TEXTURE_FORMAT_RGBA8_UNORM, pixels, sizeof(pixels), &texture));
+
+    LNHandle material = LN_NULL_HANDLE;
+    ASSERT_EQ(LN_OK, LNMaterial_CreateFromBuiltinShader(graphicsContext, LN_BUILTIN_SHADER_UNLIT, &material));
+    ASSERT_EQ(LN_OK, LNMaterial_SetMainTexture(material, texture));
+    ASSERT_EQ(LN_OK, LNMaterial_SetSamplerState(material,
+        LN_TEXTURE_FILTER_MODE_NEAREST, LN_TEXTURE_ADDRESS_MODE_CLAMP_TO_EDGE));
+
+    LNHandle camera = LN_NULL_HANDLE;
+    createOrthoCamera(&camera);
+
+    // 右下の 1 テクセルを青、上段の 2 テクセルを緑にする。
+    const uint8_t blue[4] = { 0, 0, 255, 255 };
+    ASSERT_EQ(LN_OK, LNTexture2D_WritePixels(graphicsContext, texture, 1, 1, 1, 1, blue, sizeof(blue)));
+    const uint8_t greenRow[2 * 4] = { 0, 255, 0, 255, 0, 255, 0, 255 };
+    ASSERT_EQ(LN_OK, LNTexture2D_WritePixels(graphicsContext, texture, 0, 0, 2, 1, greenRow, sizeof(greenRow)));
+
+    struct Expect { int x; int y; int channel; const char* name; };
+    const Expect expects[] = {
+        { TEST_W / 4,     TEST_H / 4,     1, "左上 (緑)" },
+        { TEST_W * 3 / 4, TEST_H / 4,     1, "右上 (緑)" },
+        { TEST_W / 4,     TEST_H * 3 / 4, 0, "左下 (赤のまま)" },
+        { TEST_W * 3 / 4, TEST_H * 3 / 4, 2, "右下 (青)" },
+    };
+    for (const auto& e : expects) {
+        uint8_t rgb[3] = {};
+        drawFullscreenSpriteAndSample(material, camera, e.x, e.y, rgb);
+        for (int c = 0; c < 3; c++) {
+            if (c == e.channel) {
+                EXPECT_GT((int)rgb[c], 200) << e.name << " ch " << c << ": 期待した色になっていません。"
+                    << " RGB=(" << (int)rgb[0] << "," << (int)rgb[1] << "," << (int)rgb[2] << ")";
+            } else {
+                EXPECT_LT((int)rgb[c], 60) << e.name << " ch " << c << ": 期待しない色が出ています。"
+                    << " RGB=(" << (int)rgb[0] << "," << (int)rgb[1] << "," << (int)rgb[2] << ")";
+            }
+        }
+    }
+
+    LNObject_Release(camera);
+    LNObject_Release(material);
+    LNObject_Release(texture);
+}
+
+// 範囲外の矩形・サイズの不一致・レンダーターゲットへの書き込みは LN_ERROR_INVALID_ARGUMENT になる。
+TEST_F(Test_Graphics, TextureWritePixelsRejectsInvalidArguments) {
+    const uint8_t pixels[2 * 2 * 4] = {};
+    LNHandle texture = LN_NULL_HANDLE;
+    ASSERT_EQ(LN_OK, LNTexture2D_CreateFromPixels(
+        graphicsContext, 2, 2, LN_TEXTURE_FORMAT_RGBA8_UNORM, pixels, sizeof(pixels), &texture));
+
+    EXPECT_EQ(LN_ERROR_INVALID_ARGUMENT,
+        LNTexture2D_WritePixels(graphicsContext, texture, 1, 0, 2, 1, pixels, 2 * 4)) << "右端からはみ出す矩形";
+    EXPECT_EQ(LN_ERROR_INVALID_ARGUMENT,
+        LNTexture2D_WritePixels(graphicsContext, texture, 0, 2, 1, 1, pixels, 4)) << "下端より下の矩形";
+    EXPECT_EQ(LN_ERROR_INVALID_ARGUMENT,
+        LNTexture2D_WritePixels(graphicsContext, texture, 0, 0, 0, 1, pixels, 0)) << "幅 0 の矩形";
+    EXPECT_EQ(LN_ERROR_INVALID_ARGUMENT,
+        LNTexture2D_WritePixels(graphicsContext, texture, 0, 0, 2, 2, pixels, 4)) << "データサイズの不一致";
+
+    LNHandle renderTarget = LN_NULL_HANDLE;
+    ASSERT_EQ(LN_OK, LNTexture2D_CreateRenderTargetEx(
+        graphicsContext, 2, 2, LN_TEXTURE_FORMAT_RGBA8_UNORM, &renderTarget));
+    EXPECT_EQ(LN_ERROR_INVALID_ARGUMENT,
+        LNTexture2D_WritePixels(graphicsContext, renderTarget, 0, 0, 2, 2, pixels, sizeof(pixels))) << "レンダーターゲット";
+
+    LNObject_Release(renderTarget);
+    LNObject_Release(texture);
 }
 
 // フレームをまたいで名前付きサンプラー設定を変えたときに、新しい設定が反映される

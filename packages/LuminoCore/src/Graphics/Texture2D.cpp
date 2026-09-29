@@ -68,6 +68,37 @@ Result<Ref<Texture>> Texture::createRenderTarget(
     return tex;
 }
 
+VoidResult Texture::writePixels(
+    rhi::Device* device,
+    uint32_t x,
+    uint32_t y,
+    uint32_t width,
+    uint32_t height,
+    const void* data,
+    uint64_t size) {
+    // LoadFromMemory 等は幅・高さ 0 のまま包んでいるため、検証には RHI テクスチャ側の値を使う。
+    if (!m_rhiTexture || m_isRenderTarget) {
+        return LN_MAKE_ERROR_WITH_CODE(ErrorCode::InvalidArgument,
+            "Texture is not writable. Only textures created from pixels or images can be written.");
+    }
+    const uint32_t texWidth = m_rhiTexture->width();
+    const uint32_t texHeight = m_rhiTexture->height();
+    if (width == 0 || height == 0 || x > texWidth || y > texHeight ||
+        width > texWidth - x || height > texHeight - y) {
+        return LN_MAKE_ERROR_WITH_CODE(ErrorCode::InvalidArgument,
+            "Write region (%u, %u, %u, %u) is out of texture bounds (%u x %u).",
+            x, y, width, height, texWidth, texHeight);
+    }
+    const uint64_t expectedSize =
+        static_cast<uint64_t>(width) * height * rhi::bytesPerPixel(m_rhiTexture->format());
+    if (!data || size != expectedSize) {
+        return LN_MAKE_ERROR_WITH_CODE(ErrorCode::InvalidArgument,
+            "Pixel data size mismatch. (expected: %llu, actual: %llu)",
+            static_cast<unsigned long long>(expectedSize), static_cast<unsigned long long>(size));
+    }
+    return device->writeTexture(m_rhiTexture.get(), x, y, width, height, data, size);
+}
+
 void Texture::wrapBackbuffer(
     rhi::TextureView* rhiTextureView,
     uint32_t width,

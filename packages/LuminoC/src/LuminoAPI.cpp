@@ -823,6 +823,31 @@ LNResult LNTexture2D_CreateFromPixels(
     return LN_OK;
 }
 
+LNResult LNTexture2D_WritePixels(
+    LNHandle graphicsContext,
+    LNHandle texture,
+    uint32_t x,
+    uint32_t y,
+    uint32_t width,
+    uint32_t height,
+    const void* pixelData,
+    uint32_t dataSizeBytes) {
+    if (isDeviceLostNow()) return LN_ERROR_DEVICE_LOST;
+
+    auto* ctx = resolveObject<ln::GraphicsContext>(graphicsContext);
+    if (!ctx) return LN_ERROR_INVALID_HANDLE;
+    auto* tex = resolveObject<ln::Texture>(texture);
+    if (!tex) return LN_ERROR_INVALID_HANDLE;
+    if (isStaleResource(tex)) {
+        warnStaleResourceSkipped("texture");
+        return LN_OK;
+    }
+
+    auto result = tex->writePixels(ctx->device(), x, y, width, height, pixelData, dataSizeBytes);
+    if (!result) return toLNResult(result.error());
+    return LN_OK;
+}
+
 //------------------------------------------------------------------------------
 // LNImage
 //------------------------------------------------------------------------------

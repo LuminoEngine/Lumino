@@ -31,11 +31,13 @@ public:
                          VkDeviceSize dstOffset = 0);
 
     /**
-     * data から size バイトを dstImage へコピーする。
-     * UNDEFINED -> TRANSFER_DST_OPTIMAL -> SHADER_READ_ONLY_OPTIMAL とレイアウトを遷移させる。
+     * data から size バイトを dstImage の矩形領域 (x, y, width, height) へコピーし、完了を待つ。
+     * oldLayout -> TRANSFER_DST_OPTIMAL -> SHADER_READ_ONLY_OPTIMAL とレイアウトを遷移させる。
+     * oldLayout に UNDEFINED を渡すと既存の内容は破棄されるため、部分的な書き込みでは
+     * SHADER_READ_ONLY_OPTIMAL を渡すこと。
      */
-    void uploadTextureImmediate(VkImage dstImage, const void* data, VkDeviceSize size,
-                                uint32_t width, uint32_t height);
+    void uploadTextureImmediate(VkImage dstImage, VkImageLayout oldLayout, const void* data, VkDeviceSize size,
+                                uint32_t x, uint32_t y, uint32_t width, uint32_t height);
 
     /**
      * srcImage のピクセルデータを CPU 側のバッファへコピーする。

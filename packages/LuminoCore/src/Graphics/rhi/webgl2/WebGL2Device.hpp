@@ -141,6 +141,8 @@ public:
     Result<Ref<PipelineLayout>> createPipelineLayout(const PipelineLayoutDesc& desc) override;
     Result<Ref<RenderPipeline>> createRenderPipeline(const RenderPipelineDesc& desc) override;
     VoidResult writeBuffer(Buffer* dst, uint64_t dstOffset, const void* data, uint64_t size) override;
+    VoidResult writeTexture(Texture* dst, uint32_t x, uint32_t y, uint32_t width, uint32_t height,
+                            const void* data, uint64_t size) override;
     Result<std::vector<uint8_t>> readbackTexture(TextureView* view) override;
     void waitIdle() override;
     Backend backend() const override { return Backend::WebGL2; }

@@ -51,7 +51,8 @@ void StagingBufferPool::uploadImmediate(VkBuffer dstBuffer, const void* data, Vk
     releasePage(staging);
 }
 
-void StagingBufferPool::uploadTextureImmediate(VkImage dstImage, const void* data, VkDeviceSize size,
+void StagingBufferPool::uploadTextureImmediate(VkImage dstImage, VkImageLayout oldLayout, const void* data,
+                                               VkDeviceSize size, uint32_t x, uint32_t y,
                                                uint32_t width, uint32_t height) {
     Page staging = acquirePage(size);
     writePage(staging, data, size);
@@ -64,15 +65,19 @@ void StagingBufferPool::uploadTextureImmediate(VkImage dstImage, const void* dat
         barrier.image = dstImage;
         barrier.subresourceRange = colorSubresourceRange();
 
-        barrier.oldLayout = VK_IMAGE_LAYOUT_UNDEFINED;
+        // 既存の内容を残す場合は、先行するフレームのシェーダ読み込みが終わるのを待ってから書き込む。
+        const bool keepContents = (oldLayout != VK_IMAGE_LAYOUT_UNDEFINED);
+        barrier.oldLayout = oldLayout;
         barrier.newLayout = VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL;
-        barrier.srcAccessMask = 0;
+        barrier.srcAccessMask = keepContents ? VK_ACCESS_SHADER_READ_BIT : 0;
         barrier.dstAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT;
         vkCmdPipelineBarrier(*cmd,
-            VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT, VK_PIPELINE_STAGE_TRANSFER_BIT,
+            keepContents ? VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT : VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT,
+            VK_PIPELINE_STAGE_TRANSFER_BIT,
             0, 0, nullptr, 0, nullptr, 1, &barrier);
 
         VkBufferImageCopy region = fullImageCopyRegion(width, height);
+        region.imageOffset = {static_cast<int32_t>(x), static_cast<int32_t>(y), 0};
         vkCmdCopyBufferToImage(*cmd, staging.buffer, dstImage,
             VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 1, &region);
 

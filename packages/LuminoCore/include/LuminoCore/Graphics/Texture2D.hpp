@@ -55,6 +55,20 @@ public:
     /** レンダーターゲットとして作成されたかどうか。 */
     bool isRenderTarget() const { return m_isRenderTarget; }
 
+    /**
+     * テクスチャの矩形領域へピクセルデータを書き込みます。
+     * 対象はピクセルデータや画像から作成したテクスチャです。レンダーターゲット・深度・バックバッファには書き込めません。
+     * data は width * height * (1 ピクセルのバイト数) バイトで、行は上から下へ詰めて並べます。
+     */
+    VoidResult writePixels(
+        rhi::Device* device,
+        uint32_t x,
+        uint32_t y,
+        uint32_t width,
+        uint32_t height,
+        const void* data,
+        uint64_t size);
+
     void wrapBackbuffer(
         rhi::TextureView* rhiTextureView,
         uint32_t width,

@@ -477,6 +477,33 @@ extern LUMINO_API LNResult LNTexture2D_CreateFromPixels(
     LNHandle* outHandle
 );
 
+/**
+ * テクスチャの矩形領域へピクセルデータを書き込みます。
+ * 引数の並びは WebGPU の queue.writeTexture に合わせています。
+ * 対象は LNTexture2D_CreateFromPixels / LNTexture2D_LoadFromMemory / LNTexture2D_LoadFromFile で作成したテクスチャで、
+ * レンダーターゲット・深度バッファには書き込めません (LN_ERROR_INVALID_ARGUMENT)。
+ * 同一フレーム内の描画は、書き込んだ順序によらずそのフレームで最後に書いた内容を読みます。
+ *
+ * @param[in]  graphicsContext GraphicsContext のハンドル
+ * @param[in]  texture         書き込み先テクスチャのハンドル
+ * @param[in]  x               書き込み先矩形の左端 (ピクセル)
+ * @param[in]  y               書き込み先矩形の上端 (ピクセル)
+ * @param[in]  width           書き込み先矩形の幅 (ピクセル)
+ * @param[in]  height          書き込み先矩形の高さ (ピクセル)
+ * @param[in]  pixelData       ピクセルデータへのポインタ (テクスチャのフォーマットに従い、行は上から下へ詰めて並べる)
+ * @param[in]  dataSizeBytes   ピクセルデータサイズ (バイト)。width * height * 1 ピクセルのバイト数と一致すること
+ */
+extern LUMINO_API LNResult LNTexture2D_WritePixels(
+    LNHandle graphicsContext,
+    LNHandle texture,
+    uint32_t x,
+    uint32_t y,
+    uint32_t width,
+    uint32_t height,
+    const void* pixelData,
+    uint32_t dataSizeBytes
+);
+
 //------------------------------------------------------------------------------
 // LNImage
 //------------------------------------------------------------------------------

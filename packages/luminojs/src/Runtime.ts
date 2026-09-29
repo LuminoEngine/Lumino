@@ -346,6 +346,7 @@ export class Runtime {
 
         // Texture
         API.LNTexture2D_CreateFromPixels    = cw("LNTexture2D_CreateFromPixels",    "number", ["number", "number", "number", "number", "number", "number", "number"]);
+        API.LNTexture2D_WritePixels         = cw("LNTexture2D_WritePixels",         "number", ["number", "number", "number", "number", "number", "number", "number", "number"]);
         API.LNTexture2D_CreateRenderTargetEx = cw("LNTexture2D_CreateRenderTargetEx", "number", ["number", "number", "number", "number", "number"]);
         API.LNTexture2D_CreateDepthStencil   = cw("LNTexture2D_CreateDepthStencil",   "number", ["number", "number", "number", "number"]);
 

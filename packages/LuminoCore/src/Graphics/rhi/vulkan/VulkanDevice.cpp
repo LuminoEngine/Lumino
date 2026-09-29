@@ -380,15 +380,11 @@ Result<Ref<Texture>> VulkanDevice::createTexture(const TextureDesc& desc) {
 
     // 初期データがあればステージングバッファ経由でアップロードする。
     if (desc.initialData) {
-        uint32_t bpp = 4; // 一般的なフォーマットは 1 ピクセル 4 バイトとみなす。
-        if (desc.format == TextureFormat::R8Unorm) bpp = 1;
-        else if (desc.format == TextureFormat::RG8Unorm) bpp = 2;
-        else if (desc.format == TextureFormat::RGBA16Float) bpp = 8;
-        else if (desc.format == TextureFormat::RGBA32Float) bpp = 16;
-        VkDeviceSize imageSize = static_cast<VkDeviceSize>(desc.width) * desc.height * bpp;
+        VkDeviceSize imageSize = static_cast<VkDeviceSize>(desc.width) * desc.height * bytesPerPixel(desc.format);
 
         m_stagingPool.uploadTextureImmediate(
-            tex->handle(), desc.initialData, imageSize, desc.width, desc.height);
+            tex->handle(), VK_IMAGE_LAYOUT_UNDEFINED, desc.initialData, imageSize,
+            0, 0, desc.width, desc.height);
     }
 
     return Ref<Texture>(tex);
@@ -490,6 +486,17 @@ VoidResult VulkanDevice::writeBuffer(Buffer* dst, uint64_t dstOffset, const void
         }
         std::memcpy(static_cast<uint8_t*>(mapped) + dstOffset, data, size);
     }
+    return LN_MAKE_SUCCESS();
+}
+
+VoidResult VulkanDevice::writeTexture(Texture* dst, uint32_t x, uint32_t y, uint32_t width, uint32_t height,
+                                      const void* data, uint64_t size) {
+    // 作成後のサンプル用テクスチャは常に SHADER_READ_ONLY_OPTIMAL にある (VulkanTexture::init / createTexture)。
+    // TODO: 単発コマンドは vkQueueWaitIdle で完了を待つため、書き込みのたびに GPU が止まる。
+    //       Vulkan が主経路になったら、フレームのコマンドバッファへ記録する方式に切り替える。
+    auto* tex = static_cast<VulkanTexture*>(dst);
+    m_stagingPool.uploadTextureImmediate(
+        tex->handle(), VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL, data, size, x, y, width, height);
     return LN_MAKE_SUCCESS();
 }
 

@@ -56,6 +56,18 @@ enum class TextureFormat {
     RGBA32Float,
 };
 
+/** 1 ピクセルあたりのバイト数を返す。Undefined の場合は 0。 */
+inline uint32_t bytesPerPixel(TextureFormat format) {
+    switch (format) {
+        case TextureFormat::Undefined:   return 0;
+        case TextureFormat::R8Unorm:     return 1;
+        case TextureFormat::RG8Unorm:    return 2;
+        case TextureFormat::RGBA16Float: return 8;
+        case TextureFormat::RGBA32Float: return 16;
+        default:                         return 4;
+    }
+}
+
 enum class BufferUsage : uint32_t {
     Vertex  = 0x01,
     Index   = 0x02,
@@ -621,6 +633,16 @@ public:
      * 再生することでこの契約を満たすこと。draw を即時に発行してはならない。
      */
     virtual VoidResult writeBuffer(Buffer* dst, uint64_t dstOffset, const void* data, uint64_t size) = 0;
+
+    /**
+     * テクスチャの矩形領域へピクセルデータを書き込む。map/unmap をサポートしないものを含む全バックエンドで動作する。
+     * 対象は CopyDst を持つ、ミップを 1 段だけ持つカラーテクスチャ。
+     *
+     * data は width * height * bytesPerPixel(format) バイトで、行は上から下へ詰めて並べる (行間のパディングなし)。
+     * 順序の契約は writeBuffer と同じ。同一フレーム内の描画は、そのフレームで最後に書いた内容を読む。
+     */
+    virtual VoidResult writeTexture(Texture* dst, uint32_t x, uint32_t y, uint32_t width, uint32_t height,
+                                    const void* data, uint64_t size) = 0;
 
     /**
      * テクスチャビューの内容をCPU側のピクセルバッファに読み戻します。

@@ -28,11 +28,7 @@ VoidResult WebGPUTexture::init(WebGPUDevice* device, const TextureDesc& desc) {
 
     // 初期ピクセルデータがあればキュー経由でアップロードする。
     if (desc.initialData) {
-        uint32_t bpp = 4; // 一般的なフォーマットは 1 ピクセル 4 バイトとみなす。
-        if (desc.format == TextureFormat::R8Unorm)          bpp = 1;
-        else if (desc.format == TextureFormat::RG8Unorm)    bpp = 2;
-        else if (desc.format == TextureFormat::RGBA16Float) bpp = 8;
-        else if (desc.format == TextureFormat::RGBA32Float) bpp = 16;
+        const uint32_t bpp = bytesPerPixel(desc.format);
 
         WGPUTexelCopyTextureInfo dst = WGPU_TEXEL_COPY_TEXTURE_INFO_INIT;
         dst.texture = m_texture;
