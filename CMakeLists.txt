@@ -81,6 +81,16 @@ endif()
 
 if(LN_PLATFORM_DESKTOP)
     find_package(directx-dxc CONFIG) # dawn で必要になる
+    # vcpkg の directx-dxc ポートは Microsoft::DXIL の Release 用プロパティ名を
+    # IMPORTED_LOCATION_RELASE と誤記しているため、Release ビルドで dxil.dll がコピーされず
+    # Dawn の D3D12 バックエンドが失敗する。ポート側が直るまでここで補う。
+    if(TARGET Microsoft::DXIL)
+        get_target_property(_ln_dxil_release Microsoft::DXIL IMPORTED_LOCATION_RELEASE)
+        if(NOT _ln_dxil_release)
+            get_target_property(_ln_dxil_release Microsoft::DXIL IMPORTED_LOCATION_RELASE)
+            set_target_properties(Microsoft::DXIL PROPERTIES IMPORTED_LOCATION_RELEASE "${_ln_dxil_release}")
+        endif()
+    endif()
 endif()
 
 if(LUMINO_USE_SLANG)

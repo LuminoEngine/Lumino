@@ -6,7 +6,7 @@
 /**
  * 使用するバックエンド。コマンドライン引数 --backend=<vulkan|webgpu|webgl2> で選ぶ。
  * 同じビジュアルテストをバックエンドごとに走らせるための入口で、ctest 側では
- * "webgl2." 接頭辞つきのテストとして登録している。
+ * "vulkan." / "webgpu." / "webgl2." 接頭辞つきのテストとして登録している。
  */
 static LNGraphicsBackend s_backend = LN_GRAPHICS_BACKEND_DEFAULT;
 

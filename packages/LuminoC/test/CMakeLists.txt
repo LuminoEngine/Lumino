@@ -40,21 +40,20 @@ gtest_discover_tests(${PROJECT_NAME}
     TEST_FILTER "-Test_Graphics.*:Test_DeviceLost.*"
     DISCOVERY_TIMEOUT 60
 )
-gtest_discover_tests(${PROJECT_NAME}
-    TEST_FILTER "Test_Graphics.*:Test_DeviceLost.*"
-    PROPERTIES LABELS "gpu"
-    DISCOVERY_TIMEOUT 60
-)
 
-# 同じビジュアルテストを WebGL2 (デスクトップでは ANGLE の OpenGL ES 3.0) でも走らせる。
-# Web の主経路をデスクトップで検証するための構成 (webgl2-backend-plan.md P4)。
-# WebGL2 側だけを走らせるには ctest -R "^webgl2\." を使う。
-if(LN_ENABLE_WEBGL2)
-    gtest_discover_tests(${PROJECT_NAME}
-        EXTRA_ARGS --backend=webgl2
-        TEST_FILTER "Test_Graphics.*:Test_DeviceLost.*"
-        TEST_PREFIX "webgl2."
-        PROPERTIES LABELS "gpu"
-        DISCOVERY_TIMEOUT 60
-    )
-endif()
+# GPU テストは有効なバックエンドごとに "<backend>." 接頭辞と label "gpu-<backend>" を
+# 付けて登録する。WebGL2 はデスクトップでは ANGLE の OpenGL ES 3.0 で、Web の主経路を
+# デスクトップで検証するための構成 (webgl2-backend-plan.md P4)。
+# 特定のバックエンドだけを走らせるには ctest -L gpu-vulkan や ctest -R "^webgpu\." を使う。
+foreach(backend vulkan webgpu webgl2)
+    string(TOUPPER ${backend} BACKEND_UPPER)
+    if(LN_ENABLE_${BACKEND_UPPER})
+        gtest_discover_tests(${PROJECT_NAME}
+            EXTRA_ARGS --backend=${backend}
+            TEST_FILTER "Test_Graphics.*:Test_DeviceLost.*"
+            TEST_PREFIX "${backend}."
+            PROPERTIES LABELS "gpu-${backend}"
+            DISCOVERY_TIMEOUT 60
+        )
+    endif()
+endforeach()
