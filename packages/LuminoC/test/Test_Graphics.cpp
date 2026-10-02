@@ -1441,6 +1441,62 @@ TEST_F(Test_Graphics, MaterialColorChangeAcrossFrames) {
     LNObject_Release(material);
 }
 
+// 乗算済みアルファのブレンドでは、シェーダの色に A が掛からない (One, OneMinusSrcAlpha) ことを確認する。
+// 黒背景に (0.5, 0, 0, 0.5) を描くと、PremultipliedAlpha なら R = 0.5、Alpha なら R = 0.25 になる。
+TEST_F(Test_Graphics, BlendModePremultipliedAlpha) {
+    LNHandle material = LN_NULL_HANDLE;
+    ASSERT_EQ(LN_OK, LNMaterial_CreateFromBuiltinShader(graphicsContext, LN_BUILTIN_SHADER_UNLIT, &material));
+    ASSERT_EQ(LN_OK, LNMaterial_SetColor(material, 0.5f, 0.0f, 0.0f, 0.5f));
+    ASSERT_EQ(LN_OK, LNMaterial_SetBlendMode(material, LN_BLEND_MODE_PREMULTIPLIED_ALPHA));
+
+    LNHandle camera = LN_NULL_HANDLE;
+    createOrthoCamera(&camera);
+
+    uint8_t rgb[3] = {};
+    drawFullscreenSpriteAndSample(material, camera, TEST_W / 2, TEST_H / 2, rgb);
+    EXPECT_NEAR((int)rgb[0], 128, 8)
+        << "RGB=(" << (int)rgb[0] << "," << (int)rgb[1] << "," << (int)rgb[2] << ")";
+    EXPECT_LT((int)rgb[1], 8);
+    EXPECT_LT((int)rgb[2], 8);
+
+    LNObject_Release(camera);
+    LNObject_Release(material);
+}
+
+// カメラ無しのパスでも drawScreenRect が NDC のまま画面全体に描かれることを確認する。
+TEST_F(Test_Graphics, DrawScreenRectWithoutCamera) {
+    LNHandle material = LN_NULL_HANDLE;
+    ASSERT_EQ(LN_OK, LNMaterial_CreateFromBuiltinShader(graphicsContext, LN_BUILTIN_SHADER_UNLIT, &material));
+    ASSERT_EQ(LN_OK, LNMaterial_SetColor(material, 0.0f, 1.0f, 0.0f, 1.0f));
+
+    LNHandle renderer, colorBuffer, depthBuffer;
+    ASSERT_EQ(LN_OK, LNGraphicsContext_BeginFrame(
+        graphicsContext, TEST_W, TEST_H, &renderer, &colorBuffer, &depthBuffer));
+    LNRenderPassDesc rpDesc;
+    LNRenderPassDesc_Init(&rpDesc);
+    rpDesc.colorAttachments[0].clearColor[3] = 1.0f;
+    ASSERT_EQ(LN_OK, LNRenderer_BeginRenderPass(renderer, graphicsContext, &rpDesc, LN_NULL_HANDLE));
+    ASSERT_EQ(LN_OK, LNRenderer_DrawScreenRect(renderer, material));
+    ASSERT_EQ(LN_OK, LNRenderer_EndRenderPass(renderer));
+
+    const uint8_t* data = nullptr;
+    int32_t w = 0, h = 0;
+    endFrameAndCapture(&data, &w, &h);
+    ASSERT_NE(nullptr, data);
+    // 中央と四隅の近くがすべて緑なら、矩形が NDC 全体を覆っている。
+    const int points[5][2] = {
+        { TEST_W / 2, TEST_H / 2 }, { 2, 2 }, { TEST_W - 3, 2 }, { 2, TEST_H - 3 }, { TEST_W - 3, TEST_H - 3 },
+    };
+    for (const auto& pt : points) {
+        const uint8_t* p = data + (static_cast<size_t>(pt[1]) * w + pt[0]) * 4;
+        EXPECT_LT((int)p[0], 8) << "(" << pt[0] << ", " << pt[1] << ")";
+        EXPECT_GT((int)p[1], 247) << "(" << pt[0] << ", " << pt[1] << ")";
+        EXPECT_LT((int)p[2], 8) << "(" << pt[0] << ", " << pt[1] << ")";
+    }
+
+    LNObject_Release(material);
+}
+
 // フレームをまたいでテクスチャを差し替えたときに、新しいテクスチャが出ることを確認する。
 // テクスチャの差し替えは BindGroup の構成の変化なので、全フレームスロットの
 // BindGroup を破棄しないと古いテクスチャを使い続ける。

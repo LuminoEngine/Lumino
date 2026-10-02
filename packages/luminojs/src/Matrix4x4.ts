@@ -190,20 +190,36 @@ export class Matrix4x4 {
         return result;
     }
 
-    /** this = this * rhs (結果を this に書き込む) */
-    multiply(rhs: Matrix4x4): this {
-        const a = this.m;
-        const b = rhs.m;
+    /** src の値を this へコピーする。 */
+    copyFrom(src: Matrix4x4): this {
+        this.m.set(src.m);
+        return this;
+    }
+
+    /**
+     * result = a * b。result は a や b と同じインスタンスでもよい。
+     * @param result 結果の書き込み先。省略すると新しい行列を返す。
+     */
+    public static multiply(a: Matrix4x4, b: Matrix4x4, result?: Matrix4x4): Matrix4x4 {
+        result = result ?? new Matrix4x4();
+        const am = a.m;
+        const bm = b.m;
         for (let col = 0; col < 4; col++) {
             for (let row = 0; row < 4; row++) {
                 let sum = 0;
                 for (let k = 0; k < 4; k++) {
-                    sum += a[k * 4 + row] * b[col * 4 + k];
+                    sum += am[k * 4 + row] * bm[col * 4 + k];
                 }
                 _mulTmp[col * 4 + row] = sum;
             }
         }
-        a.set(_mulTmp);
+        result.m.set(_mulTmp);
+        return result;
+    }
+
+    /** this = this * rhs (結果を this に書き込む) */
+    multiply(rhs: Matrix4x4): this {
+        Matrix4x4.multiply(this, rhs, this);
         return this;
     }
 }

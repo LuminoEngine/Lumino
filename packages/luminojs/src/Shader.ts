@@ -9,8 +9,7 @@ import { API, Runtime } from "./Runtime";
  *
  * `Material.createFromShader` で作った Material はこれらを共有するため、
  * 同一シェーダの Material を何個作っても GPU リソースは増えません。
- * 1 フレーム内で異なるパラメータを使いたい場合 (Material のパラメータは
- * フレーム単位で後勝ちになるため、描画箇所ごとに Material が必要) や、
+ * 1 フレーム内で異なるパラメータを使いたい場合 (`Material` のパラメータの後勝ちを参照) や、
  * テクスチャごとに Material を分けたい場合は、Shader を 1 つ作って
  * そこから Material を量産してください。
  *
@@ -43,6 +42,13 @@ export class Shader extends LuminoObject implements ResidentResource {
      */
     static createFromCompiledShader(data: Uint8Array): Shader {
         return new Shader(data);
+    }
+
+    /** URL からコンパイル済みシェーダ (.lcsh) を取得してシェーダを作成します。 */
+    static async loadFromURL(url: string): Promise<Shader> {
+        const resp = await fetch(url);
+        if (!resp.ok) throw new Error(`Failed to fetch shader: ${resp.status} ${url}`);
+        return Shader.createFromCompiledShader(new Uint8Array(await resp.arrayBuffer()));
     }
 
     /**

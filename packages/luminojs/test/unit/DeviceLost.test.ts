@@ -4,48 +4,12 @@ import { Texture } from "../../src/Texture";
 import { API, Runtime } from "../../src/Runtime";
 import { Result, TextureFormat } from "../../src/types";
 import type { ResidentResource } from "../../src/ResidencyManager";
+import { createFakeModule, type FakeModule } from "./fakeModule";
 
 // GraphicsContext.beginFrame のデバイスロスト復旧フローを、WASM モジュールを
 // モックしてテストする。C++ 側の自動復旧そのものは gtest (Test_DeviceLost.cpp)
 // で検証されるため、ここでは JS 層の責務 (null 返却、invalidateAll、RT 再作成、
 // onDeviceRestored フック) のみを対象とする。
-
-//------------------------------------------------------------------------------
-// フェイク WASM モジュール
-//------------------------------------------------------------------------------
-
-const HEAP_SIZE = 4096;
-
-interface FakeModule {
-    buffer: ArrayBuffer;
-    nextPtr: number;
-    _malloc(size: number): number;
-    _free(ptr: number): void;
-    HEAPU8: Uint8Array;
-    HEAPU32: Uint32Array;
-    HEAPF32: Float32Array;
-    UTF8ToString(ptr: number): string;
-    cwrap(): never;
-}
-
-function createFakeModule(): FakeModule {
-    const buffer = new ArrayBuffer(HEAP_SIZE);
-    return {
-        buffer,
-        nextPtr: 16, // 先頭は Runtime._returnPtr (0) 用に空けておく
-        _malloc(size: number): number {
-            const p = this.nextPtr;
-            this.nextPtr += (size + 7) & ~7;
-            return p;
-        },
-        _free(): void {},
-        HEAPU8: new Uint8Array(buffer),
-        HEAPU32: new Uint32Array(buffer),
-        HEAPF32: new Float32Array(buffer),
-        UTF8ToString(): string { return ""; },
-        cwrap(): never { throw new Error("not supported in fake module"); },
-    };
-}
 
 //------------------------------------------------------------------------------
 // テスト本体

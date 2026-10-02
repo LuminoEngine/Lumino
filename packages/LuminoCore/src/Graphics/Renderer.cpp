@@ -52,6 +52,15 @@ rhi::BlendState resolveBlendState(BlendMode mode) {
             s.dstAlpha = rhi::BlendFactor::One;
             s.alphaOp  = rhi::BlendOp::Add;
             break;
+        case BlendMode::PremultipliedAlpha:
+            s.enabled  = true;
+            s.srcColor = rhi::BlendFactor::One;
+            s.dstColor = rhi::BlendFactor::OneMinusSrcAlpha;
+            s.colorOp  = rhi::BlendOp::Add;
+            s.srcAlpha = rhi::BlendFactor::One;
+            s.dstAlpha = rhi::BlendFactor::OneMinusSrcAlpha;
+            s.alphaOp  = rhi::BlendOp::Add;
+            break;
     }
     return s;
 }
@@ -335,7 +344,11 @@ void Renderer::beginOverlayRenderPass(rhi::TextureView* colorTarget) {
         m_passBindGroupDirty[i]               = false;
     }
 
-    // 頂点はすでに NDC なので、単位行列のビュー射影行列をアップロードする。
+    // オーバーレイの頂点はすでに NDC。
+    bindIdentityView();
+}
+
+void Renderer::bindIdentityView() {
     auto viewAlloc = m_viewAllocator->allocate();
     ViewParamsUBO viewParams{};
     // viewProj, view, proj, invViewProj に列優先の単位行列を設定する。

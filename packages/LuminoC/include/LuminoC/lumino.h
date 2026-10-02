@@ -584,6 +584,10 @@ extern LUMINO_API LNResult LNShader_CreateFromShaderSourceFile(
 
 //------------------------------------------------------------------------------
 // LNMaterial
+//
+// パラメータは GPU で描画されるときに読まれるため、同じフレームでは後勝ちになります。
+// 描画ごとに値を変えたい場合は LNMaterial_CreateFromShader でマテリアルを分けてください。
+// 詳細は docs/graphics-conventions.md の「マテリアルのパラメータが読まれるタイミング」を参照してください。
 //------------------------------------------------------------------------------
 
 /** 合成方法 */
@@ -598,6 +602,11 @@ typedef enum LNBlendMode {
     LN_BLEND_MODE_SUBTRACT = 3,
     /** 乗算合成 */
     LN_BLEND_MODE_MULTIPLY = 4,
+    /**
+     * 乗算済みアルファのアルファブレンド (色も A も One, OneMinusSrcAlpha)。
+     * シェーダが RGB に A を掛けた色を出力する場合に使います。
+     */
+    LN_BLEND_MODE_PREMULTIPLIED_ALPHA = 5,
 } LNBlendMode;
 
 /** テクスチャのフィルタリング方法 */
@@ -715,6 +724,13 @@ extern LUMINO_API LNResult LNMaterial_SetMainTexture(
     LNHandle texture
 );
 
+/**
+ * シェーダの float4 パラメータを名前で設定します。
+ *
+ * @param[in] material マテリアルのハンドル
+ * @param[in] name     シェーダ内の uniform 変数名 (UTF-8)
+ * @param[in] values   設定する値 (float x 4)
+ */
 extern LUMINO_API LNResult LNMaterial_SetFloat4(
     LNHandle material,
     const char* name,
@@ -1025,18 +1041,20 @@ extern LUMINO_API LNResult LNCamera_SetMatrices(
  * レンダーパスを開始します。LNRenderPassDesc で描画先やクリア方法を指定します。
  * desc は LNRenderPassDesc_Init で初期化してから使用してください。
  * renderTarget / depthBuffer が LN_NULL_HANDLE の場合、バックバッファが使用されます。
- * camera が有効な場合、カメラデータを set=0 View UBO に自動アップロードします。
+ * cameraOrNull が有効な場合、カメラデータを set=0 View UBO に自動アップロードします。
+ * cameraOrNull が LN_NULL_HANDLE の場合は単位行列のビューデータが使われるため、
+ * 頂点を NDC で指定する描画 (LNRenderer_DrawScreenRect など) にそのまま使えます。
  *
  * @param[in] renderer         Renderer のハンドル
  * @param[in] graphicsContext  GraphicsContext のハンドル (バックバッファ取得用)
  * @param[in] desc             レンダーパスの設定
- * @param[in] camera           カメラのハンドル (LN_NULL_HANDLE でカメラなし - ポストエフェクト用)
+ * @param[in] cameraOrNull     カメラのハンドル (LN_NULL_HANDLE でカメラなし - ポストエフェクト用)
  */
 extern LUMINO_API LNResult LNRenderer_BeginRenderPass(
     LNHandle renderer,
     LNHandle graphicsContext,
     const LNRenderPassDesc* desc,
-    LNHandle camera
+    LNHandle cameraOrNull
 );
 
 /**

@@ -102,6 +102,36 @@ describe("Matrix4x4.multiply", () => {
         m.multiply(identity);
         expect(toArray(m)).toEqual(before);
     });
+
+    it("static multiply は a, b を変えずに result へ書き込む", () => {
+        const t = Matrix4x4.makeTranslation(1, 2, 3);
+        const s = Matrix4x4.makeScale(2, 2, 2);
+        const tBefore = toArray(t);
+        const sBefore = toArray(s);
+        const result = new Matrix4x4();
+        expect(Matrix4x4.multiply(t, s, result)).toBe(result);
+        expectMatrixCloseTo(result, [2, 0, 0, 0, 0, 2, 0, 0, 0, 0, 2, 0, 1, 2, 3, 1]);
+        expect(toArray(t)).toEqual(tBefore);
+        expect(toArray(s)).toEqual(sBefore);
+    });
+
+    it("static multiply は result が b と同じインスタンスでも正しい", () => {
+        // world = parent * local を local へ書き戻す使い方。途中で b を上書きすると結果が壊れる。
+        const t = Matrix4x4.makeTranslation(1, 2, 3);
+        const s = Matrix4x4.makeScale(2, 2, 2);
+        Matrix4x4.multiply(t, s, s);
+        expectMatrixCloseTo(s, [2, 0, 0, 0, 0, 2, 0, 0, 0, 0, 2, 0, 1, 2, 3, 1]);
+    });
+});
+
+describe("Matrix4x4.copyFrom", () => {
+    it("値をコピーし、元の行列とは別の配列を持つ", () => {
+        const src = Matrix4x4.makeTranslation(1, 2, 3);
+        const dst = new Matrix4x4().copyFrom(src);
+        expect(toArray(dst)).toEqual(toArray(src));
+        src.m[12] = 100;
+        expect(dst.m[12]).toBe(1);
+    });
 });
 
 describe("Matrix4x4.makeOrthographic", () => {

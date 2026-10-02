@@ -1445,7 +1445,7 @@ LNResult LNCamera_SetMatrices(
 
 LNResult LNRenderer_BeginRenderPass(
     LNHandle renderer, LNHandle graphicsContext,
-    const LNRenderPassDesc* desc, LNHandle camera) {
+    const LNRenderPassDesc* desc, LNHandle cameraOrNull) {
     if (!desc) return LN_ERROR_INVALID_ARGUMENT;
     // colorAttachments は固定長配列で、RHI 側も同じ上限のスタック領域に積むため、
     // 超過はここで弾く。
@@ -1532,13 +1532,16 @@ LNResult LNRenderer_BeginRenderPass(
             ? std::string(desc->shaderPassName)
             : std::string();
 
-    if (camera != LN_NULL_HANDLE) {
-        auto* camObj = resolveObject<CameraObject>(camera);
+    if (cameraOrNull != LN_NULL_HANDLE) {
+        auto* camObj = resolveObject<CameraObject>(cameraOrNull);
         if (!camObj) return LN_ERROR_INVALID_HANDLE;
         ren->beginRenderPass(rpDesc, camObj->camera, shaderPassName, toLnSortMode(desc->sortMode));
     } else {
         // カメラ無しパスは深度ソートできないため sortMode は無視 (Stable のまま)。
         ren->beginRenderPass(rpDesc, shaderPassName);
+        // C API の利用者は set=0 を自分でバインドできない。WebGPU はレイアウトの全セットの
+        // バインドを要求するため、単位行列のビューをバインドして NDC のまま描けるようにする。
+        ren->bindIdentityView();
     }
     return LN_OK;
 }

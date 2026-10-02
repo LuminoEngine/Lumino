@@ -40,19 +40,20 @@ export class Renderer extends LuminoObject {
      * レンダーパスを開始する。
      * `renderTarget` / `depthBuffer` が未設定の場合、バックバッファが使用されます。
      * カメラが有効な場合、カメラデータを View UBO に自動アップロードします。
+     * カメラを省略すると単位行列のビューが使われるため、`drawScreenRect` だけのパスに使えます。
      *
      * @param ctx    この Renderer を所有する GraphicsContext。
      * @param desc   レンダーパスディスクリプタ (カラーアタッチメント、デプス、クリア値など)。
-     * @param camera カメラ。
+     * @param camera カメラ。省略可。
      */
-    beginRenderPass(ctx: GraphicsContext, desc: RenderPassDesc, camera: Camera): void {
+    beginRenderPass(ctx: GraphicsContext, desc: RenderPassDesc, camera?: Camera): void {
         this._boundCtx = ctx;
         const ptr = this._serializeDesc(desc);
         try {
             Runtime.safeCall(() =>
                 (API.LNRenderer_BeginRenderPass as (
                     r: number, ctx: number, d: number, cam: number,
-                ) => number)(this._handle, ctx.handle, ptr, camera.handle));
+                ) => number)(this._handle, ctx.handle, ptr, camera?.handle ?? 0));
         } finally {
             if (this._lastShaderPassNamePtr) {
                 Runtime.module._free(this._lastShaderPassNamePtr);

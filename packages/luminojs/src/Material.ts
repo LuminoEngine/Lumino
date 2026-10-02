@@ -19,6 +19,13 @@ interface SamplerState {
     address: TextureAddressMode;
 }
 
+/**
+ * シェーダとそのパラメータ (テクスチャ、定数、ブレンドなどの描画状態) の組です。
+ *
+ * パラメータは GPU で描画されるときに読まれるため、同じフレームでは後勝ちになります。
+ * 描画ごとに値を変えたい場合は `createFromShader` で Material を分けてください。
+ * 詳細は docs/graphics-conventions.md の「マテリアルのパラメータが読まれるタイミング」を参照してください。
+ */
 export class Material extends LuminoObject implements ResidentResource {
     private _source: MaterialSource;
     private _mainTexture: Texture | undefined;
@@ -56,9 +63,6 @@ export class Material extends LuminoObject implements ResidentResource {
      * GPU シェーダモジュールとパイプラインレイアウトは `Shader` が保持しているものを
      * 共有するため、同一 `Shader` から Material を何個作っても GPU リソースは増えません。
      *
-     * Material のパラメータ (`setFloat4` 等) は同一フレーム内では後勝ちになるため、
-     * 「1 フレーム内で異なるパラメータで描く箇所の数」だけ Material が必要になります。
-     * そうした Material の量産にはこの経路を使ってください。
      * @param shader `Shader.createFromCompiledShader` で作成したシェーダ
      * @see Shader
      */
@@ -98,7 +102,7 @@ export class Material extends LuminoObject implements ResidentResource {
     }
 
     /**
-     * ベースカラー (RGBA, 0.0 - 1.0) を設定します。
+     * ベースカラー (RGBA, 0.0 - 1.0) を設定します。同じフレームでは後勝ちです。
      * @param r 赤成分 (0.0 - 1.0)
      * @param g 緑成分 (0.0 - 1.0)
      * @param b 青成分 (0.0 - 1.0)
@@ -109,14 +113,14 @@ export class Material extends LuminoObject implements ResidentResource {
         this._paramsDirty = true;
     }
 
-    /** 名前付き float4 シェーダパラメータを設定します。 */
+    /** 名前付き float4 シェーダパラメータを設定します。同じフレームでは後勝ちです。 */
     setFloat4(name: string, values: [number, number, number, number]): void {
         this._float4s.set(name, [values[0], values[1], values[2], values[3]]);
         this._paramsDirty = true;
     }
 
     /**
-     * 名前付きシェーダ uniform にテクスチャをバインドします。
+     * 名前付きシェーダ uniform にテクスチャをバインドします。同じフレームでは後勝ちです。
      *
      * ある名前に対して一度もバインドされなかった場合(あるいは下層の C++ Material に
      * その名前で `null` が渡された場合)、未バインドのリソースをサンプリングしないよう、

@@ -138,6 +138,13 @@ public:
     void beginOverlayRenderPass(rhi::TextureView* colorTarget);
 
     /**
+     * 現在のパスの set=0 に、単位行列のビューデータをバインドします。
+     * カメラ無しのパスで、頂点を NDC で指定するシェーダ (drawScreenRect など) を描くために使います。
+     * beginRenderPass の後に呼び出してください。
+     */
+    void bindIdentityView();
+
+    /**
      * 現在のパスに対して、指定したディスクリプタセットに BindGroup をバインドします。
      * 変更は遅延して反映されます。次の setPipeline 呼び出し
      * (drawMesh / drawScreenRect の内部) の後に GPU へフラッシュされます。

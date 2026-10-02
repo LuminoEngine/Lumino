@@ -3,8 +3,8 @@ import { Renderer } from "./Renderer";
 import { ResidencyManager } from "./ResidencyManager";
 import { API, Runtime } from "./Runtime";
 import { readGraphicsProfiler } from "./serialize";
-import { Result, SIZEOF_GRAPHICS_PROFILER, type GraphicsProfiler, type Handle } from "./types";
-import type { Texture } from "./Texture";
+import { Result, SIZEOF_GRAPHICS_PROFILER, type GraphicsProfiler, type Handle, type TextureFormat } from "./types";
+import { Texture } from "./Texture";
 
 /**
  * `GraphicsContext.beginFrame()` の戻り値。
@@ -17,6 +17,17 @@ export interface FrameInfo {
     depthBuffer: Handle;
 }
 
+/** 一時レンダーターゲットのプールの 1 枠。 */
+interface TemporaryRenderTargetSlot {
+    texture: Texture;
+    format: TextureFormat;
+    inUse: boolean;
+    lastUsedFrame: number;
+}
+
+/** 返却されたまま使われなかった一時レンダーターゲットを破棄するまでのフレーム数。 */
+const TEMPORARY_RENDER_TARGET_IDLE_FRAMES = 60;
+
 export class GraphicsContext extends LuminoObject {
     private _renderer: Renderer | null = null;
     private _windowHandle: Handle = 0;
@@ -25,6 +36,7 @@ export class GraphicsContext extends LuminoObject {
     private _residencyManager = new ResidencyManager();
     private _deviceLostPending = false;
     private _externalTextures: Set<Texture> = new Set();
+    private _temporaryRenderTargets: TemporaryRenderTargetSlot[] = [];
     /** getProfiler() 用の使い回しバッファ。毎フレーム呼ばれても malloc しないよう遅延確保する。 */
     private _profilerPtr = 0;
 
@@ -103,6 +115,7 @@ export class GraphicsContext extends LuminoObject {
 
         this._currentFrame++;
         this._residencyManager.gc(this._currentFrame);
+        this._collectTemporaryRenderTargets();
 
         // canvas の現在のサイズを取得する
         let width = 0;
@@ -177,6 +190,50 @@ export class GraphicsContext extends LuminoObject {
     }
 
     /**
+     * 一時的に使うレンダーターゲットを借ります。使い終わったら `releaseTemporaryRenderTarget` で返却してください。
+     *
+     * 返却済みで、サイズとフォーマットが同じものがあれば再利用し、無ければ新しく作ります。
+     * 返却されたまま一定フレーム使われなかったものは `beginFrame` で破棄されます。
+     * ポストエフェクトの中間バッファのように、フレームの中だけで使うレンダーターゲットに向いています。
+     *
+     * - 内容は保持されません。前に使った内容が残っていることがあるため、クリアしてから描いてください。
+     * - 返却したものは同じフレームの中で再び貸し出されることがあります。描画コマンドは積んだ順に
+     *   実行されるため、返却前に積んだ描画が後から積んだ描画で上書きされることはありません。
+     * - 借りたテクスチャを `dispose()` しないでください。所有権はこの GraphicsContext にあります。
+     */
+    acquireTemporaryRenderTarget(width: number, height: number, format: TextureFormat): Texture {
+        let slot = this._temporaryRenderTargets.find(
+            (s) => !s.inUse && s.texture.width === width && s.texture.height === height && s.format === format);
+        if (!slot) {
+            slot = { texture: Texture.createRenderTargetEx(this, width, height, format), format, inUse: false, lastUsedFrame: 0 };
+            this._temporaryRenderTargets.push(slot);
+        }
+        slot.inUse = true;
+        return slot.texture;
+    }
+
+    /**
+     * `acquireTemporaryRenderTarget` で借りたレンダーターゲットを返却します。
+     * @param texture 返却するテクスチャ
+     */
+    releaseTemporaryRenderTarget(texture: Texture): void {
+        const slot = this._temporaryRenderTargets.find((s) => s.texture === texture);
+        if (!slot || !slot.inUse) {
+            throw new Error("releaseTemporaryRenderTarget: the texture is not an acquired temporary render target.");
+        }
+        slot.inUse = false;
+        slot.lastUsedFrame = this._currentFrame;
+    }
+
+    private _collectTemporaryRenderTargets(): void {
+        this._temporaryRenderTargets = this._temporaryRenderTargets.filter((s) => {
+            if (s.inUse || this._currentFrame - s.lastUsedFrame <= TEMPORARY_RENDER_TARGET_IDLE_FRAMES) return true;
+            s.texture.dispose();
+            return false;
+        });
+    }
+
+    /**
      * フレームの描画を終了し、画面に表示します。
      * `beginFrame()` と対になるように呼び出してください。
      */
@@ -221,6 +278,8 @@ export class GraphicsContext extends LuminoObject {
 
     override dispose(): void {
         this._residencyManager.disposeAll();
+        for (const s of this._temporaryRenderTargets) s.texture.dispose();
+        this._temporaryRenderTargets = [];
         this._externalTextures.clear();
         this._renderer = null;
         if (this._profilerPtr !== 0) {

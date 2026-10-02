@@ -98,6 +98,11 @@ export enum BlendMode {
     Subtract = 3,
     /** 乗算合成 */
     Multiply = 4,
+    /**
+     * 乗算済みアルファのアルファブレンド (色も A も One, OneMinusSrcAlpha)。
+     * シェーダが RGB に A を掛けた色を出力する場合に使います。
+     */
+    PremultipliedAlpha = 5,
 }
 
 /** ポリゴンのカリングモード (C の LNCullMode に対応)。 */
