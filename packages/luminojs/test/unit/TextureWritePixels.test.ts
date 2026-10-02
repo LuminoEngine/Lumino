@@ -1,6 +1,7 @@
 import { beforeEach, describe, expect, it } from "vitest";
 import { GraphicsContext } from "../../src/GraphicsContext";
 import { Texture } from "../../src/Texture";
+import { Material } from "../../src/Material";
 import { API, Runtime } from "../../src/Runtime";
 import { Result } from "../../src/types";
 
@@ -50,6 +51,7 @@ describe("Texture.writePixels", () => {
     let createCount: number;
     let writeCalls: WriteCall[];
     let ctx: GraphicsContext;
+    let bindCalls: number[];
 
     beforeEach(() => {
         fake = createFakeModule();
@@ -72,6 +74,15 @@ describe("Texture.writePixels", () => {
             return Result.OK;
         }) as never;
         API.LNObject_Release = ((): number => Result.OK) as never;
+        API.LNMaterial_CreateFromBuiltinShader = ((_ctx: number, _shader: number, out: number): number => {
+            new DataView(fake.buffer).setUint32(out, 0x00070001, true);
+            return Result.OK;
+        }) as never;
+        bindCalls = [];
+        API.LNMaterial_SetMainTexture = ((_mat: number, tex: number): number => {
+            bindCalls.push(tex);
+            return Result.OK;
+        }) as never;
 
         ctx = new GraphicsContext();
         ctx._setHandle(0x00050001, false);
@@ -144,5 +155,29 @@ describe("Texture.writePixels", () => {
         expect(() => texture.writePixels(1, 0, 2, 1, fill(2, 1, 0))).toThrow(/out of texture bounds/);
         expect(() => texture.writePixels(0, 0, 0, 1, new Uint8Array(0))).toThrow(/out of texture bounds/);
         expect(() => texture.writePixels(0, 0, 2, 2, fill(1, 1, 0))).toThrow(/size mismatch/);
+    });
+
+    it("Material が参照するテクスチャの書き込みは、パラメータ変更が無くても Material の ensure でアップロードされる", () => {
+        const { texture } = createTexture(2, 2);
+        const material = Material.createUnlit();
+        material.setMainTexture(texture);
+        material.ensure(ctx);
+
+        texture.writePixels(0, 0, 1, 1, fill(1, 1, 7));
+        material.ensure(ctx);
+        expect(writeCalls).toHaveLength(1);
+        expect(bindCalls).toHaveLength(1); // ハンドルは変わらないので再バインドしない
+    });
+
+    it("Material が参照するテクスチャが evict されたら、作り直したハンドルをバインドし直す", () => {
+        const { texture } = createTexture(2, 2);
+        const material = Material.createUnlit();
+        material.setMainTexture(texture);
+        material.ensure(ctx);
+
+        texture.evict();
+        material.ensure(ctx);
+        expect(createCount).toBe(2);
+        expect(bindCalls).toEqual([0x00060001, 0x00060002]);
     });
 });

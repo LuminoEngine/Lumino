@@ -211,6 +211,11 @@ export class Material extends LuminoObject implements ResidentResource {
             this._source.shader.ensure(ctx);
         }
 
+        // 参照中のテクスチャも毎フレーム ensure する。writePixels の書き込みをアップロードし、evict されないようにするため。
+        // evict 後の再生成などでハンドルが変わったら、C++ Material へバインドし直す。
+        if (this._mainTexture) this._ensureTexture(ctx, this._mainTexture);
+        for (const tex of this._namedTextures.values()) this._ensureTexture(ctx, tex);
+
         if (this._handle === 0) {
             this._createGpuMaterial(ctx);
             // 生成直後は _paramsDirty の以前の状態にかかわらず、
@@ -265,6 +270,12 @@ export class Material extends LuminoObject implements ResidentResource {
                 ) => number)(shader.handle, out));
             this._setHandle(handle, true);
         }
+    }
+
+    private _ensureTexture(ctx: GraphicsContext, texture: Texture): void {
+        const handle = texture.handle;
+        texture.ensure(ctx);
+        if (texture.handle !== handle) this._paramsDirty = true;
     }
 
     private _applyParams(ctx: GraphicsContext): void {
