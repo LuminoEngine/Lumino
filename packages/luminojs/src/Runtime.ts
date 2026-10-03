@@ -343,7 +343,7 @@ export class Runtime {
         API.LNRenderer_DrawSprite      = cw("LNRenderer_DrawSprite",      "number", ["number", "number", "number", "number", "number", "number", "number", "number", "number", "number", "number", "number", "number", "number", "number", "number", "number", "number"]);
         API.LNRenderer_PushStencilMask = cw("LNRenderer_PushStencilMask", "number", ["number", "number", "number", "number"]);
         API.LNRenderer_PopStencilMask  = cw("LNRenderer_PopStencilMask",  "number", ["number"]);
-
+        API.LNRenderer_SetScissorRect  = cw("LNRenderer_SetScissorRect",  "number", ["number", "number", "number", "number", "number"]);
         // Texture
         API.LNTexture2D_CreateFromPixels    = cw("LNTexture2D_CreateFromPixels",    "number", ["number", "number", "number", "number", "number", "number", "number"]);
         API.LNTexture2D_WritePixels         = cw("LNTexture2D_WritePixels",         "number", ["number", "number", "number", "number", "number", "number", "number", "number"]);

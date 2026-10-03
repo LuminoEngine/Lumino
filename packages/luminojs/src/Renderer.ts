@@ -123,6 +123,39 @@ export class Renderer extends LuminoObject {
     }
 
     /**
+     * 以降の描画をシザー矩形の内側に制限する。
+     * 座標は現在のレンダーパスのカラーターゲットのピクセル座標で、左上原点
+     * (`Camera.setOrthographic2D` と同じ向き)。バックバッファでもレンダーターゲットでも同じ。
+     * ターゲットの範囲外は Lumino 側で切り詰めるため、負の座標やターゲットより大きい矩形もそのまま渡せる。
+     * 幅か高さが 0 以下なら、以降の描画は何も出力されなくなる。
+     *
+     * 設定はレンダーパスの中だけで有効で、`beginRenderPass()` でターゲット全体に戻る。
+     * 呼び出しより前に積んだ描画には効かない。そのため zIndex によるソートはこの呼び出しの前後で区切られる。
+     * ステンシルマスクの解除もシザーの内側だけに効くため、`pushStencilMask()` と `popStencilMask()` の間ではシザーを変えないこと。
+     *
+     * @param x      矩形の左端 (ピクセル、整数)。
+     * @param y      矩形の上端 (ピクセル、整数)。
+     * @param width  矩形の幅 (ピクセル、整数)。
+     * @param height 矩形の高さ (ピクセル、整数)。
+     */
+    setScissorRect(x: number, y: number, width: number, height: number): void {
+        if (!this._boundCtx) throw new Error("Renderer.setScissorRect called outside of a render pass");
+        Runtime.safeCall(() =>
+            (API.LNRenderer_SetScissorRect as (
+                r: number, x: number, y: number, w: number, h: number,
+            ) => number)(this._handle, x, y, width, height));
+    }
+
+    /**
+     * シザー矩形をカラーターゲット全体に戻す。
+     * C API に専用の関数は無く、ターゲットを覆う矩形を `setScissorRect()` に渡すのと同じ。
+     * `Infinity` は WASM の i32 への変換で 0 になり何も描かれなくなるため、int32 の最大値を使う。
+     */
+    resetScissorRect(): void {
+        this.setScissorRect(0, 0, 0x7fffffff, 0x7fffffff);
+    }
+
+    /**
      * スプライトの描画コマンドを内部バッファに蓄積する (バッチ処理)。
      * 蓄積されたコマンドは `endRenderPass()` 時に自動的にソート、バッチ化、描画されます。
      *

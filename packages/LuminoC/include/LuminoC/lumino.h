@@ -1196,6 +1196,31 @@ extern LUMINO_API LNResult LNRenderer_PushStencilMask(
  */
 extern LUMINO_API LNResult LNRenderer_PopStencilMask(LNHandle renderer);
 
+/**
+ * 以降の描画をシザー矩形の内側に制限します。
+ *
+ * 座標は現在のレンダーパスのカラーターゲットのピクセル座標で、左上原点です
+ * (バックバッファでもレンダーターゲットでも同じ)。
+ * ターゲットの範囲外の部分は Lumino が切り詰めるため、負の座標やターゲットより大きい矩形もそのまま渡せます。
+ * 幅か高さが 0 以下なら、以降の描画は何も出力されなくなります。
+ * 設定はレンダーパスの中だけで有効で、LNRenderer_BeginRenderPass でターゲット全体に戻ります。
+ * パスの途中でターゲット全体に戻すには、(0, 0, INT32_MAX, INT32_MAX) のようにターゲットを覆う矩形を渡してください。
+ *
+ * 呼び出しより前に積んだ描画には効きません (内部でそれまでの描画コマンドを先に描画します)。
+ * そのため zIndex によるソートは、この呼び出しの前後で区切られます。
+ * ステンシルマスクの解除もシザーの内側だけに効くため、PushStencilMask と PopStencilMask の間ではシザーを変えないでください。
+ *
+ * @param[in] renderer       Renderer のハンドル
+ * @param[in] x,y            矩形の左上 (ピクセル)
+ * @param[in] width,height   矩形のサイズ (ピクセル)
+ * @return レンダーパスの外で呼び出した場合は LN_ERROR_UNKNOWN。
+ */
+extern LUMINO_API LNResult LNRenderer_SetScissorRect(
+    LNHandle renderer,
+    int32_t x, int32_t y,
+    int32_t width, int32_t height
+);
+
 //------------------------------------------------------------------------------
 // LNDebug
 //------------------------------------------------------------------------------

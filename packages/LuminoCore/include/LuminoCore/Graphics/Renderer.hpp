@@ -238,6 +238,20 @@ public:
      */
     Result<void> popStencilMask();
 
+    // ---- シザー矩形 ----
+
+    /**
+     * 以降の描画をシザー矩形の内側に制限します。
+     * 座標は現在のレンダーパスのカラーターゲットのピクセル座標で、左上原点です。
+     * ターゲットの範囲外の部分は切り詰め、幅か高さが 0 以下なら何も描画されなくなります。
+     * 設定は beginRenderPass でターゲット全体に戻ります。
+     * パスの途中で戻すには (0, 0, INT32_MAX, INT32_MAX) のようにターゲットを覆う矩形を渡します。
+     *
+     * 呼び出し前に積んだ描画は、変更前のシザーで先に描画します (pushStencilMask と同じ)。
+     * そのため zIndex によるソートは、シザーを変更した位置で区切られます。
+     */
+    Result<void> setScissorRect(int32_t x, int32_t y, int32_t width, int32_t height);
+
 private:
     friend class GraphicsContext;
 

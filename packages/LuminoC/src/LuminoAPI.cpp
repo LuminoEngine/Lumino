@@ -1727,6 +1727,20 @@ LNResult LNRenderer_PopStencilMask(LNHandle renderer) {
     return LN_OK;
 }
 
+LNResult LNRenderer_SetScissorRect(
+    LNHandle renderer, int32_t x, int32_t y, int32_t width, int32_t height) {
+    LN_REQUIRE_RUNTIME();
+    if (isDeviceLostNow()) return LN_ERROR_DEVICE_LOST;
+
+    auto* ren = resolveObject<ln::Renderer>(renderer);
+    if (!ren) return LN_ERROR_INVALID_HANDLE;
+
+    auto result = ren->setScissorRect(x, y, width, height);
+    if (!result) return LN_ERROR_UNKNOWN;
+
+    return LN_OK;
+}
+
 //------------------------------------------------------------------------------
 // LNTexture2D_CreateRenderTarget
 //------------------------------------------------------------------------------

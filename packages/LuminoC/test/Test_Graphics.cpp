@@ -3,7 +3,9 @@
 #include "VisualTestHelper.hpp"
 #include <vector>
 #include <string>
+#include <initializer_list>
 #include <cstdio>
+#include <cstdlib>
 #include <cstring>
 
 #define TEST_W 320
@@ -1740,4 +1742,169 @@ TEST_F(Test_Graphics, DebugPrintDoesNotLeakPreviousFrameGlyphs) {
     // 2 フレーム目: 1 文字。x < 24 にしか出ないので、x >= 40 は背景のまま。
     countGlyphPixelsAfterPrint("M", &shortCount);
     EXPECT_EQ(0, shortCount) << "前フレームのグリフが残っています。";
+}
+
+//------------------------------------------------------------------------------
+// シザー矩形
+//------------------------------------------------------------------------------
+
+struct PixelExpect { int x; int y; int r; int g; int b; const char* name; };
+
+/** 各点の RGB が期待値と一致することを確かめる。描く色は 0 か 255 だけなので許容誤差は小さくてよい。 */
+static void expectPixels(const uint8_t* data, int32_t w, std::initializer_list<PixelExpect> expects) {
+    for (const auto& e : expects) {
+        const uint8_t* p = data + (static_cast<size_t>(e.y) * w + e.x) * 4;
+        EXPECT_TRUE(std::abs(p[0] - e.r) < 8 && std::abs(p[1] - e.g) < 8 && std::abs(p[2] - e.b) < 8)
+            << e.name << " (" << e.x << ", " << e.y << "): RGB=("
+            << (int)p[0] << "," << (int)p[1] << "," << (int)p[2] << "), 期待値=("
+            << e.r << "," << e.g << "," << e.b << ")";
+    }
+}
+
+/** 縦は画面全体、横は offsetX を中心に幅 sizeW の単色スプライトを積む (createOrthoCamera 用)。 */
+static void drawSolidSprite(LNHandle renderer, LNHandle material, float offsetX, float sizeW, float r, float g, float b) {
+    LNMatrix identity = translationMatrix(0.0f, 0.0f, 0.0f);
+    ASSERT_EQ(LN_OK, LNRenderer_DrawSprite(
+        renderer, material, 0, &identity,
+        offsetX, 0.0f,
+        sizeW, (float)TEST_H,
+        0.5f, 0.5f,
+        0.0f, 0.0f, 1.0f, 1.0f,
+        r, g, b, 1.0f));
+}
+
+// シザー矩形の内側だけが描かれ、座標が左上原点であることを確認する。
+// あわせて、SetScissorRect より前に積んだ描画が切られないことと、ターゲットを覆う矩形で全面に戻せることも見る。
+TEST_F(Test_Graphics, ScissorRect) {
+    LNHandle material = LN_NULL_HANDLE;
+    ASSERT_EQ(LN_OK, LNMaterial_CreateFromBuiltinShader(graphicsContext, LN_BUILTIN_SHADER_UNLIT, &material));
+    // 同じ深度に重ねて描くため、後の描画が深度テストで弾かれないようにする。
+    ASSERT_EQ(LN_OK, LNMaterial_SetDepthTestEnabled(material, LN_FALSE));
+
+    LNHandle camera = LN_NULL_HANDLE;
+    createOrthoCamera(&camera);
+
+    LNHandle renderer, colorBuffer, depthBuffer;
+    ASSERT_EQ(LN_OK, LNGraphicsContext_BeginFrame(
+        graphicsContext, TEST_W, TEST_H, &renderer, &colorBuffer, &depthBuffer));
+    EXPECT_EQ(LN_ERROR_UNKNOWN, LNRenderer_SetScissorRect(renderer, 0, 0, 1, 1)) << "レンダーパスの外";
+
+    LNRenderPassDesc rpDesc;
+    LNRenderPassDesc_Init(&rpDesc);
+    rpDesc.colorAttachments[0].clearColor[3] = 1.0f;
+    ASSERT_EQ(LN_OK, LNRenderer_BeginRenderPass(renderer, graphicsContext, &rpDesc, camera));
+    drawSolidSprite(renderer, material, 0.0f, (float)TEST_W, 1.0f, 0.0f, 0.0f);
+    // 上下と左右で値を変え、向きの誤りを検出できるようにする。
+    ASSERT_EQ(LN_OK, LNRenderer_SetScissorRect(renderer, 10, 20, 30, 40));
+    drawSolidSprite(renderer, material, 0.0f, (float)TEST_W, 0.0f, 1.0f, 0.0f);
+    ASSERT_EQ(LN_OK, LNRenderer_SetScissorRect(renderer, 0, 0, INT32_MAX, INT32_MAX));
+    drawSolidSprite(renderer, material, TEST_W / 4.0f, TEST_W / 2.0f, 0.0f, 0.0f, 1.0f);
+    ASSERT_EQ(LN_OK, LNRenderer_EndRenderPass(renderer));
+
+    const uint8_t* data = nullptr;
+    int32_t w = 0, h = 0;
+    endFrameAndCapture(&data, &w, &h);
+    ASSERT_NE(nullptr, data);
+    expectPixels(data, w, {
+        { 10, 20, 0, 255, 0, "シザーの左上端" },
+        { 39, 59, 0, 255, 0, "シザーの右下端" },
+        {  9, 30, 255, 0, 0, "シザーの左の外 (SetScissorRect より前の描画)" },
+        { 40, 30, 255, 0, 0, "シザーの右の外" },
+        { 20, 19, 255, 0, 0, "シザーの上の外" },
+        { 20, 60, 255, 0, 0, "シザーの下の外" },
+        { TEST_W - 3, 2, 0, 0, 255, "全面に戻した後の描画 (右上)" },
+        { TEST_W - 3, TEST_H - 3, 0, 0, 255, "全面に戻した後の描画 (右下)" },
+    });
+
+    LNObject_Release(camera);
+    LNObject_Release(material);
+}
+
+// レンダーターゲットでもシザーが左上原点で効くことと、範囲外、負の座標、幅 0 の矩形が
+// エラーにならずターゲットの範囲に切り詰められることを確認する。
+// WebGPU は範囲外のシザーをバリデーションエラーにするため、webgpu バックエンドでは切り詰め漏れも検出できる。
+TEST_F(Test_Graphics, ScissorRectOnRenderTargetIsClamped) {
+    LNHandle material = LN_NULL_HANDLE;
+    ASSERT_EQ(LN_OK, LNMaterial_CreateFromBuiltinShader(graphicsContext, LN_BUILTIN_SHADER_UNLIT, &material));
+    ASSERT_EQ(LN_OK, LNMaterial_SetDepthTestEnabled(material, LN_FALSE));
+
+    LNHandle camera = LN_NULL_HANDLE;
+    createOrthoCamera(&camera);
+
+    // デプスはバックバッファのものが使われるため、同じサイズにする。
+    LNHandle renderTarget = LN_NULL_HANDLE;
+    ASSERT_EQ(LN_OK, LNTexture2D_CreateRenderTargetEx(
+        graphicsContext, TEST_W, TEST_H, LN_TEXTURE_FORMAT_RGBA8_UNORM, &renderTarget));
+
+    // レンダーターゲットをバックバッファへ 1:1 で写すためのマテリアル。
+    LNHandle blitMaterial = LN_NULL_HANDLE;
+    ASSERT_EQ(LN_OK, LNMaterial_CreateFromBuiltinShader(graphicsContext, LN_BUILTIN_SHADER_UNLIT, &blitMaterial));
+    ASSERT_EQ(LN_OK, LNMaterial_SetMainTexture(blitMaterial, renderTarget));
+    ASSERT_EQ(LN_OK, LNMaterial_SetSamplerState(blitMaterial,
+        LN_TEXTURE_FILTER_MODE_NEAREST, LN_TEXTURE_ADDRESS_MODE_CLAMP_TO_EDGE));
+
+    LNHandle renderer, colorBuffer, depthBuffer;
+    ASSERT_EQ(LN_OK, LNGraphicsContext_BeginFrame(
+        graphicsContext, TEST_W, TEST_H, &renderer, &colorBuffer, &depthBuffer));
+
+    LNRenderPassDesc rtDesc;
+    LNRenderPassDesc_Init(&rtDesc);
+    rtDesc.colorAttachmentCount = 1;
+    rtDesc.colorAttachments[0].renderTarget = renderTarget;
+    rtDesc.colorAttachments[0].clearColor[3] = 1.0f;
+    ASSERT_EQ(LN_OK, LNRenderer_BeginRenderPass(renderer, graphicsContext, &rtDesc, camera));
+    ASSERT_EQ(LN_OK, LNRenderer_SetScissorRect(renderer, 10, 20, 30, 40));
+    drawSolidSprite(renderer, material, 0.0f, (float)TEST_W, 0.0f, 1.0f, 0.0f);
+    // 右下にはみ出す矩形 -> (W - 10, H - 20, 10, 20)
+    ASSERT_EQ(LN_OK, LNRenderer_SetScissorRect(renderer, TEST_W - 10, TEST_H - 20, 100, 100));
+    drawSolidSprite(renderer, material, 0.0f, (float)TEST_W, 0.0f, 0.0f, 1.0f);
+    // 左上にはみ出す矩形 -> (0, 0, 5, 5)
+    ASSERT_EQ(LN_OK, LNRenderer_SetScissorRect(renderer, -10, -10, 15, 15));
+    drawSolidSprite(renderer, material, 0.0f, (float)TEST_W, 1.0f, 0.0f, 0.0f);
+    // 以下はどれも何も描かれない矩形。
+    const int32_t emptyRects[][4] = {
+        { 100, 100, 0, 50 },                 // 幅 0
+        { 100, 100, 50, -10 },               // 高さが負
+        { TEST_W + 10, TEST_H + 10, 10, 10 }, // 右下の完全な外
+        { -100, -100, 50, 50 },              // 左上の完全な外
+    };
+    for (const auto& r : emptyRects) {
+        ASSERT_EQ(LN_OK, LNRenderer_SetScissorRect(renderer, r[0], r[1], r[2], r[3]));
+        drawSolidSprite(renderer, material, 0.0f, (float)TEST_W, 1.0f, 1.0f, 1.0f);
+    }
+    ASSERT_EQ(LN_OK, LNRenderer_EndRenderPass(renderer));
+
+    LNRenderPassDesc rpDesc;
+    LNRenderPassDesc_Init(&rpDesc);
+    ASSERT_EQ(LN_OK, LNRenderer_BeginRenderPass(renderer, graphicsContext, &rpDesc, LN_NULL_HANDLE));
+    ASSERT_EQ(LN_OK, LNRenderer_DrawScreenRect(renderer, blitMaterial));
+    ASSERT_EQ(LN_OK, LNRenderer_EndRenderPass(renderer));
+
+    const uint8_t* data = nullptr;
+    int32_t w = 0, h = 0;
+    endFrameAndCapture(&data, &w, &h);
+    ASSERT_NE(nullptr, data);
+    expectPixels(data, w, {
+        { 10, 20, 0, 255, 0, "シザーの左上端" },
+        { 39, 59, 0, 255, 0, "シザーの右下端" },
+        {  9, 30, 0, 0, 0, "シザーの左の外" },
+        { 40, 30, 0, 0, 0, "シザーの右の外" },
+        { 20, 19, 0, 0, 0, "シザーの上の外" },
+        { 20, 60, 0, 0, 0, "シザーの下の外" },
+        { TEST_W - 10, TEST_H - 20, 0, 0, 255, "右下にはみ出す矩形の左上端" },
+        { TEST_W - 1,  TEST_H - 1,  0, 0, 255, "右下にはみ出す矩形の右下端" },
+        { TEST_W - 11, TEST_H - 1,  0, 0, 0,   "右下にはみ出す矩形の左の外" },
+        { TEST_W - 1,  TEST_H - 21, 0, 0, 0,   "右下にはみ出す矩形の上の外" },
+        { 0, 0, 255, 0, 0, "左上にはみ出す矩形の左上端" },
+        { 4, 4, 255, 0, 0, "左上にはみ出す矩形の右下端" },
+        { 5, 2, 0, 0, 0,   "左上にはみ出す矩形の右の外" },
+        { 2, 5, 0, 0, 0,   "左上にはみ出す矩形の下の外" },
+        { TEST_W / 2, TEST_H / 2, 0, 0, 0, "何も描かれない矩形" },
+        { 120, 120, 0, 0, 0, "何も描かれない矩形" },
+    });
+
+    LNObject_Release(blitMaterial);
+    LNObject_Release(renderTarget);
+    LNObject_Release(camera);
+    LNObject_Release(material);
 }

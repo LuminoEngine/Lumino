@@ -4,6 +4,8 @@
 #include <LuminoCore/Graphics/GraphicsModule.hpp>
 #include <LuminoCore/Graphics/PipelineCache.hpp>
 #include <LuminoCore/Graphics/ShaderPass.hpp>
+#include <algorithm>
+#include <cstdint>
 #include <cstring>
 
 namespace ln {
@@ -336,6 +338,7 @@ void Renderer::beginOverlayRenderPass(rhi::TextureView* colorTarget) {
     rpDesc.depthStencilAttachment = nullptr;
 
     m_currentPass = m_currentCmd->beginRenderPass(rpDesc);
+    m_currentColorTarget = colorTarget;
 
     for (uint32_t i = 0; i < kMaxBindGroupSets; ++i) {
         m_passBindGroups[i]                   = nullptr;
@@ -694,6 +697,31 @@ Result<void> Renderer::popStencilMask() {
     if (!result) return result;
 
     m_stencilRef--;
+    return {};
+}
+
+// ------ シザー矩形 --------------------------------------------------------------------------------------------
+
+Result<void> Renderer::setScissorRect(int32_t x, int32_t y, int32_t width, int32_t height) {
+    if (!m_currentColorTarget) {
+        return LN_MAKE_ERROR("setScissorRect must be called inside a render pass with a color target.");
+    }
+
+    // シザーを変更する前に、保留中のバッチコマンドを変更前のシザーで描画する。
+    auto flushResult = flushBatch();
+    if (!flushResult) return flushResult;
+
+    // WebGPU はターゲットの範囲外のシザーをバリデーションエラーにするため、ここで切り詰める。
+    // x + width が int32_t を溢れないよう 64bit で計算する。
+    const int64_t tw = m_currentColorTarget->width();
+    const int64_t th = m_currentColorTarget->height();
+    const int64_t x0 = std::clamp<int64_t>(x, 0, tw);
+    const int64_t y0 = std::clamp<int64_t>(y, 0, th);
+    const int64_t x1 = std::clamp<int64_t>(int64_t{x} + width, x0, tw);
+    const int64_t y1 = std::clamp<int64_t>(int64_t{y} + height, y0, th);
+    m_currentPass->setScissorRect(
+        static_cast<uint32_t>(x0), static_cast<uint32_t>(y0),
+        static_cast<uint32_t>(x1 - x0), static_cast<uint32_t>(y1 - y0));
     return {};
 }
 
