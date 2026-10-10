@@ -12,6 +12,10 @@ import lumino;
 //------------------------------------------------------------------------------
 struct MaterialParams {
     float4 color;
+    // アルファテストの閾値。最終的なアルファがこれ未満のピクセルを捨てる。既定 0 で無効。
+    // ponytail: discard を含むシェーダは cutoff = 0 でも GPU によっては early-Z が効かない。
+    // モバイルで不透明な Unlit が重くなったら、アルファテスト付きを別のシェーダに分ける。
+    float alphaCutoff;
 };
 
 uniform ConstantBuffer<MaterialParams> u_params;
@@ -37,7 +41,9 @@ VSOutput vsMain(VSInput input) {
 [shader("fragment")]
 float4 fsMain(VSOutput input) : SV_TARGET {
     float4 texColor = u_baseTexture.Sample(u_baseSampler, input.uv);
-    return texColor * u_params.color * input.color;
+    float4 color = texColor * u_params.color * input.color;
+    if (color.a < u_params.alphaCutoff) discard;
+    return color;
 }
 
 //------------------------------------------------------------------------------
@@ -69,6 +75,7 @@ VSOutputGB vsGBufferMain(VSInput input) {
 LNGBufferOutput fsGBufferMain(VSOutputGB input) {
     float4 texColor = u_baseTexture.Sample(u_baseSampler, input.uv);
     float4 albedo = texColor * u_params.color * input.color;
+    if (albedo.a < u_params.alphaCutoff) discard;
     float viewDepth = -input.viewPos.z;
     // Unlit マテリアルは金属度や粗さを持たないので 0 を出力。AO は 1.0 (遮蔽なし)。
     return lnPackGBuffer(albedo.rgb, input.worldNormal, viewDepth, 0.0, 0.0, 1.0);

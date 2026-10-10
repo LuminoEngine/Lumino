@@ -412,6 +412,9 @@ VoidResult ShaderCompiler2::buildParameterBlocks(int targetIndex) {
 
         bool hasGlobalCB = false;
         int globalCBSize = 0;
+        // 最初の明示的な ConstantBuffer のフィールド。Material の setFloat4 などで名前で引けるようにする。
+        std::vector<GlobalMemberInfo> explicitCBMembers;
+        bool hasExplicitCB = false;
 
         for (int i = 0; i < parameterCount; i++) {
             slang::VariableLayoutReflection* parameter = programLayout->getParameterByIndex(i);
@@ -449,6 +452,21 @@ VoidResult ShaderCompiler2::buildParameterBlocks(int targetIndex) {
                 elem.constantBufferSize = static_cast<int16_t>(
                     cbElementLayout->getSize(SLANG_PARAMETER_CATEGORY_UNIFORM));
                 globalLayout.elements.push_back(std::move(elem));
+
+                if (!hasExplicitCB) {
+                    hasExplicitCB = true;
+                    int fieldCount = cbElementLayout->getFieldCount();
+                    for (int f = 0; f < fieldCount; f++) {
+                        slang::VariableLayoutReflection* field = cbElementLayout->getFieldByIndex(f);
+                        GlobalMemberInfo memberInfo;
+                        memberInfo.name = field->getName();
+                        memberInfo.offset = static_cast<int16_t>(
+                            field->getOffset(slang::ParameterCategory::Uniform));
+                        memberInfo.size = static_cast<int16_t>(
+                            field->getTypeLayout()->getSize(SLANG_PARAMETER_CATEGORY_UNIFORM));
+                        explicitCBMembers.push_back(std::move(memberInfo));
+                    }
+                }
 
                 // バインディングスペースからセットインデックスを決める ($Global スペースなら 0 のはず)
                 if (globalLayout.setIndex < 0) {
@@ -505,6 +523,13 @@ VoidResult ShaderCompiler2::buildParameterBlocks(int targetIndex) {
                     globalLayout.setIndex = 0; // $Global の既定は space 0
                 }
             }
+        }
+
+        // Material のパラメータバッファは最初の CB 1 本だけで、全 UBO バインディングに同じものを結ぶ。
+        // 素の uniform があればそれ ($Global) が最初の CB になるので、明示的な CB のフィールドは登録しない
+        // (オフセットが別のバッファ基準になり、間違った位置に書いてしまうため)。
+        if (!hasGlobalCB) {
+            globalLayout.members = std::move(explicitCBMembers);
         }
 
         // 裸のリソースが 1 つでも見つかった場合のみ追加する

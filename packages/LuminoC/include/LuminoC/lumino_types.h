@@ -149,7 +149,11 @@ typedef uint32_t LNHandle;
 
 /** ビルトインシェーダの種類 */
 typedef enum LNBuiltinShader {
-    /** Unlit: テクスチャ * カラー、ライティングなし */
+    /**
+     * Unlit: テクスチャ * カラー、ライティングなし。
+     * float パラメータ "alphaCutoff" を設定すると、アルファがそれ未満のピクセルを捨てます (既定 0 で無効)。
+     * アルファ付きテクスチャを BlendMode Normal で描いて深度を書くときに使います。
+     */
     LN_BUILTIN_SHADER_UNLIT       = 0,
     /** BasicLit: Blinn-Phong、1方向ライト */
     LN_BUILTIN_SHADER_BASIC_LIT   = 1,

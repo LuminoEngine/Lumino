@@ -738,6 +738,21 @@ extern LUMINO_API LNResult LNMaterial_SetFloat4(
 );
 
 /**
+ * シェーダの float パラメータを名前で設定します。
+ *
+ * 組み込みの Unlit では "alphaCutoff" (アルファテストの閾値) に使います。
+ *
+ * @param[in] material マテリアルのハンドル
+ * @param[in] name     シェーダ内の uniform 変数名 (UTF-8)
+ * @param[in] value    設定する値
+ */
+extern LUMINO_API LNResult LNMaterial_SetFloat(
+    LNHandle material,
+    const char* name,
+    float value
+);
+
+/**
  * シェーダバインディング名でテクスチャを設定します。
  * シェーダの uniform Texture2D 変数名（例: "u_sceneColor"）を指定します。
  *

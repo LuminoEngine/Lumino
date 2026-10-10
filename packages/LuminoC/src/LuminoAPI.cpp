@@ -1063,6 +1063,17 @@ extern LUMINO_API LNResult LNMaterial_SetFloat4(LNHandle material, const char* n
     return LN_OK;
 }
 
+extern LUMINO_API LNResult LNMaterial_SetFloat(LNHandle material, const char* name, float value) {
+    auto* mat = resolveObject<ln::Material>(material);
+    if (!mat) return LN_ERROR_INVALID_HANDLE;
+    if (isStaleResource(mat)) {
+        warnStaleResourceSkipped("material");
+        return LN_OK;
+    }
+    mat->setFloat(name, value);
+    return LN_OK;
+}
+
 // C-API の列挙値は rhi の列挙値をそのまま公開しているため、両者がずれないよう固定する。
 static_assert(static_cast<int>(ln::rhi::FilterMode::Nearest) == LN_TEXTURE_FILTER_MODE_NEAREST, "");
 static_assert(static_cast<int>(ln::rhi::FilterMode::Linear) == LN_TEXTURE_FILTER_MODE_LINEAR, "");

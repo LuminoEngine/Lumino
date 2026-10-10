@@ -33,7 +33,7 @@ struct ParameterBlockLayout2 {
     int16_t setIndex;                    // ディスクリプタセットのインデックス
     bool hasImplicitConstantBuffer;      // 構造体が単純なデータフィールドのみを含む場合に true
     std::vector<ParameterBlockElement2> elements;
-    std::vector<GlobalMemberInfo> members; // $Global CB のメンバ情報 (実際の ParameterBlock では空)
+    std::vector<GlobalMemberInfo> members; // $Material の CB のメンバ情報。素の uniform か、それが無ければ最初の ConstantBuffer のフィールド (実際の ParameterBlock では空)
 };
 
 // ターゲットごとのバインディング情報

@@ -32,6 +32,7 @@ export class Material extends LuminoObject implements ResidentResource {
     private _namedTextures: Map<string, Texture> = new Map();
     private _color: [number, number, number, number] | null = null;
     private _float4s: Map<string, [number, number, number, number]> = new Map();
+    private _floats: Map<string, number> = new Map();
     private _samplerState: SamplerState | null = null;
     private _namedSamplerStates: Map<string, SamplerState> = new Map();
     private _cullMode: CullMode | null = null;
@@ -50,7 +51,10 @@ export class Material extends LuminoObject implements ResidentResource {
     }
 
     /** 組み込みの Unlit シェーダーを用いてマテリアルを作成します。(テクスチャ * カラー、ライティングなし)
-     * GPU 側リソースは最初の描画時に遅延生成されます。 */
+     * GPU 側リソースは最初の描画時に遅延生成されます。
+     *
+     * `setFloat("alphaCutoff", 0.5)` のように閾値を設定すると、アルファがそれ未満のピクセルを捨てます (既定 0 で無効)。
+     * アルファ付きテクスチャを `BlendMode.Normal` で描いて深度を書けるので、描画順に依存せず前後関係が出ます。 */
     static createUnlit(): Material {
         const mat = new Material({ kind: "unlit" });
         mat._dirty = true;
@@ -116,6 +120,12 @@ export class Material extends LuminoObject implements ResidentResource {
     /** 名前付き float4 シェーダパラメータを設定します。同じフレームでは後勝ちです。 */
     setFloat4(name: string, values: [number, number, number, number]): void {
         this._float4s.set(name, [values[0], values[1], values[2], values[3]]);
+        this._paramsDirty = true;
+    }
+
+    /** 名前付き float シェーダパラメータを設定します。同じフレームでは後勝ちです。 */
+    setFloat(name: string, value: number): void {
+        this._floats.set(name, value);
         this._paramsDirty = true;
     }
 
@@ -254,6 +264,7 @@ export class Material extends LuminoObject implements ResidentResource {
         this._namedTextures.clear();
         this._namedSamplerStates.clear();
         this._float4s.clear();
+        this._floats.clear();
     }
 
     //--------------------------------------------------------------------------
@@ -327,6 +338,13 @@ export class Material extends LuminoObject implements ResidentResource {
             } finally {
                 m._free(ptr);
             }
+        }
+
+        for (const [name, v] of this._floats) {
+            Runtime.safeCall(() =>
+                (API.LNMaterial_SetFloat as (
+                    mat: number, name: string, value: number,
+                ) => number)(this._handle, name, v));
         }
 
         if (this._samplerState !== null) {

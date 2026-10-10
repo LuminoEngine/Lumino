@@ -177,6 +177,9 @@ Material API（`setFloat4` 等）に渡す 名前 は、シェーダのリフレ
 - 単独 `uniform` の場合 → 変数名（例: `u_myColor`）
 - テクスチャ / サンプラー → 変数名（例: `u_baseTexture`, `u_gbufferA`）
 
+Material が持つ定数バッファは 1 本だけです。素の `uniform` と `ConstantBuffer<T>` を混ぜたり、
+`ConstantBuffer<T>` を 2 つ以上宣言したりすると、名前で引けるのは素の `uniform`（無ければ最初の `ConstantBuffer<T>` のフィールド）だけです。
+
 > 慣例: 拡散（メイン）テクスチャのスロットは `u_baseTexture` / `u_baseSampler` という名前を使います。
 > Material の「メインテクスチャ」設定（後述）はこのスロットに対応します。
 
@@ -274,7 +277,7 @@ Material API（`setFloat4` 等）に渡す 名前 は、シェーダのリフレ
 | 作成（コンパイル済みから直接） | `MaterialFactory::createFromCompiledShader(ctx, data, size)` | `LNMaterial_CreateFromCompiledShader` | `Material.createFromCompiledShader(data)` |
 | ベースカラー | `setColor(Color)` | `LNMaterial_SetColor` | `setColor(r,g,b,a)` |
 | 名前付き float4 | `setFloat4(name, float*)` | `LNMaterial_SetFloat4` | `setFloat4(name, [x,y,z,w])` |
-| 名前付き float | `setFloat(name, value)` | — | — |
+| 名前付き float | `setFloat(name, value)` | `LNMaterial_SetFloat` | `setFloat(name, value)` |
 | 鏡面反射（BasicLit） | `setSpecular(color, shininess)` | — | — |
 | メインテクスチャ | `setTexture(tex)` | `LNMaterial_SetMainTexture` | `setMainTexture(tex)` |
 | 名前付きテクスチャ | `setNamedTexture(name, tex)` | `LNMaterial_SetNamedTexture` | `setNamedTexture(name, tex)` |
@@ -287,8 +290,11 @@ Material API（`setFloat4` 等）に渡す 名前 は、シェーダのリフレ
 
 > `setColor` はマテリアルバッファ先頭の `float4`（慣例的に `u_params.color`）に書き込みます。
 > `setSpecular` はその次の `float4`（`u_params.specular`）に書き込みます。これら以外の
-> パラメータは `setFloat4(name, ...)` で名前指定して設定します。
-> `setFloat` / `setSpecular` は現状 C++ コアのみの提供です。
+> パラメータは `setFloat4(name, ...)` / `setFloat(name, ...)` で名前指定して設定します。
+> `setSpecular` は現状 C++ コアのみの提供です。
+>
+> 組み込み Unlit は `setFloat("alphaCutoff", 0.5)` でアルファテストを有効にできます (既定 0 で無効)。
+> アルファがこの値未満のピクセルを捨てるので、アルファ付きテクスチャを `Normal` で描いて深度を書けます。
 
 ### 1 つのシェーダから複数の Material を作る
 
@@ -455,6 +461,7 @@ matSSR.setNamedTexture("u_gbufferC", gbufferC);
 const mat = Material.createUnlit();
 mat.setColor(0.4, 0.4, 0.4, 1.0);
 mat.setCullMode(CullMode.None); // 両面描画
+mat.setFloat("alphaCutoff", 0.5); // 葉などの透明部分を抜いて深度を書く
 ```
 
 参照: [ssr/main.ts](../packages/luminojs-examples/src/ssr/main.ts)

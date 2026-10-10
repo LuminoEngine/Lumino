@@ -1908,3 +1908,67 @@ TEST_F(Test_Graphics, ScissorRectOnRenderTargetIsClamped) {
     LNObject_Release(camera);
     LNObject_Release(material);
 }
+
+//------------------------------------------------------------------------------
+// アルファテスト
+//------------------------------------------------------------------------------
+
+// Unlit の alphaCutoff で透明部分が捨てられ、不透明部分だけが深度を書くことを確認する。
+// 左半分が透明、右半分が不透明なテクスチャを Normal で手前に先に描き、後から奥に緑を描く。
+// 左は手前が捨てられて緑が見え、右は手前の深度で緑が弾かれて赤が残る。
+// アルファテストが効かないと、左も透明な赤が深度を書いて緑を弾くため赤になる。
+TEST_F(Test_Graphics, UnlitAlphaCutoff) {
+    // 2x1 RGBA8: 左は透明な赤、右は不透明な赤。
+    const uint8_t pixels[2 * 4] = { 255, 0, 0, 0,   255, 0, 0, 255 };
+    LNHandle texture = LN_NULL_HANDLE;
+    ASSERT_EQ(LN_OK, LNTexture2D_CreateFromPixels(
+        graphicsContext, 2, 1, LN_TEXTURE_FORMAT_RGBA8_UNORM, pixels, sizeof(pixels), &texture));
+
+    LNHandle nearMat = LN_NULL_HANDLE;
+    ASSERT_EQ(LN_OK, LNMaterial_CreateFromBuiltinShader(graphicsContext, LN_BUILTIN_SHADER_UNLIT, &nearMat));
+    ASSERT_EQ(LN_OK, LNMaterial_SetMainTexture(nearMat, texture));
+    ASSERT_EQ(LN_OK, LNMaterial_SetSamplerState(nearMat,
+        LN_TEXTURE_FILTER_MODE_NEAREST, LN_TEXTURE_ADDRESS_MODE_CLAMP_TO_EDGE));
+    ASSERT_EQ(LN_OK, LNMaterial_SetFloat(nearMat, "alphaCutoff", 0.5f));
+
+    LNHandle farMat = LN_NULL_HANDLE;
+    ASSERT_EQ(LN_OK, LNMaterial_CreateFromBuiltinShader(graphicsContext, LN_BUILTIN_SHADER_UNLIT, &farMat));
+    ASSERT_EQ(LN_OK, LNMaterial_SetColor(farMat, 0.0f, 1.0f, 0.0f, 1.0f));
+
+    LNHandle camera = LN_NULL_HANDLE;
+    createOrthoCamera(&camera);
+
+    LNHandle renderer, colorBuffer, depthBuffer;
+    ASSERT_EQ(LN_OK, LNGraphicsContext_BeginFrame(
+        graphicsContext, TEST_W, TEST_H, &renderer, &colorBuffer, &depthBuffer));
+    LNRenderPassDesc rpDesc;
+    LNRenderPassDesc_Init(&rpDesc);
+    rpDesc.colorAttachments[0].clearColor[3] = 1.0f;
+    ASSERT_EQ(LN_OK, LNRenderer_BeginRenderPass(renderer, graphicsContext, &rpDesc, camera));
+    // カメラは +Z 側から原点を見ているので、z が大きいほど手前。既定の Stable で積んだ順に描かれる。
+    const LNMatrix nearTransform = translationMatrix(0.0f, 0.0f, 0.5f);
+    const LNMatrix farTransform = translationMatrix(0.0f, 0.0f, -0.5f);
+    ASSERT_EQ(LN_OK, LNRenderer_DrawSprite(
+        renderer, nearMat, 0, &nearTransform,
+        0.0f, 0.0f, (float)TEST_W, (float)TEST_H, 0.5f, 0.5f,
+        0.0f, 0.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f));
+    ASSERT_EQ(LN_OK, LNRenderer_DrawSprite(
+        renderer, farMat, 0, &farTransform,
+        0.0f, 0.0f, (float)TEST_W, (float)TEST_H, 0.5f, 0.5f,
+        0.0f, 0.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f));
+    ASSERT_EQ(LN_OK, LNRenderer_EndRenderPass(renderer));
+
+    const uint8_t* data = nullptr;
+    int32_t w = 0, h = 0;
+    endFrameAndCapture(&data, &w, &h);
+    ASSERT_NE(nullptr, data);
+    expectPixels(data, w, {
+        { TEST_W / 4,     TEST_H / 2, 0, 255, 0, "透明部分 (捨てられて奥が見える)" },
+        { TEST_W * 3 / 4, TEST_H / 2, 255, 0, 0, "不透明部分 (深度で奥を隠す)" },
+    });
+
+    LNObject_Release(camera);
+    LNObject_Release(farMat);
+    LNObject_Release(nearMat);
+    LNObject_Release(texture);
+}
