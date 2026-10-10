@@ -19,8 +19,7 @@ Material::Material()
     , m_baseTexture(nullptr)
     , m_cullMode(rhi::CullMode::Back)
     , m_blendMode(BlendMode::Normal)
-    , m_depthTestEnabled(true)
-    , m_depthWriteEnabled(true) {
+    , m_depthTestEnabled(true) {
 }
 
 int Material::findMemberOffset(const std::string& name) const {

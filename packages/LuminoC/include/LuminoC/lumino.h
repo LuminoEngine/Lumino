@@ -826,6 +826,7 @@ extern LUMINO_API LNResult LNMaterial_SetDepthTestEnabled(
 
 /**
  * マテリアルのデプス書き込み有効/無効を設定します。
+ * 呼ばない場合は、ブレンドモードが LN_BLEND_MODE_NORMAL のときだけ書き込みます。
  *
  * @param[in] material マテリアルのハンドル
  * @param[in] enabled  LN_TRUE: 有効, LN_FALSE: 無効

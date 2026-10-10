@@ -488,15 +488,8 @@ Result<void> Renderer::drawSubmesh(
     key.cullMode            = mat->cullMode();
     key.blendState          = resolveBlendState(mat->blendMode());
     key.depthTestEnabled    = mat->depthTestEnabled();
+    // ブレンド時の既定は深度を書かない。明示した場合はそれが勝つ (Material::depthWriteEnabled() を参照)。
     key.depthWriteEnabled   = mat->depthWriteEnabled();
-    // 半透明ブレンドのマテリアルは深度を書き込まない。
-    // テクスチャの透明部分を含む矩形全体が深度を書き込むと、同 zIndex の後続スプライトが
-    // 深度テスト (Less) で弾かれ、円が矩形の輪郭で「見切れ」る不具合が起きる。
-    // 半透明の前後関係は描画順 (ペインターズアルゴリズム, sortKey の sequence) で解決するため、
-    // 透明矩形が深度バッファを上書きしないようにする。
-    if (mat->blendMode() != BlendMode::Normal) {
-        key.depthWriteEnabled = false;
-    }
     // ステンシルマスクが有効なときは、描画をマスク領域内に制限するためステンシルテストを有効にする。
     if (m_stencilRef > 0) {
         key.stencilTestEnabled = true;

@@ -186,6 +186,31 @@ TEST_F(Test_Material, DestroyCallback) {
     EXPECT_EQ(expected, notified) << "コールバックに渡された Material が違います";
 }
 
+// 深度書き込みの解決順を確認するテスト。
+// 未指定ならブレンドモードから決まり、明示した値はブレンドモードより優先される。
+TEST_F(Test_Material, DepthWriteResolution) {
+    auto* module = ln::CoreInstance::instance()->graphicsModule();
+
+    // Normal + 未指定 → 書き込む。
+    {
+        auto material = *ln::MaterialFactory::createUnlit(module);
+        EXPECT_TRUE(material->depthWriteEnabled());
+    }
+    // Alpha + 未指定 → 書き込まない (2D スプライト向けの既定)。
+    {
+        auto material = *ln::MaterialFactory::createUnlit(module);
+        material->setBlendMode(ln::BlendMode::Alpha);
+        EXPECT_FALSE(material->depthWriteEnabled());
+    }
+    // Alpha + 明示 true → 書き込む。設定の順序には依存しない。
+    {
+        auto material = *ln::MaterialFactory::createUnlit(module);
+        material->setDepthWriteEnabled(true);
+        material->setBlendMode(ln::BlendMode::Alpha);
+        EXPECT_TRUE(material->depthWriteEnabled());
+    }
+}
+
 // findPass() が線形走査になっても名前引きが壊れないことを確認するテスト。
 TEST_F(Test_Material, FindPassByName) {
     auto* module = ln::CoreInstance::instance()->graphicsModule();

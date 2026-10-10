@@ -4,6 +4,7 @@
 #include "rhi/Rhi.hpp"
 #include "Vertex.hpp"
 #include "ShaderPass.hpp"
+#include <optional>
 
 namespace ln {
 
@@ -129,6 +130,11 @@ public:
     void setBlendMode(BlendMode mode);
     void setCullMode(rhi::CullMode mode);
     void setDepthTestEnabled(bool enabled);
+
+    /**
+     * 深度書き込みの有効/無効を明示します。
+     * 明示しない場合は、ブレンドモードが Normal のときだけ深度を書き込みます (depthWriteEnabled() を参照)。
+     */
     void setDepthWriteEnabled(bool enabled);
 
     // ShaderPass のアクセサ
@@ -158,7 +164,15 @@ public:
     rhi::CullMode cullMode() const { return m_cullMode; }
     BlendMode blendMode() const { return m_blendMode; }
     bool depthTestEnabled() const { return m_depthTestEnabled; }
-    bool depthWriteEnabled() const { return m_depthWriteEnabled; }
+    /**
+     * 解決後の深度書き込みの有効/無効。
+     * setDepthWriteEnabled() で明示した値があればそれを返します。
+     * 明示していなければ、ブレンドモードが Normal のときだけ true を返します。
+     * 半透明の矩形 (テクスチャの透明部分を含む) が深度を書くと、同じ zIndex の後続スプライトが
+     * 深度テストで弾かれて矩形の輪郭で「見切れ」るため、ブレンド時の既定は書き込まない側にしています。
+     * 半透明の前後関係は描画順 (sortKey の sequence) で解決します。
+     */
+    bool depthWriteEnabled() const { return m_depthWriteEnabled.value_or(m_blendMode == BlendMode::Normal); }
 
     /** $Material 定数バッファの内容のバージョン。setFloat/setColor 等で進みます (UBO の書き直しのみ必要)。 */
     uint64_t paramVersion() const { return m_paramVersion; }
@@ -254,7 +268,7 @@ private:
     rhi::CullMode m_cullMode;
     BlendMode m_blendMode;
     bool m_depthTestEnabled;
-    bool m_depthWriteEnabled;
+    std::optional<bool> m_depthWriteEnabled; // 未指定ならブレンドモードから決める
 
     void markParamDirty() { ++m_paramVersion; }
     void markBindingDirty() { ++m_bindingVersion; }

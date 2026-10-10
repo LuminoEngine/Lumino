@@ -175,6 +175,7 @@ export class Material extends LuminoObject implements ResidentResource {
 
     /**
      * ブレンドモードを設定します。
+     * Normal 以外のブレンドでは既定で深度を書きません。必要なら setDepthWriteEnabled(true) を明示します。
      * @param mode 合成方法
      */
     setBlendMode(mode: BlendMode): void {
@@ -193,6 +194,8 @@ export class Material extends LuminoObject implements ResidentResource {
 
     /**
      * デプス書き込みの有効/無効を設定します。
+     * 呼ばない場合は、ブレンドモードが Normal のときだけ書き込みます。
+     * Normal 以外のブレンドで深度を書きたい場合は true を明示します。
      * @param enabled true で有効
      */
     setDepthWriteEnabled(enabled: boolean): void {
