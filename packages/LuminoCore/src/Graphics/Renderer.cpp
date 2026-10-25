@@ -63,6 +63,19 @@ rhi::BlendState resolveBlendState(BlendMode mode) {
             s.dstAlpha = rhi::BlendFactor::OneMinusSrcAlpha;
             s.alphaOp  = rhi::BlendOp::Add;
             break;
+        // WebGPU は Min / Max のとき係数が One でないと検証エラーになる (Vulkan と GL は係数を無視する)
+        case BlendMode::Min:
+        case BlendMode::Max: {
+            const auto op = (mode == BlendMode::Min) ? rhi::BlendOp::Min : rhi::BlendOp::Max;
+            s.enabled  = true;
+            s.srcColor = rhi::BlendFactor::One;
+            s.dstColor = rhi::BlendFactor::One;
+            s.colorOp  = op;
+            s.srcAlpha = rhi::BlendFactor::One;
+            s.dstAlpha = rhi::BlendFactor::One;
+            s.alphaOp  = op;
+            break;
+        }
     }
     return s;
 }

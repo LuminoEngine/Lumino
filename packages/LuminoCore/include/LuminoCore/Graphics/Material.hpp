@@ -54,6 +54,8 @@ enum class BlendMode {
     Subtract = 3,
     Multiply = 4,
     PremultipliedAlpha = 5,
+    Min = 6,
+    Max = 7,
 };
 
 /** GPU アライメント済みのビューパラメータ (Set N - カメラ)。シェーダの ViewParams 構造体と一致させること。 */

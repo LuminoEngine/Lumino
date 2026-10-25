@@ -607,6 +607,10 @@ typedef enum LNBlendMode {
      * シェーダが RGB に A を掛けた色を出力する場合に使います。
      */
     LN_BLEND_MODE_PREMULTIPLIED_ALPHA = 5,
+    /** 比較 (暗) 合成。RGBA の各成分で描画先と小さい方を残します。アルファは考慮しません。 */
+    LN_BLEND_MODE_MIN = 6,
+    /** 比較 (明) 合成。RGBA の各成分で描画先と大きい方を残します。アルファは考慮しません。 */
+    LN_BLEND_MODE_MAX = 7,
 } LNBlendMode;
 
 /** テクスチャのフィルタリング方法 */

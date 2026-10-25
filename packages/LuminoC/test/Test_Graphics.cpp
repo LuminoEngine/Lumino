@@ -1465,6 +1465,52 @@ TEST_F(Test_Graphics, BlendModePremultipliedAlpha) {
     LNObject_Release(material);
 }
 
+// Min / Max は成分ごとに描画先と比較し、アルファを掛けないことを確認する。
+// 灰色 (0.5) の背景に (1, 0, 0.25, 0) を描くと、Min なら (0.5, 0, 0.25)、Max なら (1, 0.5, 0.5) になる。
+TEST_F(Test_Graphics, BlendModeMinMax) {
+    struct Case { LNBlendMode mode; int r, g, b; };
+    const Case cases[] = {
+        { LN_BLEND_MODE_MIN, 128, 0, 64 },
+        { LN_BLEND_MODE_MAX, 255, 128, 128 },
+    };
+    LNHandle camera = LN_NULL_HANDLE;
+    createOrthoCamera(&camera);
+
+    for (const auto& c : cases) {
+        LNHandle material = LN_NULL_HANDLE;
+        ASSERT_EQ(LN_OK, LNMaterial_CreateFromBuiltinShader(graphicsContext, LN_BUILTIN_SHADER_UNLIT, &material));
+        ASSERT_EQ(LN_OK, LNMaterial_SetColor(material, 1.0f, 0.0f, 0.25f, 0.0f));
+        ASSERT_EQ(LN_OK, LNMaterial_SetBlendMode(material, c.mode));
+
+        LNHandle renderer, colorBuffer, depthBuffer;
+        ASSERT_EQ(LN_OK, LNGraphicsContext_BeginFrame(
+            graphicsContext, TEST_W, TEST_H, &renderer, &colorBuffer, &depthBuffer));
+        LNRenderPassDesc rpDesc;
+        LNRenderPassDesc_Init(&rpDesc);
+        for (int i = 0; i < 4; i++) rpDesc.colorAttachments[0].clearColor[i] = 0.5f;
+        ASSERT_EQ(LN_OK, LNRenderer_BeginRenderPass(renderer, graphicsContext, &rpDesc, camera));
+        LNMatrix identity = translationMatrix(0.0f, 0.0f, 0.0f);
+        ASSERT_EQ(LN_OK, LNRenderer_DrawSprite(
+            renderer, material, 0, &identity,
+            0.0f, 0.0f, (float)TEST_W, (float)TEST_H, 0.5f, 0.5f,
+            0.0f, 0.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f));
+        ASSERT_EQ(LN_OK, LNRenderer_EndRenderPass(renderer));
+
+        const uint8_t* data = nullptr;
+        int32_t w = 0, h = 0;
+        endFrameAndCapture(&data, &w, &h);
+        ASSERT_NE(nullptr, data);
+        const uint8_t* p = data + (static_cast<size_t>(TEST_H / 2) * w + TEST_W / 2) * 4;
+        EXPECT_NEAR((int)p[0], c.r, 8) << "mode=" << c.mode;
+        EXPECT_NEAR((int)p[1], c.g, 8) << "mode=" << c.mode;
+        EXPECT_NEAR((int)p[2], c.b, 8) << "mode=" << c.mode;
+
+        LNObject_Release(material);
+    }
+
+    LNObject_Release(camera);
+}
+
 // カメラ無しのパスでも drawScreenRect が NDC のまま画面全体に描かれることを確認する。
 TEST_F(Test_Graphics, DrawScreenRectWithoutCamera) {
     LNHandle material = LN_NULL_HANDLE;
