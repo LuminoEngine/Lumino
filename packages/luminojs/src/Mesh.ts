@@ -3,13 +3,14 @@ import type { GraphicsContext } from "./GraphicsContext";
 import type { Material } from "./Material";
 import type { ResidentResource } from "./ResidencyManager";
 import { API, Runtime } from "./Runtime";
-import { type Vertex, type SubMesh, SIZEOF_VERTEX, SIZEOF_SUBMESH } from "./types";
+import { type Vertex, type SubMesh, PrimitiveTopology, SIZEOF_VERTEX, SIZEOF_SUBMESH } from "./types";
 
 export class Mesh extends LuminoObject implements ResidentResource {
     private _vertices: Vertex[] = [];
     private _indices: Uint32Array = new Uint32Array(0);
     private _submeshes: SubMesh[] = [];
     private _materials: (Material | null)[] = [];
+    private _topology = PrimitiveTopology.TriangleList;
     private _dirty = false;
     private _materialsDirty = false;
     private _lastUsedFrame = 0;
@@ -23,13 +24,16 @@ export class Mesh extends LuminoObject implements ResidentResource {
      * @param vertices  頂点配列
      * @param indices   インデックス配列 (uint32)
      * @param submeshes サブメッシュ配列 (インデックス範囲とマテリアルスロット)
+     * @param topology  プリミティブの組み立て方。省略時は TriangleList
      */
     static create(
         vertices: Vertex[],
         indices: Uint32Array,
         submeshes: SubMesh[],
+        topology: PrimitiveTopology = PrimitiveTopology.TriangleList,
     ): Mesh {
         const mesh = new Mesh();
+        mesh._topology = topology;
         mesh._vertices = vertices;
         mesh._indices = indices;
         mesh._submeshes = submeshes;
@@ -162,17 +166,19 @@ export class Mesh extends LuminoObject implements ResidentResource {
             }
 
             const handle = Runtime.safeCallWithReturnHandle((out) =>
-                (API.LNMesh_Create as (
+                (API.LNMesh_CreateWithTopology as (
                     ctx: number,
                     verts: number, vertCount: number,
                     idx: number, idxCount: number,
                     subs: number, subCount: number,
+                    topology: number,
                     out: number,
                 ) => number)(
                     ctx.handle,
                     vertPtr, vertices.length,
                     idxPtr, indices.length,
                     subPtr, submeshes.length,
+                    this._topology,
                     out,
                 ));
 

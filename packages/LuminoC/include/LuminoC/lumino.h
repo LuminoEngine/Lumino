@@ -633,6 +633,20 @@ typedef enum LNCompareFunction {
     LN_COMPARE_FUNCTION_ALWAYS = 7,
 } LNCompareFunction;
 
+/** プリミティブの組み立て方 (メッシュの頂点をどう繋いで描くか) */
+typedef enum LNPrimitiveTopology {
+    /** 頂点 3 つごとに 1 つの三角形 (既定) */
+    LN_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST = 0,
+    /** 連続する三角形の帯 */
+    LN_PRIMITIVE_TOPOLOGY_TRIANGLE_STRIP = 1,
+    /** 頂点 2 つごとに 1 本の線 */
+    LN_PRIMITIVE_TOPOLOGY_LINE_LIST = 2,
+    /** 連続する折れ線 */
+    LN_PRIMITIVE_TOPOLOGY_LINE_STRIP = 3,
+    /** 頂点ごとに 1 つの点 */
+    LN_PRIMITIVE_TOPOLOGY_POINT_LIST = 4,
+} LNPrimitiveTopology;
+
 /** テクスチャのフィルタリング方法 */
 typedef enum LNTextureFilterMode {
     /** 最近傍 (ドット絵の拡大表示向け) */
@@ -912,6 +926,26 @@ extern LUMINO_API LNResult LNMesh_Create(
     uint32_t indexCount,
     const LNSubMesh* submeshes,
     uint32_t submeshCount,
+    LNHandle* outHandle
+);
+
+/**
+ * プリミティブの組み立て方を指定してメッシュを作成します。
+ * LNMesh_Create は topology に LN_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST を指定した場合と同じです。
+ * 線 (LINE_LIST / LINE_STRIP) の太さは 1px 固定です。
+ *
+ * @param[in]  topology プリミティブの組み立て方
+ * @see LNMesh_Create (その他の引数)
+ */
+extern LUMINO_API LNResult LNMesh_CreateWithTopology(
+    LNHandle graphicsContext,
+    const LNVertex* vertices,
+    uint32_t vertexCount,
+    const uint32_t* indices,
+    uint32_t indexCount,
+    const LNSubMesh* submeshes,
+    uint32_t submeshCount,
+    LNPrimitiveTopology topology,
     LNHandle* outHandle
 );
 

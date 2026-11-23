@@ -630,6 +630,84 @@ TEST_F(Test_Graphics, MaterialDepthCompareFunction) {
     LNObject_Release(camera);
 }
 
+// 線のメッシュのテスト。
+// 同じマテリアルで、左に三角形の矩形、右に LineList の水平線を同じレンダーパスで描く。
+TEST_F(Test_Graphics, MeshLineListTopology) {
+    LNVertex quadVerts[4] = {
+        { -2.0f,  0.4f, 0.0f,  0,0,1,  0,0,  1,1,1,1,  1,0,0,0 },
+        { -0.2f,  0.4f, 0.0f,  0,0,1,  1,0,  1,1,1,1,  1,0,0,0 },
+        { -2.0f, -0.4f, 0.0f,  0,0,1,  0,1,  1,1,1,1,  1,0,0,0 },
+        { -0.2f, -0.4f, 0.0f,  0,0,1,  1,1,  1,1,1,1,  1,0,0,0 },
+    };
+    uint32_t quadIndices[6] = { 0, 2, 1, 1, 2, 3 };
+    LNSubMesh quadSub = { 0, 6, 0 };
+    LNVertex lineVerts[2] = {
+        { 0.2f, 0.0f, 0.0f,  0,0,1,  0,0,  1,1,1,1,  1,0,0,0 },
+        { 2.0f, 0.0f, 0.0f,  0,0,1,  1,0,  1,1,1,1,  1,0,0,0 },
+    };
+    uint32_t lineIndices[2] = { 0, 1 };
+    LNSubMesh lineSub = { 0, 2, 0 };
+
+    LNHandle mat = LN_NULL_HANDLE, quadMesh = LN_NULL_HANDLE, lineMesh = LN_NULL_HANDLE;
+    ASSERT_EQ(LN_OK, LNMaterial_CreateFromBuiltinShader(graphicsContext, LN_BUILTIN_SHADER_UNLIT, &mat));
+    ASSERT_EQ(LN_OK, LNMaterial_SetColor(mat, 1.0f, 0.0f, 0.0f, 1.0f));
+    ASSERT_EQ(LN_OK, LNMesh_Create(graphicsContext, quadVerts, 4, quadIndices, 6, &quadSub, 1, &quadMesh));
+    ASSERT_EQ(LN_OK, LNMesh_CreateWithTopology(
+        graphicsContext, lineVerts, 2, lineIndices, 2, &lineSub, 1, LN_PRIMITIVE_TOPOLOGY_LINE_LIST, &lineMesh));
+    ASSERT_EQ(LN_OK, LNMesh_SetMaterial(quadMesh, 0, mat));
+    ASSERT_EQ(LN_OK, LNMesh_SetMaterial(lineMesh, 0, mat));
+
+    // 範囲外の topology は弾く
+    LNHandle bad = LN_NULL_HANDLE;
+    EXPECT_EQ(LN_ERROR_INVALID_ARGUMENT, LNMesh_CreateWithTopology(
+        graphicsContext, lineVerts, 2, lineIndices, 2, &lineSub, 1, (LNPrimitiveTopology)99, &bad));
+
+    LNHandle camera = LN_NULL_HANDLE;
+    ASSERT_EQ(LN_OK, LNCamera_Create(&camera));
+    ASSERT_EQ(LN_OK, LNCamera_SetPerspective(camera,
+        60.0f * 3.14159f / 180.0f, (float)TEST_W / (float)TEST_H, 0.1f, 100.0f));
+    ASSERT_EQ(LN_OK, LNCamera_SetLookAt(camera, 0,0,3,  0,0,0,  0,1,0));
+
+    LNTransform identity = { 0,0,0,  0,0,0,1,  1,1,1 };
+    LNHandle renderer, colorBuffer, depthBuffer;
+    ASSERT_EQ(LN_OK, LNGraphicsContext_BeginFrame(graphicsContext, TEST_W, TEST_H, &renderer, &colorBuffer, &depthBuffer));
+    LNRenderPassDesc rpDesc;
+    LNRenderPassDesc_Init(&rpDesc);
+    ASSERT_EQ(LN_OK, LNRenderer_BeginRenderPass(renderer, graphicsContext, &rpDesc, camera));
+    ASSERT_EQ(LN_OK, LNRenderer_DrawMesh(renderer, quadMesh, &identity, 0));
+    ASSERT_EQ(LN_OK, LNRenderer_DrawMesh(renderer, lineMesh, &identity, 0));
+    ASSERT_EQ(LN_OK, LNRenderer_EndRenderPass(renderer));
+
+    const uint8_t* data = nullptr;
+    int32_t w = 0, h = 0;
+    endFrameAndCapture(&data, &w, &h);
+    ASSERT_NE(nullptr, data);
+    auto isRed = [&](int x, int y) {
+        const uint8_t* p = data + (static_cast<size_t>(y) * w + x) * 4;
+        return p[0] > 160 && p[1] < 96 && p[2] < 96;
+    };
+
+    // 左の矩形は塗られている
+    EXPECT_TRUE(isRed(w / 4, h / 2));
+
+    // 右の列で、赤いのは中央付近の数行だけ (1px の線)
+    const int x = w * 3 / 4;
+    int redRows = 0;
+    for (int y = 0; y < h; y++) {
+        if (isRed(x, y)) {
+            redRows++;
+            EXPECT_LE(std::abs(y - h / 2), 2) << "y=" << y;
+        }
+    }
+    EXPECT_GE(redRows, 1);
+    EXPECT_LE(redRows, 2);
+
+    LNObject_Release(camera);
+    LNObject_Release(lineMesh);
+    LNObject_Release(quadMesh);
+    LNObject_Release(mat);
+}
+
 // 深度書き込みOFFのテスト。
 TEST_F(Test_Graphics, MaterialDepthWriteEnabled) {
     uint32_t indices[6] = { 0, 2, 1, 1, 2, 3 };

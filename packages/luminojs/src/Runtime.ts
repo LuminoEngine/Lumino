@@ -375,7 +375,7 @@ export class Runtime {
         API.LNMaterial_SetDepthCompareFunction   = cw("LNMaterial_SetDepthCompareFunction",   "number", ["number", "number"]);
 
         // Mesh
-        API.LNMesh_Create      = cw("LNMesh_Create",      "number", ["number", "number", "number", "number", "number", "number", "number", "number"]);
+        API.LNMesh_CreateWithTopology = cw("LNMesh_CreateWithTopology", "number", ["number", "number", "number", "number", "number", "number", "number", "number", "number"]);
         API.LNMesh_SetMaterial = cw("LNMesh_SetMaterial", "number", ["number", "number", "number"]);
 
         // Camera

@@ -1211,7 +1211,25 @@ LNResult LNMesh_Create(
     const LNSubMesh* submeshes,
     uint32_t submeshCount,
     LNHandle* outHandle) {
+    return LNMesh_CreateWithTopology(
+        graphicsContext, vertices, vertexCount, indices, indexCount,
+        submeshes, submeshCount, LN_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST, outHandle);
+}
+
+LNResult LNMesh_CreateWithTopology(
+    LNHandle graphicsContext,
+    const LNVertex* vertices,
+    uint32_t vertexCount,
+    const uint32_t* indices,
+    uint32_t indexCount,
+    const LNSubMesh* submeshes,
+    uint32_t submeshCount,
+    LNPrimitiveTopology topology,
+    LNHandle* outHandle) {
     if (!outHandle || !vertices || !indices || !submeshes) return LN_ERROR_INVALID_ARGUMENT;
+    if (topology < LN_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST || topology > LN_PRIMITIVE_TOPOLOGY_POINT_LIST) {
+        return LN_ERROR_INVALID_ARGUMENT;
+    }
     if (vertexCount == 0 || indexCount == 0 || submeshCount == 0) return LN_ERROR_INVALID_ARGUMENT;
     *outHandle = LN_NULL_HANDLE;
 
@@ -1244,7 +1262,8 @@ LNResult LNMesh_Create(
         subs[i].materialIndex = submeshes[i].materialIndex;
     }
 
-    auto meshResult = ln::Mesh::create(ctx->device(), verts, idx, subs);
+    auto meshResult = ln::Mesh::create(
+        ctx->device(), verts, idx, subs, static_cast<ln::rhi::PrimitiveTopology>(topology));
     if (!meshResult) return LN_ERROR_UNKNOWN;
     *outHandle = wrapObjectFromCreate(meshResult->get());
     return LN_OK;

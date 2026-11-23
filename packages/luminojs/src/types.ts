@@ -109,6 +109,20 @@ export enum BlendMode {
     Max = 7,
 }
 
+/** プリミティブの組み立て方 (C の LNPrimitiveTopology に対応)。線の太さは 1px 固定です。 */
+export enum PrimitiveTopology {
+    /** 頂点 3 つごとに 1 つの三角形 (既定) */
+    TriangleList  = 0,
+    /** 連続する三角形の帯 */
+    TriangleStrip = 1,
+    /** 頂点 2 つごとに 1 本の線 */
+    LineList      = 2,
+    /** 連続する折れ線 */
+    LineStrip     = 3,
+    /** 頂点ごとに 1 つの点 */
+    PointList     = 4,
+}
+
 /** 比較関数 (C の LNCompareFunction に対応)。深度テストなどで使います。 */
 export enum CompareFunction {
     /** 常に不合格 */
