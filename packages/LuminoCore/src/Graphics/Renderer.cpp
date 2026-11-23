@@ -501,6 +501,7 @@ Result<void> Renderer::drawSubmesh(
     key.cullMode            = mat->cullMode();
     key.blendState          = resolveBlendState(mat->blendMode());
     key.depthTestEnabled    = mat->depthTestEnabled();
+    key.depthCompare        = mat->depthCompareFunction();
     // ブレンド時の既定は深度を書かない。明示した場合はそれが勝つ (Material::depthWriteEnabled() を参照)。
     key.depthWriteEnabled   = mat->depthWriteEnabled();
     // ステンシルマスクが有効なときは、描画をマスク領域内に制限するためステンシルテストを有効にする。

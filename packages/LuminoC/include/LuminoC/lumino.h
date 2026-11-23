@@ -613,6 +613,26 @@ typedef enum LNBlendMode {
     LN_BLEND_MODE_MAX = 7,
 } LNBlendMode;
 
+/** 比較関数 (深度テストなどで使います) */
+typedef enum LNCompareFunction {
+    /** 常に不合格 */
+    LN_COMPARE_FUNCTION_NEVER = 0,
+    /** 新しい値 < 既存の値 で合格 (深度テストの既定) */
+    LN_COMPARE_FUNCTION_LESS = 1,
+    /** 新しい値 <= 既存の値 で合格 */
+    LN_COMPARE_FUNCTION_LESS_EQUAL = 2,
+    /** 新しい値 > 既存の値 で合格 */
+    LN_COMPARE_FUNCTION_GREATER = 3,
+    /** 新しい値 >= 既存の値 で合格 */
+    LN_COMPARE_FUNCTION_GREATER_EQUAL = 4,
+    /** 新しい値 == 既存の値 で合格 */
+    LN_COMPARE_FUNCTION_EQUAL = 5,
+    /** 新しい値 != 既存の値 で合格 */
+    LN_COMPARE_FUNCTION_NOT_EQUAL = 6,
+    /** 常に合格 */
+    LN_COMPARE_FUNCTION_ALWAYS = 7,
+} LNCompareFunction;
+
 /** テクスチャのフィルタリング方法 */
 typedef enum LNTextureFilterMode {
     /** 最近傍 (ドット絵の拡大表示向け) */
@@ -853,6 +873,19 @@ extern LUMINO_API LNResult LNMaterial_SetDepthTestEnabled(
 extern LUMINO_API LNResult LNMaterial_SetDepthWriteEnabled(
     LNHandle material,
     LNBool enabled
+);
+
+/**
+ * マテリアルの深度テストの比較関数を設定します。既定は LN_COMPARE_FUNCTION_LESS です。
+ * LN_COMPARE_FUNCTION_LESS_EQUAL にすると、同じ深度では後に描いた物が残ります。
+ * 深度テストが無効のときは無視されます。
+ *
+ * @param[in] material マテリアルのハンドル
+ * @param[in] func     比較関数
+ */
+extern LUMINO_API LNResult LNMaterial_SetDepthCompareFunction(
+    LNHandle material,
+    LNCompareFunction func
 );
 
 //------------------------------------------------------------------------------

@@ -19,7 +19,8 @@ Material::Material()
     , m_baseTexture(nullptr)
     , m_cullMode(rhi::CullMode::Back)
     , m_blendMode(BlendMode::Normal)
-    , m_depthTestEnabled(true) {
+    , m_depthTestEnabled(true)
+    , m_depthCompareFunction(rhi::CompareFunction::Less) {
 }
 
 int Material::findMemberOffset(const std::string& name) const {
@@ -132,6 +133,7 @@ void Material::setBlendMode(BlendMode mode) { m_blendMode = mode; }
 void Material::setCullMode(rhi::CullMode mode) { m_cullMode = mode; }
 void Material::setDepthTestEnabled(bool enabled) { m_depthTestEnabled = enabled; }
 void Material::setDepthWriteEnabled(bool enabled) { m_depthWriteEnabled = enabled; }
+void Material::setDepthCompareFunction(rhi::CompareFunction func) { m_depthCompareFunction = func; }
 
 // ------ MaterialFactory -----------------------------------------------------------------------------------------------------------------
 

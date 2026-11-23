@@ -4,7 +4,7 @@ import type { Texture } from "./Texture";
 import { Shader } from "./Shader";
 import type { ResidentResource } from "./ResidencyManager";
 import { API, Runtime } from "./Runtime";
-import { BlendMode, BuiltinShader, CullMode, TextureAddressMode, TextureFilterMode } from "./types";
+import { BlendMode, BuiltinShader, CompareFunction, CullMode, TextureAddressMode, TextureFilterMode } from "./types";
 
 type MaterialSource =
     | { kind: "unlit" }
@@ -39,6 +39,7 @@ export class Material extends LuminoObject implements ResidentResource {
     private _blendMode: BlendMode | null = null;
     private _depthTestEnabled: boolean | null = null;
     private _depthWriteEnabled: boolean | null = null;
+    private _depthCompareFunction: CompareFunction | null = null;
     private _dirty = false;
     private _paramsDirty = false;
     private _lastUsedFrame = 0;
@@ -210,6 +211,17 @@ export class Material extends LuminoObject implements ResidentResource {
      */
     setDepthWriteEnabled(enabled: boolean): void {
         this._depthWriteEnabled = enabled;
+        this._paramsDirty = true;
+    }
+
+    /**
+     * 深度テストの比較関数を設定します。呼ばない場合は Less です。
+     * LessEqual にすると、同じ深度では後に描いた物が残ります。
+     * 深度テストが無効のときは無視されます。
+     * @param func 比較関数
+     */
+    setDepthCompareFunction(func: CompareFunction): void {
+        this._depthCompareFunction = func;
         this._paramsDirty = true;
     }
 
@@ -392,6 +404,14 @@ export class Material extends LuminoObject implements ResidentResource {
                 (API.LNMaterial_SetDepthWriteEnabled as (
                     mat: number, enabled: number,
                 ) => number)(this._handle, enabled));
+        }
+
+        if (this._depthCompareFunction !== null) {
+            const func = this._depthCompareFunction;
+            Runtime.safeCall(() =>
+                (API.LNMaterial_SetDepthCompareFunction as (
+                    mat: number, func: number,
+                ) => number)(this._handle, func));
         }
     }
 }

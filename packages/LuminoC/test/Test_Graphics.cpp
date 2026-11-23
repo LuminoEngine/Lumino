@@ -559,6 +559,77 @@ TEST_F(Test_Graphics, MaterialDepthTestEnabled) {
     LNObject_Release(nearMat);
 }
 
+// 深度の比較関数のテスト。
+// 同じ深度に赤 -> 緑の順で矩形を描く。Less では先に描いた赤が残り、LessEqual では後に描いた緑が残る。
+TEST_F(Test_Graphics, MaterialDepthCompareFunction) {
+    uint32_t indices[6] = { 0, 2, 1, 1, 2, 3 };
+    LNSubMesh sub = { 0, 6, 0 };
+    LNVertex verts[4] = {
+        { -0.6f,  0.6f,  0.0f,  0,0,1,  0.0f, 0.0f,  1,1,1,1,  1,0,0,0 },
+        {  0.6f,  0.6f,  0.0f,  0,0,1,  1.0f, 0.0f,  1,1,1,1,  1,0,0,0 },
+        { -0.6f, -0.6f,  0.0f,  0,0,1,  0.0f, 1.0f,  1,1,1,1,  1,0,0,0 },
+        {  0.6f, -0.6f,  0.0f,  0,0,1,  1.0f, 1.0f,  1,1,1,1,  1,0,0,0 },
+    };
+
+    LNHandle camera = LN_NULL_HANDLE;
+    ASSERT_EQ(LN_OK, LNCamera_Create(&camera));
+    ASSERT_EQ(LN_OK, LNCamera_SetPerspective(camera,
+        60.0f * 3.14159f / 180.0f,
+        (float)TEST_W / (float)TEST_H,
+        0.1f, 100.0f));
+    ASSERT_EQ(LN_OK, LNCamera_SetLookAt(camera,
+        0.0f, 0.0f, 3.0f,
+        0.0f, 0.0f, 0.0f,
+        0.0f, 1.0f, 0.0f));
+
+    // 赤 -> 緑の順で描き、中央のピクセルを返す。
+    auto drawAndCapture = [&](LNCompareFunction func, uint8_t outPx[4]) {
+        LNHandle mats[2] = {};
+        LNHandle meshes[2] = {};
+        const float colors[2][3] = { { 1.0f, 0.0f, 0.0f }, { 0.0f, 1.0f, 0.0f } };
+        for (int i = 0; i < 2; i++) {
+            ASSERT_EQ(LN_OK, LNMaterial_CreateFromBuiltinShader(graphicsContext, LN_BUILTIN_SHADER_UNLIT, &mats[i]));
+            ASSERT_EQ(LN_OK, LNMaterial_SetColor(mats[i], colors[i][0], colors[i][1], colors[i][2], 1.0f));
+            ASSERT_EQ(LN_OK, LNMaterial_SetDepthCompareFunction(mats[i], func));
+            ASSERT_EQ(LN_OK, LNMesh_Create(graphicsContext, verts, 4, indices, 6, &sub, 1, &meshes[i]));
+            ASSERT_EQ(LN_OK, LNMesh_SetMaterial(meshes[i], 0, mats[i]));
+        }
+
+        LNTransform identity = { 0,0,0,  0,0,0,1,  1,1,1 };
+        LNHandle renderer, colorBuffer, depthBuffer;
+        ASSERT_EQ(LN_OK, LNGraphicsContext_BeginFrame(graphicsContext, TEST_W, TEST_H, &renderer, &colorBuffer, &depthBuffer));
+        LNRenderPassDesc rpDesc;
+        LNRenderPassDesc_Init(&rpDesc);
+        ASSERT_EQ(LN_OK, LNRenderer_BeginRenderPass(renderer, graphicsContext, &rpDesc, camera));
+        ASSERT_EQ(LN_OK, LNRenderer_DrawMesh(renderer, meshes[0], &identity, 0));
+        ASSERT_EQ(LN_OK, LNRenderer_DrawMesh(renderer, meshes[1], &identity, 0));
+        ASSERT_EQ(LN_OK, LNRenderer_EndRenderPass(renderer));
+
+        const uint8_t* data = nullptr;
+        int32_t w = 0, h = 0;
+        endFrameAndCapture(&data, &w, &h);
+        ASSERT_NE(nullptr, data);
+        const uint8_t* px = data + (static_cast<size_t>(h / 2) * w + w / 2) * 4;
+        std::memcpy(outPx, px, 4);
+
+        for (int i = 0; i < 2; i++) {
+            LNObject_Release(meshes[i]);
+            LNObject_Release(mats[i]);
+        }
+    };
+
+    uint8_t px[4] = {};
+    drawAndCapture(LN_COMPARE_FUNCTION_LESS, px);
+    EXPECT_GT(px[0], 160);
+    EXPECT_LT(px[1], 96);
+
+    drawAndCapture(LN_COMPARE_FUNCTION_LESS_EQUAL, px);
+    EXPECT_LT(px[0], 96);
+    EXPECT_GT(px[1], 160);
+
+    LNObject_Release(camera);
+}
+
 // 深度書き込みOFFのテスト。
 TEST_F(Test_Graphics, MaterialDepthWriteEnabled) {
     uint32_t indices[6] = { 0, 2, 1, 1, 2, 3 };

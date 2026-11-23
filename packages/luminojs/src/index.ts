@@ -23,6 +23,7 @@ export {
     CullMode,
     TextureFilterMode,
     TextureAddressMode,
+    CompareFunction,
     LN_NULL_HANDLE,
     LN_MAX_COLOR_ATTACHMENTS,
     SIZEOF_VERTEX,

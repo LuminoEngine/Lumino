@@ -109,6 +109,26 @@ export enum BlendMode {
     Max = 7,
 }
 
+/** 比較関数 (C の LNCompareFunction に対応)。深度テストなどで使います。 */
+export enum CompareFunction {
+    /** 常に不合格 */
+    Never        = 0,
+    /** 新しい値 < 既存の値 で合格 (深度テストの既定) */
+    Less         = 1,
+    /** 新しい値 <= 既存の値 で合格 */
+    LessEqual    = 2,
+    /** 新しい値 > 既存の値 で合格 */
+    Greater      = 3,
+    /** 新しい値 >= 既存の値 で合格 */
+    GreaterEqual = 4,
+    /** 新しい値 == 既存の値 で合格 */
+    Equal        = 5,
+    /** 新しい値 != 既存の値 で合格 */
+    NotEqual     = 6,
+    /** 常に合格 */
+    Always       = 7,
+}
+
 /** ポリゴンのカリングモード (C の LNCullMode に対応)。 */
 export enum CullMode {
     /** カリングなし (両面描画)。 */

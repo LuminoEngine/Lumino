@@ -372,6 +372,7 @@ export class Runtime {
         API.LNMaterial_SetBlendMode              = cw("LNMaterial_SetBlendMode",              "number", ["number", "number"]);
         API.LNMaterial_SetDepthTestEnabled       = cw("LNMaterial_SetDepthTestEnabled",       "number", ["number", "number"]);
         API.LNMaterial_SetDepthWriteEnabled      = cw("LNMaterial_SetDepthWriteEnabled",      "number", ["number", "number"]);
+        API.LNMaterial_SetDepthCompareFunction   = cw("LNMaterial_SetDepthCompareFunction",   "number", ["number", "number"]);
 
         // Mesh
         API.LNMesh_Create      = cw("LNMesh_Create",      "number", ["number", "number", "number", "number", "number", "number", "number", "number"]);

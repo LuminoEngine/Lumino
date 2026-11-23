@@ -1165,6 +1165,19 @@ LNResult LNMaterial_SetDepthWriteEnabled(LNHandle material, LNBool enabled) {
     return LN_OK;
 }
 
+LNResult LNMaterial_SetDepthCompareFunction(LNHandle material, LNCompareFunction func) {
+    auto* mat = resolveObject<ln::Material>(material);
+    if (!mat) return LN_ERROR_INVALID_HANDLE;
+    if (func < LN_COMPARE_FUNCTION_NEVER || func > LN_COMPARE_FUNCTION_ALWAYS) return LN_ERROR_INVALID_ARGUMENT;
+    if (isStaleResource(mat)) {
+        warnStaleResourceSkipped("material");
+        return LN_OK;
+    }
+
+    mat->setDepthCompareFunction(static_cast<ln::rhi::CompareFunction>(func));
+    return LN_OK;
+}
+
 LNResult LNMaterial_SetNamedTexture(LNHandle material, const char* name, LNHandle texture) {
     auto* mat = resolveObject<ln::Material>(material);
     if (!mat) return LN_ERROR_INVALID_HANDLE;

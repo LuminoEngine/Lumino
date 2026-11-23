@@ -16,6 +16,7 @@ struct PipelineCacheKey {
     rhi::CullMode cullMode = rhi::CullMode::Back;
     rhi::BlendState blendState;     // blendState.enabled==false の場合、他のフィールドは無視
     bool depthTestEnabled = true;
+    rhi::CompareFunction depthCompare = rhi::CompareFunction::Less; // depthTestEnabled==false の場合は無視
     bool depthWriteEnabled = true;
     bool stencilTestEnabled = false;
     rhi::StencilFaceState stencilFront;

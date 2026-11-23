@@ -31,6 +31,7 @@ bool PipelineCacheKey::operator==(const PipelineCacheKey& o) const {
         if (blendState.alphaOp  != o.blendState.alphaOp)  return false;
     }
     if (depthTestEnabled  != o.depthTestEnabled)  return false;
+    if (depthTestEnabled && depthCompare != o.depthCompare) return false;
     if (depthWriteEnabled != o.depthWriteEnabled) return false;
     if (stencilTestEnabled != o.stencilTestEnabled) return false;
     if (stencilTestEnabled) {
@@ -65,6 +66,9 @@ size_t PipelineCacheKeyHash::operator()(const PipelineCacheKey& key) const {
         hash_combine(seed, static_cast<uint32_t>(key.blendState.alphaOp));
     }
     hash_combine(seed, key.depthTestEnabled);
+    if (key.depthTestEnabled) {
+        hash_combine(seed, static_cast<uint32_t>(key.depthCompare));
+    }
     hash_combine(seed, key.depthWriteEnabled);
     hash_combine(seed, key.stencilTestEnabled);
     if (key.stencilTestEnabled) {
@@ -125,6 +129,7 @@ Result<rhi::RenderPipeline*> PipelineCache::getOrCreate(const PipelineCacheKey& 
     rpDesc.cullMode        = key.cullMode;
     rpDesc.renderPassLayout = key.renderPassLayout;
     rpDesc.depthStencil.depthTestEnable    = key.depthTestEnabled;
+    rpDesc.depthStencil.depthCompare       = key.depthCompare;
     rpDesc.depthStencil.depthWriteEnable   = key.depthWriteEnabled;
     rpDesc.depthStencil.stencilTestEnable  = key.stencilTestEnabled;
     rpDesc.depthStencil.stencilFront       = key.stencilFront;

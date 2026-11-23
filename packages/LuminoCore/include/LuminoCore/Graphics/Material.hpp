@@ -139,6 +139,13 @@ public:
      */
     void setDepthWriteEnabled(bool enabled);
 
+    /**
+     * 深度テストの比較関数を設定します。既定は Less です。
+     * LessEqual にすると、同じ深度では後に描いた物が残ります。
+     * 深度テストが無効のときは無視されます。
+     */
+    void setDepthCompareFunction(rhi::CompareFunction func);
+
     // ShaderPass のアクセサ
     /** 既定 (主) の ShaderPass - 最初に登録されたパスで、通常は "Forward"。
      *  マテリアルパラメータのレイアウトと、フォールバックのアクセサとして使用します。 */
@@ -166,6 +173,7 @@ public:
     rhi::CullMode cullMode() const { return m_cullMode; }
     BlendMode blendMode() const { return m_blendMode; }
     bool depthTestEnabled() const { return m_depthTestEnabled; }
+    rhi::CompareFunction depthCompareFunction() const { return m_depthCompareFunction; }
     /**
      * 解決後の深度書き込みの有効/無効。
      * setDepthWriteEnabled() で明示した値があればそれを返します。
@@ -270,6 +278,7 @@ private:
     rhi::CullMode m_cullMode;
     BlendMode m_blendMode;
     bool m_depthTestEnabled;
+    rhi::CompareFunction m_depthCompareFunction;
     std::optional<bool> m_depthWriteEnabled; // 未指定ならブレンドモードから決める
 
     void markParamDirty() { ++m_paramVersion; }
