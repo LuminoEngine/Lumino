@@ -35,7 +35,7 @@ Luminoは、ゲーム開発向けのプラットフォーム抽象化ライブ�
 
 ```sh
 # vcpkg 準備
-git clone -b 2026.03.18 https://github.com/microsoft/vcpkg.git ./build/vcpkg
+git clone -b 2026.10.16 https://github.com/microsoft/vcpkg.git ./build/vcpkg
 ./build/vcpkg/bootstrap-vcpkg.bat
 
 # webgpu 準備

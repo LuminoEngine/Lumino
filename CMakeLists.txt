@@ -158,16 +158,16 @@ function(ln_setup_c_api_client_configurations TARGET)
         $<TARGET_FILE_DIR:${TARGET}>
     )
 
-    # ANGLE (libEGL.dll / libGLESv2.dll / 依存する zlib1.dll)
+    # ANGLE (libEGL.dll / libGLESv2.dll / 依存する z.dll)
     # 上記 MAP_IMPORTED_CONFIG_DEBUG で Debug 構成でも Release 版を使うため、
-    # applocal 任せ (Debug は zlibd1.dll) にせず Release 版の zlib を明示コピーする。
+    # applocal 任せにせず Release 版の zlib を明示コピーする。
     if(LN_ENABLE_WEBGL2)
         add_custom_command(
             TARGET ${TARGET} POST_BUILD
             COMMAND ${CMAKE_COMMAND} -E copy_if_different
                 $<TARGET_FILE:unofficial::angle::libEGL>
                 $<TARGET_FILE:unofficial::angle::libGLESv2>
-                $<TARGET_FILE_DIR:unofficial::angle::libGLESv2>/zlib1.dll
+                $<TARGET_FILE_DIR:unofficial::angle::libGLESv2>/z.dll
                 $<TARGET_FILE_DIR:${TARGET}>
         )
     endif()

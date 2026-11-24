@@ -114,7 +114,7 @@ TEST_F(Test_Graphics, ColorAttachmentCountOverLimitIsRejected) {
 TEST_F(Test_Graphics, HelloTexture) {
     // テクスチャを読み込む (Sprite.png)
     LNHandle texture = LN_NULL_HANDLE;
-    ASSERT_EQ(LN_OK, LNTexture2D_LoadFromFile(graphicsContext, TEST_DATA_DIR "/Sprite.png", &texture));
+    ASSERT_EQ(LN_OK, LNTexture2D_LoadFromFile(graphicsContext, TEST_DATA_DIR "/Data/Sprite.png", &texture));
 
     // テクスチャ付きの Unlit マテリアルを作成
     LNHandle material = LN_NULL_HANDLE;
@@ -181,8 +181,8 @@ TEST_F(Test_Graphics, SpriteOrder) {
     LNHandle redMaterial = LN_NULL_HANDLE;
     LNHandle greenTexture = LN_NULL_HANDLE;
     LNHandle greenMaterial = LN_NULL_HANDLE;
-    ASSERT_EQ(LN_OK, LNTexture2D_LoadFromFile(graphicsContext, TEST_DATA_DIR "/RedMargined.png", &redTexture));
-    ASSERT_EQ(LN_OK, LNTexture2D_LoadFromFile(graphicsContext, TEST_DATA_DIR "/GreenMargined.png", &greenTexture));
+    ASSERT_EQ(LN_OK, LNTexture2D_LoadFromFile(graphicsContext, TEST_DATA_DIR "/Data/RedMargined.png", &redTexture));
+    ASSERT_EQ(LN_OK, LNTexture2D_LoadFromFile(graphicsContext, TEST_DATA_DIR "/Data/GreenMargined.png", &greenTexture));
 
     ASSERT_EQ(LN_OK, LNMaterial_CreateFromBuiltinShader(graphicsContext, LN_BUILTIN_SHADER_UNLIT, &redMaterial));
     ASSERT_EQ(LN_OK, LNMaterial_CreateFromBuiltinShader(graphicsContext, LN_BUILTIN_SHADER_UNLIT, &greenMaterial));
@@ -317,7 +317,7 @@ TEST_F(Test_Graphics, StencilMask1) {
     // LoadFromFile なしでは C API 経由でデータをアップロードできないため、スプライトテクスチャをマスクとして使用します。
     // Sprite.png はアルファ値がゼロではないため、パイプラインの流れをテストします。
     LNHandle spriteTex = LN_NULL_HANDLE;
-    ASSERT_EQ(LN_OK, LNTexture2D_LoadFromFile(graphicsContext, TEST_DATA_DIR "/Sprite.png", &spriteTex));
+    ASSERT_EQ(LN_OK, LNTexture2D_LoadFromFile(graphicsContext, TEST_DATA_DIR "/Data/Sprite.png", &spriteTex));
 
     // マスク用マテリアルを作成
     LNHandle maskMat = LN_NULL_HANDLE;
@@ -411,7 +411,7 @@ TEST_F(Test_Graphics, StencilMask1) {
 // (左側が白になってしまう問題の修正確認)
 TEST_F(Test_Graphics, TwoSprites) {
     LNHandle texture = LN_NULL_HANDLE;
-    ASSERT_EQ(LN_OK, LNTexture2D_LoadFromFile(graphicsContext, TEST_DATA_DIR "/Sprite.png", &texture));
+    ASSERT_EQ(LN_OK, LNTexture2D_LoadFromFile(graphicsContext, TEST_DATA_DIR "/Data/Sprite.png", &texture));
 
     LNHandle mat1 = LN_NULL_HANDLE;
     ASSERT_EQ(LN_OK, LNMaterial_CreateFromBuiltinShader(graphicsContext, LN_BUILTIN_SHADER_UNLIT, &mat1));
