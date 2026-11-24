@@ -20,7 +20,6 @@ namespace ln::platform {
 struct PlatformWindow::Impl {
 #if defined(__EMSCRIPTEN__)
     // Web: 紐づく canvas の CSS セレクタ (例: "#my_canvas") だけを保持する。
-    // GraphicsContext は Phase 2 で WebGPU rhi 側から作られる予定。
     std::string canvasSelector;
 #else
     GLFWwindow* window = nullptr;

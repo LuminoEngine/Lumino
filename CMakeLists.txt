@@ -103,7 +103,7 @@ if(LN_ENABLE_WEBGL2)
     find_package(unofficial-angle CONFIG REQUIRED)
 
     # Debug 構成でも Release 版の ANGLE を使う。debug 版は検証とアサートが全て有効で
-    # 極端に遅い (実測 53 倍。docs/plans/webgl2-backend-plan.md 参照)。
+    # 極端に遅い (実測 53 倍)。
     set_target_properties(unofficial::angle::libEGL unofficial::angle::libGLESv2
         PROPERTIES MAP_IMPORTED_CONFIG_DEBUG Release)
 endif()

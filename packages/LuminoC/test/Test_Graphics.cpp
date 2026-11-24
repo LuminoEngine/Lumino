@@ -1519,8 +1519,8 @@ TEST_F(Test_Graphics, GraphicsProfiler) {
 // 伝播することを見る。
 //------------------------------------------------------------------------------
 
-// Material を毎フレーム作っては捨ててもマテリアルキャッシュが増え続けないことを確認する
-// (計画書 B-2)。スプライトのメッシュプールがスロットに Ref<Material> を持つため、
+// Material を毎フレーム作っては捨ててもマテリアルキャッシュが増え続けないことを確認する。
+// スプライトのメッシュプールがスロットに Ref<Material> を持つため、
 // エビクトは LNObject_Release の 1 フレーム後になる。ここでは定常状態だけを見る。
 TEST_F(Test_Graphics, MaterialCacheIsEvictedOnMaterialDestroy) {
     LNHandle camera = LN_NULL_HANDLE;

@@ -2,7 +2,7 @@
  * hello_triangle.cpp
  *
  * RHI API を使って色付き三角形を描画するデモ。
- * Phase 1 の検証マイルストーン: Vulkan バックエンドが正しく動作することを確認する。
+ * Vulkan バックエンドが正しく動作することを確認する。
  *
  * PlatformWindow でウィンドウを作成し、
  * window->graphicsContext() でデバイスとスワップチェーンを取得する。

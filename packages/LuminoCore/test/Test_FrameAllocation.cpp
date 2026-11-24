@@ -163,7 +163,7 @@ static void measureFrameAllocations(Backend backend, const char* backendName) {
         obj.mesh = triangle;
 
         // ---- シナリオ 1: メッシュ 1 個 + 毎フレームのマテリアルパラメータ変更 ----
-        // B-1 (パラメータ変更で BindGroup を作り直さない) と A-1 / D-1 が通る経路。
+        // パラメータ変更で BindGroup を作り直さない経路。
         for (int i = 0; i < kFrames; ++i) {
             window->processEvents();
             const float t = static_cast<float>(i) / kFrames;

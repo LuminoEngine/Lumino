@@ -93,7 +93,7 @@ VoidResult WebGL2RenderPipeline::init(const RenderPipelineDesc& desc) {
 
     // ---- combined sampler にテクスチャユニット番号を割り当てる ----
     // ESSL 300 には layout(binding = N) が無いため、名前でロケーションを引いて設定する。
-    // 対応表の添字がそのままユニット番号になる (P1 で確定したスキーマ)。
+    // 対応表の添字がそのままユニット番号になる。
     glUseProgram(m_program);
     for (size_t i = 0; i < m_combinedSamplers.size(); ++i) {
         const GLint loc = glGetUniformLocation(m_program, m_combinedSamplers[i].name.c_str());

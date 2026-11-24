@@ -178,10 +178,13 @@ typedef enum LNTextureFormat {
     LN_TEXTURE_FORMAT_BGRA8_UNORM      = 1,
     /** @deprecated BGRA8_UNORM と同じ理由。RGBA8_UNORM_SRGB を使ってください。 */
     LN_TEXTURE_FORMAT_BGRA8_UNORM_SRGB = 2,
+    /** 推奨。どのバックエンドでも使えます。 */
     LN_TEXTURE_FORMAT_RGBA8_UNORM      = 3,
+    /** 推奨。どのバックエンドでも使えます。 */
     LN_TEXTURE_FORMAT_RGBA8_UNORM_SRGB = 4,
     LN_TEXTURE_FORMAT_R8_UNORM         = 7,
     LN_TEXTURE_FORMAT_RG8_UNORM        = 8,
+    /** HDR のレンダーターゲットにはこれを使ってください。 */
     LN_TEXTURE_FORMAT_RGBA16_FLOAT     = 9,
     /**
      * @note OpenGL ES 3.0 では既定でレンダーターゲットにもフィルタリング対象にもできません

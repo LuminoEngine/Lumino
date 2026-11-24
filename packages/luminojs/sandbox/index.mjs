@@ -1,4 +1,4 @@
-// Phase 6: ClearScreen サンドボックス
+// ClearScreen サンドボックス
 //
 // luminojs の公開 API を使い、requestAnimationFrame ループで
 // canvas を薄い緑色にクリアする。

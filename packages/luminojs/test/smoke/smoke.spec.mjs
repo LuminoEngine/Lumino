@@ -322,7 +322,7 @@ test.beforeAll(async ({ browser }) => {
             }
         }
 
-        // 7. デバイスロスト自動復旧 (docs/plans/device-lost-design.md フェーズ B3)。
+        // 7. デバイスロスト自動復旧。
         //    実 WebGPU デバイスを wgpuDeviceDestroy で破棄し (deep シミュレーション)、
         //    フレームループを回すだけで自動復旧して描画が再開できることを検証する。
         if (res.initialize.ok && res.webgpuAvailable) {

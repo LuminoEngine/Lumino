@@ -1,7 +1,7 @@
 ﻿/**
  * ForwardRendering.cpp
  *
- * Phase 2 デモ: ForwardRenderer でプロシージャルメッシュを描画する。
+ * ForwardRenderer でプロシージャルメッシュを描画する。
  * Camera, Material, Mesh, ForwardRenderer の動作確認。
  *
  * PlatformWindow でウィンドウを作成し、

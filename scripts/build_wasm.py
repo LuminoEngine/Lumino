@@ -284,7 +284,7 @@ def _copy_example_assets() -> None:
 #----------------------------------------------------------------------------
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(
-        description="Build Lumino (Phase 0) for WebAssembly via Emscripten."
+        description="Build Lumino for WebAssembly via Emscripten."
     )
     parser.add_argument(
         "action",

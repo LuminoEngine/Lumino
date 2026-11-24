@@ -104,7 +104,7 @@ TEST_F(Test_Material, SamplerStateBumpsBindingVersion) {
 
 // paramVersion と bindingVersion が独立して動くことを確認するテスト。
 // パラメータ変更で bindingVersion が上がってしまうと、色を毎フレーム変える
-// だけのマテリアルで BindGroup が毎フレーム作り直される (B-1 の課題)。
+// だけのマテリアルで BindGroup が毎フレーム作り直される。
 TEST_F(Test_Material, ParamAndBindingVersionAreIndependent) {
     auto* module = ln::CoreInstance::instance()->graphicsModule();
     auto matResult = ln::MaterialFactory::createUnlit(module);
@@ -164,7 +164,7 @@ TEST_F(Test_Material, SamplerBindingResolvesToTextureName) {
 // Material の破棄コールバックが発火することを確認するテスト。
 // Renderer は (Material*, ShaderPass*) を生ポインタでキャッシュするため、この通知が
 // 無いとキャッシュが単調増加し、さらに同じアドレスに再確保された別の Material が
-// 前の Material の BindGroup を掴んでしまう (計画書 B-2)。
+// 前の Material の BindGroup を掴んでしまう。
 TEST_F(Test_Material, DestroyCallback) {
     auto* module = ln::CoreInstance::instance()->graphicsModule();
 

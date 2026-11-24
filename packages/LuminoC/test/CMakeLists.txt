@@ -43,7 +43,7 @@ gtest_discover_tests(${PROJECT_NAME}
 
 # GPU テストは有効なバックエンドごとに "<backend>." 接頭辞と label "gpu-<backend>" を
 # 付けて登録する。WebGL2 はデスクトップでは ANGLE の OpenGL ES 3.0 で、Web の主経路を
-# デスクトップで検証するための構成 (webgl2-backend-plan.md P4)。
+# デスクトップで検証するための構成。
 # 特定のバックエンドだけを走らせるには ctest -L gpu-vulkan や ctest -R "^webgpu\." を使う。
 foreach(backend vulkan webgpu webgl2)
     string(TOUPPER ${backend} BACKEND_UPPER)

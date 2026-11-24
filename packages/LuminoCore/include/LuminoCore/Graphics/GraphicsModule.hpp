@@ -26,7 +26,7 @@ public:
      * デバイスの状態。
      * Running 以外の間、GPU 依存の C API は入口で LN_ERROR_DEVICE_LOST を返し、
      * RHI には一切触れない (デバイスロスト設計の RHI ガード)。
-     * Recovering は自動復旧ステートマシン (フェーズ B2) で使用する。
+     * Recovering は自動復旧ステートマシンで使用する。
      */
     enum class DeviceState {
         Running,

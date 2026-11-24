@@ -379,7 +379,7 @@ Result<void> BatchProcessor::flushSubMeshGroup(
     const DrawCommand* begin,
     uint32_t count) {
 
-    // フェーズ 1: 各サブメッシュを個別に描画する
+    // 各サブメッシュを個別に描画する
     for (uint32_t i = 0; i < count; ++i) {
         const auto& cmd = begin[i];
         auto result = renderer->drawSingleSubMesh(
