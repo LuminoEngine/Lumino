@@ -67,8 +67,6 @@ mul(v, M) が有利なケース:
 実際の SPIR-V を spirv-dis で見てみると、次のように RowMajor 属性が付いていることがわかるはず。
 - OpMemberDecorate %ObjectParams_std140 0 RowMajor
 
-
-
 ------------------------
 
 ## 現行アーキテクチャ (v2 / lcs2)
@@ -180,24 +178,22 @@ ShaderPass は「頂点シェーダー、フラグメントシェーダー、コ
 
 ```
 UnifiedShader
- ├─ GlobalShaderPass[]          … パス定義（プラットフォーム非依存）
- │    ├─ name                   … パス名（上位エンジンが意味を定義）
- │    ├─ vertexEntryPoint       … 頂点シェーダー関数名
- │    ├─ fragmentEntryPoint     … フラグメントシェーダー関数名
- │    ├─ computeEntryPoint      … コンピュートシェーダー関数名
- │    ├─ descriptorLayout       … 統合されたディスクリプタレイアウト
- │    └─ targetShaderPassIds[4] … 各ターゲット用パスへの参照
- │
- ├─ TargetShaderPass[]          … ターゲット別パス（エントリポイント ID の組）
- ├─ TargetEntryPoint[]          … ターゲット別エントリポイント
- │    ├─ target, name
- │    ├─ codeBlobId             … バイトコードへの参照
- │    ├─ bindingLayout          … バインディング情報
- │    └─ inputAttributes        … 頂点入力属性
- │
- ├─ Blob[]                      … コンパイル済みバイトコード
- ├─ GlobalResourceLayout        … リソースレイアウト（バッファ/テクスチャ/サンプラー/ストレージ）
- └─ GlobalConstantBufferMember[] … 定数バッファメンバー情報
+- GlobalShaderPass[]          … パス定義（プラットフォーム非依存）
+  - name                   … パス名（上位エンジンが意味を定義）
+  - vertexEntryPoint       … 頂点シェーダー関数名
+  - fragmentEntryPoint     … フラグメントシェーダー関数名
+  - computeEntryPoint      … コンピュートシェーダー関数名
+  - descriptorLayout       … 統合されたディスクリプタレイアウト
+  - targetShaderPassIds[4] … 各ターゲット用パスへの参照
+- TargetShaderPass[]          … ターゲット別パス（エントリポイント ID の組）
+- TargetEntryPoint[]          … ターゲット別エントリポイント
+  - target, name
+  - codeBlobId             … バイトコードへの参照
+  - bindingLayout          … バインディング情報
+  - inputAttributes        … 頂点入力属性
+- Blob[]                      … コンパイル済みバイトコード
+- GlobalResourceLayout        … リソースレイアウト（バッファ/テクスチャ/サンプラー/ストレージ）
+- GlobalConstantBufferMember[] … 定数バッファメンバー情報
 ```
 
 ### .lcsh バイナリフォーマット
@@ -214,17 +210,6 @@ UnifiedShader
 | `lcsh.gl.` | GlobalResourceLayout |
 
 `UnifiedShaderSerializer::loadFromData()` でデシリアライズし、ランタイムで利用します。
-
-## 主要ファイル
-
-| ファイル | 役割 |
-|---|---|
-| `include/lumino_shader/Common.hpp` | 列挙型と共通構造体の定義 |
-| `include/lumino_shader/ShaderCompiler.hpp` | Slang コンパイラ API ラッパー |
-| `include/lumino_shader/UnifiedShader.hpp` | 統合シェーダーのインメモリ表現 |
-| `include/lumino_shader/UnifiedShaderSerializer.hpp` | .lcsh シリアライズ / デシリアライズ |
-| `src/ShaderMetadataParser.hpp` | LUMINO_METADATA JSON パーサー |
-| `src/DescriptorLayoutBuilder.hpp` | ターゲット別バインディング → 統合レイアウト変換 |
 
 ## 他エンジンとの比較
 

@@ -1,6 +1,6 @@
 ﻿# lumino_shader
 
-Slang シェーダをコンパイルし、マルチターゲット (SPIRV / DXIL / WGSL / Metal) のバイトコードとリフレクション情報を統合バイナリ (`.lcsh`) にまとめるパッケージ。
+Slang シェーダをコンパイルし、マルチターゲット (SPIRV / WGSL / GLSL) のバイトコードとリフレクション情報を統合バイナリ (`.lcsh`) にまとめるパッケージ。
 
 ## 設計方針
 
@@ -177,21 +177,6 @@ UnifiedShaderSerializer2::saveToFile(shader, "output.lcsh");
 std::vector<uint8_t> data = readFile("output.lcsh");
 auto loaded = *UnifiedShaderSerializer2::loadFromData(data.data(), data.size());
 ```
-
-## 主要クラス
-
-| Class | Description |
-| --- | --- |
-| `ShaderCompiler2` | Compile Slang shaders, collect reflection info |
-| `WgslValidator` | Validate generated WGSL with Dawn (Null backend) |
-| `UnifiedShader2` | Data model holding compilation results |
-| `UnifiedShaderSerializer2` | Read/write `.lcsh` binary format |
-| `ParameterBlockLayout2` | ParameterBlock layout (set index, element list) |
-| `ParameterBlockElement2` | Single element within a ParameterBlock |
-| `TargetBinding2` | Per-target binding info (set, binding, size) |
-| `GlobalShaderPass2` | Shader pass definition (entry point name pairs) |
-| `TargetShaderPass2` | Per-target shader pass (compiled entry point refs) |
-| `TargetEntryPoint2` | Per-target entry point (bytecode, vertex attributes) |
 
 ## 対応ターゲット
 
