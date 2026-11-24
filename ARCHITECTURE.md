@@ -3,7 +3,25 @@
 Lumino のレイヤー構造・パッケージ構成・シェーダパイプラインをまとめたドキュメントです。
 各機能の詳細は、この文書からリンクする各パッケージの README や `docs/` 以下のドキュメントを参照してください。
 
-設計思想の背景 (FFI として提供する理由、旧実装からの教訓など) は [AGENTS.md](AGENTS.md) を参照してください。
+### 古い実装と教訓
+
+設計思想の背景 (FFI として提供する理由、旧実装からの教訓など) です。 
+
+`Lumino/legacy` フォルダに入っているのは旧バージョンの Lumino です。DirectX12 や Vulkan をバックエンドとしつつ、 DirectX9 時代のグラフィック API と似たものを提供するつもりで開発していましたが、レンダリング中にリソースを変更するなどのために極めて複雑なコードになってしまいました。またネイティブAPIも頻繁に呼び出すため、特に WASM で使っていると JavaScript から Lumino の API を呼び出すオーバーヘッドと、 JavaScript から C++ へエクスポートされた WebGL や WebGPU の関数を呼び出すオーバーヘッドが無視できなくなりました。
+
+ここから得られた教訓は、事前確保された共有メモリを最大限に活用し、API 関数の呼び出し回数を可能な限り抑えたいということです。
+WebGPU の API 設計はまさに参考になると考えています。テクスチャなどのリソースを事前確保・構築し、描画のコマンドリストは JavaScript 側でバイナリフォーマットとして Unit8Array 等で構築し、 C++ 側へは「フラッシュ」することで送り出します。
+
+### コアモジュールのメモリ使用の注意点
+
+C/C++ で実装されている次のモジュールはコアモジュールに該当します。
+これらは WASM にコンパイルされて JavaScript から呼び出されることを想定しています。
+
+- Lumino\packages\LuminoBase
+- Lumino\packages\LuminoCore
+- Lumino\packages\LuminoC
+
+2026年の時点では WASM は 32bit アドレス空間で動作するうえ、環境によってはメモリの上限がより小さく制限されることもあります。デバイスロスト時にリソースを再アップロードするためにビットマップデータなどをキャッシュすることがありますが、これらはできるだけ、C/C++ 側ではなく JavaScript 側で管理することを推奨します。
 
 ## レイヤー構造
 
@@ -39,10 +57,6 @@ Lumino はネイティブ (C++) のコアエンジンと、それを FFI 経由�
 [LuminoShader] ShaderCompiler2 (Slang, 4 ターゲット同時コンパイル), UnifiedShaderSerializer2 (.lcsh)
 ```
 
-ネイティブ版 (デスクトップ / コンシューマゲーム機) では、`luminojs` の代わりに C++ から直接
-LuminoC の C-API を呼び出すことも想定しています。サンプルは
-[LuminoC/examples/ClearScreen/Main.cpp](packages/LuminoC/examples/ClearScreen/Main.cpp) を参照してください。
-
 ## パッケージ一覧
 
 | パッケージ | 役割 | 詳細 |
@@ -75,22 +89,6 @@ LuminoC の C-API を呼び出すことも想定しています。サンプル�
           +-------->[LuminoBase]<---------+
 ```
 
-- `LuminoBase` はグラフィックス API に一切依存しない最下層のリーフです。`LuminoShader` と
-  `LuminoCore` の両方から PUBLIC でリンクされる共有基盤であり、これが `LuminoBase` を独立した
-  パッケージとして維持する理由です。
-- `luminosc` はシェーダコンパイラ CLI で、`LuminoShader` だけをリンクします。この経路に
-  グラフィックス API を持ち込まないことが設計上の制約です。静的ライブラリの PRIVATE 依存は
-  リンク行には伝播する (`$<LINK_ONLY:>`) ため、仮に `LuminoBase` を `LuminoCore` へ統合すると、
-  `LuminoShader` 経由で `luminosc` が Vulkan・Dawn・ANGLE・glfw を引き込むことになります。
-- `LuminoCore` から `LuminoShader` へのリンクは PRIVATE です。`.lcsh` のデシリアライズ
-  (`UnifiedShader2` / `UnifiedShaderSerializer2`) と、デスクトップのランタイムコンパイル経路
-  (`ShaderCompiler2`) にのみ使っており、`LuminoCore` の公開ヘッダには現れません。
-- デスクトップビルドでは `LuminoCore` が組み込みシェーダの生成に `luminosc` を使います
-  (`add_dependencies`)。これはビルド順序の依存であってリンク依存ではないため、上の図には
-  含めていません。
-
-パッケージ名の規則は [docs/coding-rules.md](docs/coding-rules.md) を参照してください。
-
 ## シェーダパイプライン
 
 ```
@@ -98,15 +96,9 @@ LuminoC の C-API を呼び出すことも想定しています。サンプル�
                                 *.lcsh.inl (C++ にバイトコードを埋め込むための hex 配列)
 ```
 
-- 組み込みシェーダ (Unlit/BasicLit/StencilMask 等): デスクトップの CMake ビルドで `luminosc` を
-  使い自動生成されます。
-- サンプル・アプリ側のシェーダ: `luminosc` CLI で事前コンパイルし、生成された `.lcsh` /
-  `.lcsh.inl` をコミットして利用します。
-- ランタイムコンパイル (デスクトップ, `LUMINO_USE_SLANG` 有効時): `.slang` ソースを実行時に
-  コンパイルして `Material`化することもできます。WASM ビルドではこの経路は使えません。
-
-シェーダの書き方・パラメータ設定は [docs/shader-conventions.md](docs/shader-conventions.md)、
-座標系・行列などグラフィックスの基本規約は [docs/graphics-conventions.md](docs/graphics-conventions.md)
-を参照してください。`.lcsh` バイナリフォーマットの詳細は
-[LuminoShader/README.md](packages/LuminoShader/README.md) と
-[LuminoShader/ARCHITECTURE.md](packages/LuminoShader/ARCHITECTURE.md) を参照してください。
+- 組み込みシェーダ (Unlit/BasicLit/StencilMask 等): デスクトップの CMake ビルドで `luminosc` を  使い自動生成されます。
+- サンプル・アプリ側のシェーダ: `luminosc` CLI で事前コンパイルし、生成された `.lcsh` / `.lcsh.inl` をコミットして利用します。
+- ランタイムコンパイル (デスクトップ, `LUMINO_USE_SLANG` 有効時): `.slang` ソースを実行時に  コンパイルして `Material` 化することもできます。WASM ビルドではこの経路は使えません。
+- シェーダの書き方・パラメータ設定: [docs/shader-conventions.md](docs/shader-conventions.md)
+- 座標系・行列などグラフィックスの基本規約: [docs/graphics-conventions.md](docs/graphics-conventions.md)
+- `.lcsh` バイナリフォーマットの詳細は: [LuminoShader/README.md](packages/LuminoShader/README.md), [LuminoShader/ARCHITECTURE.md](packages/LuminoShader/ARCHITECTURE.md)

@@ -1,12 +1,12 @@
 #!/usr/bin/env python3
-"""Build Lumino for the web (Emscripten / WebAssembly).
+"""Lumino を Web 向け (Emscripten / WebAssembly) にビルドします。
 
-Usage:
-    python scripts/build_wasm.py              # configure + build + copy (Release)
-    python scripts/build_wasm.py all          # same as above
-    python scripts/build_wasm.py configure    # cmake configure only
-    python scripts/build_wasm.py build        # cmake --build + copy
-    python scripts/build_wasm.py clean        # remove output
+使い方:
+    python scripts/build_wasm.py              # configure + build + コピー (Release)
+    python scripts/build_wasm.py all          # 上記と同じ
+    python scripts/build_wasm.py configure    # cmake の configure のみ
+    python scripts/build_wasm.py build        # cmake --build + コピー
+    python scripts/build_wasm.py clean        # 出力を削除
     python scripts/build_wasm.py --debug      # Debug 構成でビルド (build/lumino-wasm32-emscripten-debug)
 """
 
@@ -20,45 +20,48 @@ import subprocess
 import sys
 from pathlib import Path
 
+#----------------------------------------------------------------------------
+# Constants
+#----------------------------------------------------------------------------
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
+
 # フラグなし(Release)は従来と同じディレクトリ名を使う。--debug は専用ディレクトリに分離する。
 BUILD_DIR_RELEASE = REPO_ROOT / "build" / "lumino-wasm32-emscripten"
 BUILD_DIR_DEBUG = REPO_ROOT / "build" / "lumino-wasm32-emscripten-debug"
 OUTPUT_DIR = REPO_ROOT / "packages" / "luminojs" / "lib"
 
-# Emscripten SDK is always cloned into <repo>/build/emsdk per README.md.
+# Emscripten SDK は README.md の手順どおり、常に <repo>/build/emsdk にクローンします。
 EMSDK_ROOT = REPO_ROOT / "build" / "emsdk"
 
-# WebGPU-distribution is pinned to this commit per README.md. Update both
-# when bumping the Dawn version.
+# WebGPU-distribution は README.md の記載に従い、このコミットに固定します。
+# Dawn のバージョンを更新するときは両方を更新してください。
 WEBGPU_ROOT = REPO_ROOT / "build" / "webgpu"
 WEBGPU_EXPECTED_COMMIT = "17dcd42a7683355e7a40ac4e97e77f36dff5b5ab"
 NINJA = REPO_ROOT / "build" / "vcpkg" / "downloads" / "tools" / "ninja-1.13.2-windows" / "ninja.exe"
 VCPKG_TOOLCHAIN = REPO_ROOT / "build" / "vcpkg" / "scripts" / "buildsystems" / "vcpkg.cmake"
 
-# Files produced by the Emscripten link step that should be shipped to the TypeScript package.
+# Emscripten のリンク工程で生成され、TypeScript パッケージへ配布するファイル。
 ARTIFACT_NAMES = ("LuminoC.mjs", "LuminoC.wasm", "LuminoC.wasm.map")
 
-# Native binaries (luminosc) built for x64-Windows that are bundled into the
-# TypeScript package for use as a local CLI tool.
+# x64-Windows 向けにビルドしたネイティブバイナリ (luminosc)。
+# ローカルの CLI ツールとして使えるよう TypeScript パッケージに同梱します。
 NATIVE_BIN_SRC = REPO_ROOT / "build" / "lumino-x64-windows" / "packages" / "luminosc" / "Release"
 NATIVE_BIN_DEST = REPO_ROOT / "packages" / "luminojs" / "bin" / "x64-windows"
 NATIVE_BIN_GLOBS = ("*.exe", "*.dll")
 
-# C++ example assets (shaders, textures) that should be available to the
-# TypeScript examples via the Vite dev server / production build.
+# C++ サンプルのアセット (シェーダ、テクスチャ)。
+# Vite の開発サーバーや本番ビルドを通じて TypeScript のサンプルから使えるようにします。
 EXAMPLE_ASSETS_SRC = REPO_ROOT / "packages" / "LuminoC" / "examples" / "assets"
 EXAMPLE_ASSETS_DEST = REPO_ROOT / "packages" / "luminojs-examples" / "public"
 EXAMPLE_ASSET_GLOBS = ("*.lcsh", "*.png")
-
 
 #----------------------------------------------------------------------------
 # Emscripten SDK resolution
 #----------------------------------------------------------------------------
 
 def _find_emsdk_env(emsdk_root: Path) -> Path:
-    """Return the path to emsdk_env.bat / emsdk_env.sh for the given root."""
+    """指定したルートにある emsdk_env.bat / emsdk_env.sh のパスを返します。"""
     if os.name == "nt":
         candidate = emsdk_root / "emsdk_env.bat"
     else:
@@ -75,7 +78,7 @@ def _find_emsdk_env(emsdk_root: Path) -> Path:
 
 
 def resolve_emsdk() -> Path:
-    """Return the in-tree emsdk root (``<repo>/emsdk``)."""
+    """リポジトリ内の emsdk ルート (``<repo>/build/emsdk``) を返します。"""
     if not EMSDK_ROOT.is_dir():
         raise SystemExit(
             f"emsdk directory not found at {EMSDK_ROOT}.\n"
@@ -210,7 +213,7 @@ def _copy_artifacts(debug: bool) -> None:
         src = src_dir / name
         if not src.exists():
             if name.endswith(".map"):
-                continue  # source map is optional
+                continue  # ソースマップは省略可能
             raise FileNotFoundError(f"Expected build artifact not found: {src}")
         dst = OUTPUT_DIR / name
         shutil.copy2(src, dst)

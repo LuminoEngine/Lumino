@@ -1,8 +1,6 @@
 ﻿/**
  * フレームループ内のヒープ確保回数を数える計測テスト。
  *
- * docs/plans/per-frame-allocation-2026-08.md 第 6 節「数値の確認」に対応する。
- *
  * LuminoCore / LuminoBase は STATIC ライブラリとしてこの実行ファイルに直接リンク
  * されているため、グローバル operator new を置き換えると Lumino 側の確保をここで
  * 数えられる。Vulkan ローダやドライバ DLL の内部確保は別モジュールの operator new /
