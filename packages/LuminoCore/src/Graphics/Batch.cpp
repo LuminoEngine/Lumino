@@ -157,6 +157,24 @@ void BatchProcessor::sortCommands(std::vector<DrawCommand>& commands, SortMode m
         });
 }
 
+Vector3 BatchProcessor::spriteNormal(const Matrix4x4& transform) {
+    // 左上 3x3 の列 (列優先なので m[0..2], m[4..6], m[8..10]) を c_x, c_y, c_z とすると、
+    // 逆転置で (0, 0, 1) を変換した向きは (c_x × c_y) / det(M3) になる。
+    // det(M3) = (c_x × c_y)・c_z なので、逆行列を作らずに normalize(c_x × c_y) × sign(det) で求まる。
+    // 鏡映 (det < 0) では外積の向きが反転するのを sign(det) で戻す。
+    const float* m = transform.m;
+    const Vector3 cx{m[0], m[1], m[2]};
+    const Vector3 cy{m[4], m[5], m[6]};
+    const Vector3 cz{m[8], m[9], m[10]};
+    const Vector3 n = Vector3::cross(cx, cy);
+    const float det = Vector3::dot(n, cz);
+    // 行列式が 0 (拡大率 0 など) や NaN のときは逆転置が定義できないので、従来どおり (0, 0, 1) にする。
+    if (!(std::abs(det) > 0.0f)) {
+        return Vector3::unitZ();
+    }
+    return n.normalized() * (det > 0.0f ? 1.0f : -1.0f);
+}
+
 Result<void> BatchProcessor::flush(Renderer* renderer, DrawCommandBuffer* commandBuffer,
                                    const Matrix4x4& viewMatrix, SortMode sortMode) {
     auto& commands = commandBuffer->commands();
@@ -307,8 +325,13 @@ Result<void> BatchProcessor::flushSpriteGroup(
         uint32_t ii = i * 6;
 
         // 4 頂点を生成する
+        // 頂点の法線は、transform の逆転置で (0, 0, 1) を変換したワールド座標の法線。
+        // 頂点はワールド座標で詰めて単位行列の Transform で描くため、シェーダの
+        // objectData.normalMatrix は単位行列になり、メッシュと同じ式でそのまま扱える。
+        // 2D カメラの cy 反転 (layout2D) は位置だけの話で、法線には影響させない。
+        // tangent は今のところ固定値のまま (transform を掛けていない)。
         Vertex v{};
-        v.normal = {0, 0, 1};
+        v.normal = spriteNormal(s.transform);
         v.tangent = {1, 0, 0, 1};
         v.color = s.color;
 

@@ -19,6 +19,9 @@ struct SceneParams {
     float4 ambientColor;   // xyz = 環境光の色
 };
 
+// drawSprite の頂点はワールド座標でまとめて描くため world / normalMatrix は単位行列で、
+// 頂点の法線は transform の逆転置で変換済みのワールド座標の法線として届く。
+// そのためメッシュと同じく normalize(mul(normalMatrix, float4(input.normal, 0)).xyz) で扱える。
 struct ObjectParams {
     float4x4 world;
     float4x4 normalMatrix;

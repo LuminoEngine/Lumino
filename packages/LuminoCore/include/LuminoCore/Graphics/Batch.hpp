@@ -181,6 +181,12 @@ public:
     static void sortCommands(std::vector<DrawCommand>& commands,
                              SortMode mode = SortMode::Stable);
 
+    // テスト用に公開。スプライトの頂点の法線 (ワールド座標) を求める。
+    // transform の左上 3x3 の逆転置でローカルの法線 (0, 0, 1) を変換し、正規化した値。
+    // Transform::normalMatrix() で (0, 0, 1) を変換した向きと一致する。
+    // 行列式が 0 (拡大率 0 など) で向きが決まらないときは (0, 0, 1) を返す。
+    static Vector3 spriteNormal(const Matrix4x4& transform);
+
 private:
     BatchProcessor() = default;
 

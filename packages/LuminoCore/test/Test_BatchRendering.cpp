@@ -378,3 +378,104 @@ TEST_F(Test_BatchSort, MixedTypes_SeparatedByType) {
     EXPECT_EQ(cmds[2].type, DrawCommandType::SubMesh);
     EXPECT_EQ(cmds[3].type, DrawCommandType::SubMesh);
 }
+
+//------------------------------------------------------------------------------
+// BatchProcessor::spriteNormal のテスト
+// drawSprite の頂点の法線は、transform の逆転置で (0, 0, 1) を変換したワールド座標の法線。
+//------------------------------------------------------------------------------
+
+// 3x3 の部分を列 (ローカルの x・y・z 軸の写り先) で指定して行列を作る。平行移動は適当な値。
+static Matrix4x4 fromColumns(const Vector3& x, const Vector3& y, const Vector3& z) {
+    return Matrix4x4(x.x, x.y, x.z, 0,
+                     y.x, y.y, y.z, 0,
+                     z.x, z.y, z.z, 0,
+                     5, -3, 7, 1);
+}
+
+static void expectVecNear(const Vector3& a, const Vector3& b, float eps = 1e-5f) {
+    EXPECT_NEAR(a.x, b.x, eps);
+    EXPECT_NEAR(a.y, b.y, eps);
+    EXPECT_NEAR(a.z, b.z, eps);
+}
+
+// 列優先の m で、M の第 i 列 (ローカルの軸の写り先)
+static Vector3 column(const Matrix4x4& m, int i) {
+    return {m.m[i * 4 + 0], m.m[i * 4 + 1], m.m[i * 4 + 2]};
+}
+
+TEST(Test_SpriteNormal, LyridraFloor) {
+    // y と z の入れ替え (行列式 -1)
+    Matrix4x4 m = fromColumns({1, 0, 0}, {0, 0, 1}, {0, 1, 0});
+    expectVecNear(BatchProcessor::spriteNormal(m), {0, 1, 0});
+}
+
+TEST(Test_SpriteNormal, LyridraStandingBoard) {
+    // 行列式 -1
+    Matrix4x4 m = fromColumns({1, 0, 0}, {0, -1, 1}, {0, 1, 0});
+    const float s = 1.0f / std::sqrt(2.0f);
+    expectVecNear(BatchProcessor::spriteNormal(m), {0, s, s});
+}
+
+TEST(Test_SpriteNormal, Transforms2DKeepUnitZ) {
+    const Matrix4x4 cases[] = {
+        Matrix4x4::identity(),
+        Matrix4x4::rotateZ(0.8f),
+        Matrix4x4::scale({2.0f, 0.5f, 1.0f}),
+        Matrix4x4::scale({-1.0f, 1.0f, 1.0f}),
+        Matrix4x4::scale({1.0f, -3.0f, 1.0f}),
+        Matrix4x4::translate({100, 50, 0}) * Matrix4x4::rotateZ(-2.1f) * Matrix4x4::scale({-2.0f, 3.0f, 1.0f}),
+    };
+    for (const auto& m : cases) {
+        expectVecNear(BatchProcessor::spriteNormal(m), {0, 0, 1});
+    }
+}
+
+TEST(Test_SpriteNormal, GeneralMatrixPerpendicularToEdges) {
+    // x 軸まわりの回転・せん断・非一様な拡大・鏡映を含む一般の M
+    const Matrix4x4 shear = fromColumns({1, 0, 0}, {0.4f, 1, 0}, {0.2f, -0.3f, 1});
+    const Matrix4x4 cases[] = {
+        Matrix4x4::rotateX(0.7f) * shear * Matrix4x4::scale({2.0f, 0.5f, 3.0f}),
+        Matrix4x4::rotateY(1.2f) * Matrix4x4::rotateX(-0.4f) * shear * Matrix4x4::scale({-1.5f, 2.0f, 0.7f}),
+        fromColumns({1, 2, 0.5f}, {-0.3f, 1, 2}, {0.1f, 0.2f, -1}),
+    };
+    for (const auto& m : cases) {
+        Vector3 n = BatchProcessor::spriteNormal(m);
+        EXPECT_NEAR(n.length(), 1.0f, 1e-5f);
+        EXPECT_NEAR(Vector3::dot(n, column(m, 0).normalized()), 0.0f, 1e-5f);
+        EXPECT_NEAR(Vector3::dot(n, column(m, 1).normalized()), 0.0f, 1e-5f);
+        // 逆転置の定義どおり: n と M の z 軸の写り先の内積は正 (ローカルの n・z = 1 > 0 が保たれる)
+        EXPECT_GT(Vector3::dot(n, column(m, 2)), 0.0f);
+    }
+}
+
+TEST(Test_SpriteNormal, MatchesDrawMeshNormalMatrix) {
+    // drawMesh の経路 (Transform::normalMatrix() で (0, 0, 1) を変換) と同じ結果になること
+    Transform cases[3];
+    cases[0].rotation = Quaternion::fromAxisAngle({1, 0, 0}, 0.7f);
+    cases[0].scale = {2.0f, 0.5f, 3.0f};
+    cases[1].position = {1, 2, 3};
+    cases[1].rotation = Quaternion::fromAxisAngle(Vector3{1, 1, 0}.normalized(), -1.3f);
+    cases[1].scale = {-1.5f, 2.0f, 0.7f};
+    cases[2].rotation = Quaternion::fromAxisAngle(Vector3{0.2f, -1, 0.5f}.normalized(), 2.4f);
+    cases[2].scale = {0.3f, -4.0f, -2.0f};
+    for (const auto& t : cases) {
+        // normalMatrix * (0, 0, 1, 0) は第 2 列
+        Vector3 expected = column(t.normalMatrix(), 2).normalized();
+        expectVecNear(BatchProcessor::spriteNormal(t.matrix()), expected);
+    }
+}
+
+TEST(Test_SpriteNormal, DegenerateReturnsUnitZ) {
+    const Matrix4x4 cases[] = {
+        Matrix4x4::scale({0.0f, 1.0f, 1.0f}),
+        Matrix4x4::scale({1.0f, 0.0f, 1.0f}),
+        Matrix4x4::scale({1.0f, 1.0f, 0.0f}),
+        Matrix4x4::rotateX(0.7f) * Matrix4x4::scale({0.0f, 0.0f, 0.0f}),
+        fromColumns({1, 0, 0}, {2, 0, 0}, {0, 0, 1}),
+    };
+    for (const auto& m : cases) {
+        Vector3 n = BatchProcessor::spriteNormal(m);
+        EXPECT_FALSE(std::isnan(n.x) || std::isnan(n.y) || std::isnan(n.z));
+        expectVecNear(n, {0, 0, 1});
+    }
+}
