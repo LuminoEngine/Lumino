@@ -171,9 +171,9 @@ export class Renderer extends LuminoObject {
      *
      * 頂点の法線は、`transform` の逆転置でローカルの法線 (0, 0, 1) を変換して正規化した
      * ワールド座標の法線です (`drawMesh()` の normalMatrix と同じ考え方)。頂点はワールド座標で
-     * まとめて描くため、シェーダの `objectData.world` と `objectData.normalMatrix` は単位行列です。
+     * まとめて描くため、シェーダの `ln_World` と `ln_NormalMatrix` は単位行列です。
      * したがってシェーダでは、メッシュと同じ式
-     * `normalize(mul(objectData.normalMatrix, float4(input.normal, 0)).xyz)` でスプライトも扱えます。
+     * `normalize(mul(ln_NormalMatrix, float4(input.normal, 0)).xyz)` でスプライトも扱えます。
      * 2D の変換 (z 軸まわりの回転、x・y の拡大や反転、平行移動) では法線は (0, 0, 1) のままです。
      * 行列式が 0 (拡大率 0 など) で向きが決まらないときは (0, 0, 1) になります。
      * 接ベクトル (tangent) は `transform` によらず (1, 0, 0, 1) の固定値です。

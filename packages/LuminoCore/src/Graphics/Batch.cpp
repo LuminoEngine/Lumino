@@ -327,7 +327,7 @@ Result<void> BatchProcessor::flushSpriteGroup(
         // 4 頂点を生成する
         // 頂点の法線は、transform の逆転置で (0, 0, 1) を変換したワールド座標の法線。
         // 頂点はワールド座標で詰めて単位行列の Transform で描くため、シェーダの
-        // objectData.normalMatrix は単位行列になり、メッシュと同じ式でそのまま扱える。
+        // ln_NormalMatrix は単位行列になり、メッシュと同じ式でそのまま扱える。
         // 2D カメラの cy 反転 (layout2D) は位置だけの話で、法線には影響させない。
         // tangent は今のところ固定値のまま (transform を掛けていない)。
         Vertex v{};

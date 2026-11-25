@@ -79,7 +79,7 @@ float4 fsMain(VSOutput input) : SV_TARGET {
     // これは SSR のようなレイトレーシングを行う場合の典型的な計算方法。
     // viewRay: (ndc.x, ndc.y, 1.0, 1.0)、つまり NDC の Far Plane 上の点を逆投影して得られるビュー空間のレイ方向。
     // 画面中央だと (0,0,-1.0,0.1) とかになり、zw はどの座標でも同じ。 x y は画面右下に行くほど大きくなり、左上に行くほど小さくなる。
-    const float4 viewRay = mul(viewData.invProj, float4(ndc, 1.0, 1.0));
+    const float4 viewRay = mul(ln_ProjectionI, float4(ndc, 1.0, 1.0));
     //return viewRay;
     const float3 viewDir = viewRay.xyz / viewRay.w;
     // この時点で、 viewDir は (x, y, -カメラのFarPlane, 1.0) のようになる。
@@ -98,7 +98,7 @@ float4 fsMain(VSOutput input) : SV_TARGET {
     // N: Z+が手前。
     // V: ジオメトリからカメラへ向かう、正規化した向きベクトル
     // reflected: 視点から飛ばしたレイがジオメトリ表面で反射した後の向きベクトル
-    const float3 N = normalize(mul((float3x3)viewData.view, worldNormal));
+    const float3 N = normalize(mul((float3x3)ln_View, worldNormal));
     const float3 V = normalize(-viewPos);
     const float3 reflected = reflect(-V, N);
     //return float4(reflected, 1);
@@ -127,7 +127,7 @@ float4 fsMain(VSOutput input) : SV_TARGET {
     for (float i = 0.0; i < maxSteps; i += 1.0) {
         rayPos += reflected * stepSize;
 
-        float4 projPos = mul(viewData.proj, float4(rayPos, 1.0));
+        float4 projPos = mul(ln_Projection, float4(rayPos, 1.0));
         projPos.xy /= projPos.w;
         float2 sampleUV = projPos.xy * 0.5 + 0.5;
         sampleUV.y = 1.0 - sampleUV.y;

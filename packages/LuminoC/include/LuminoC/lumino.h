@@ -780,11 +780,11 @@ extern LUMINO_API LNResult LNMaterial_SetFloat4(
  *
  * values は LNMatrix::m と同じ列優先の 16 要素 (values[12], values[13], values[14] が平行移動) です。
  * Lumino はこれを並べ替えずに定数バッファへ 64 バイトそのまま書き込みます。
- * viewData.viewProj などシステムの行列 (LNCamera_SetMatrices で渡す行列) とまったく同じ書き方なので、
+ * ln_ViewProjection などシステムの行列 (LNCamera_SetMatrices で渡す行列) とまったく同じ書き方なので、
  * 呼び出し側で転置する必要はありません。全バックエンドで同じ結果になります。
  *
  * シェーダで uniform float4x4 M と宣言し、行列 A を渡した場合:
- * - mul(M, v) は数学の A * v です (mul(viewData.viewProj, v) と同じ書き方で使えます)。
+ * - mul(M, v) は数学の A * v です (mul(ln_ViewProjection, v) と同じ書き方で使えます)。
  * - M[i] は数学の i 行目 (values[i], values[4 + i], values[8 + i], values[12 + i]) です。
  * - M[i][j] は A の i 行 j 列 = values[j * 4 + i] です。
  *
@@ -1253,9 +1253,9 @@ extern LUMINO_API LNResult LNRenderer_DrawScreenRect(
  *
  * 頂点の法線は、transform の逆転置でローカルの法線 (0, 0, 1) を変換して正規化した
  * ワールド座標の法線です (LNRenderer_DrawMesh の normalMatrix と同じ考え方)。頂点はワールド座標で
- * まとめて描くため、シェーダの objectData.world と objectData.normalMatrix は単位行列です。
+ * まとめて描くため、シェーダの ln_World と ln_NormalMatrix は単位行列です。
  * したがってシェーダでは、メッシュと同じ式
- * normalize(mul(objectData.normalMatrix, float4(input.normal, 0)).xyz) でスプライトも扱えます。
+ * normalize(mul(ln_NormalMatrix, float4(input.normal, 0)).xyz) でスプライトも扱えます。
  * 2D の変換 (z 軸まわりの回転、x・y の拡大や反転、平行移動) では法線は (0, 0, 1) のままです。
  * 行列式が 0 (拡大率 0 など) で向きが決まらないときは (0, 0, 1) になります。
  * 接ベクトル (tangent) は transform によらず (1, 0, 0, 1) の固定値です。

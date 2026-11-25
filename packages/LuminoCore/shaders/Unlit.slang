@@ -31,8 +31,8 @@ struct VSOutput {
 [shader("vertex")]
 VSOutput vsMain(VSInput input) {
     VSOutput output;
-    float4 worldPos = mul(objectData.world, float4(input.position, 1.0));
-    output.position = mul(viewData.viewProj, worldPos);
+    float4 worldPos = mul(ln_World, float4(input.position, 1.0));
+    output.position = mul(ln_ViewProjection, worldPos);
     output.uv = input.uv;
     output.color = input.color;
     return output;
@@ -61,11 +61,11 @@ struct VSOutputGB {
 [shader("vertex")]
 VSOutputGB vsGBufferMain(VSInput input) {
     VSOutputGB o;
-    float4 worldPos = mul(objectData.world, float4(input.position, 1.0));
-    float4 viewPos4 = mul(viewData.view, worldPos);
-    o.position = mul(viewData.proj, viewPos4);
+    float4 worldPos = mul(ln_World, float4(input.position, 1.0));
+    float4 viewPos4 = mul(ln_View, worldPos);
+    o.position = mul(ln_Projection, viewPos4);
     o.viewPos  = viewPos4.xyz;
-    o.worldNormal = normalize(mul((float3x3)objectData.normalMatrix, input.normal));
+    o.worldNormal = normalize(mul((float3x3)ln_NormalMatrix, input.normal));
     o.uv = input.uv;
     o.color = input.color;
     return o;

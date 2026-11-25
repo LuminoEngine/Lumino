@@ -2218,7 +2218,7 @@ TEST_F(Test_Graphics, UnlitAlphaCutoff) {
 // 並びの取り違え (転置など) は絵の形がずれるだけで気づきにくいため、次の 3 点を確かめる。
 //   a. シェーダの mul(M, p) が、CPU で A を p に掛けた結果と一致する
 //   b. M[1] や M[i][j] が、数学の行 1 や i 行 j 列になる
-//   c. Camera の viewData.viewProj と setMatrix の M で、同じ頂点が同じ画素に描かれる
+//   c. Camera の ln_ViewProjection と setMatrix の M で、同じ頂点が同じ画素に描かれる
 // シェーダは Data/MatrixParam.slang。値は色として読み戻す (詳細はシェーダのコメント)。
 //------------------------------------------------------------------------------
 
@@ -2413,7 +2413,7 @@ TEST_F(Test_Graphics, MaterialSetMatrixRowAccess) {
     LNObject_Release(mat);
 }
 
-// c. カメラの行列との一致: 同じ行列 VP (= proj * view) を Camera.setMatrices で viewData.viewProj として
+// c. カメラの行列との一致: 同じ行列 VP (= proj * view) を Camera.setMatrices で ln_ViewProjection として
 //    渡して Unlit で描いた絵と、setMatrix で渡して mul(M, ...) で描いた絵が、画素単位で一致する。
 TEST_F(Test_Graphics, MaterialSetMatrixMatchesCameraViewProj) {
     const LNMatrix view = mulMatrix(translationMatrix(0.2f, -0.1f, -3.0f),
@@ -2423,7 +2423,7 @@ TEST_F(Test_Graphics, MaterialSetMatrixMatchesCameraViewProj) {
     const LNMatrix vp = mulMatrix(proj, view);
     const LNMatrix identity = translationMatrix(0.0f, 0.0f, 0.0f);
 
-    // view を単位行列にして、viewData.viewProj が vp とビット単位で同じになるようにする
+    // view を単位行列にして、ln_ViewProjection が vp とビット単位で同じになるようにする
     LNHandle camera = LN_NULL_HANDLE;
     ASSERT_EQ(LN_OK, LNCamera_Create(&camera));
     ASSERT_EQ(LN_OK, LNCamera_SetMatrices(camera, identity.m, vp.m, LN_FALSE));

@@ -136,11 +136,11 @@ export class Material extends LuminoObject implements ResidentResource {
      * 名前付き float4x4 シェーダパラメータを設定します。同じフレームでは後勝ちです。
      *
      * `value.m` (列優先の 16 要素。`m[12]`, `m[13]`, `m[14]` が平行移動) を並べ替えずにそのまま渡します。
-     * `Camera.setMatrices` に渡す行列や `viewData.viewProj` とまったく同じ扱いなので、転置は不要です。
+     * `Camera.setMatrices` に渡す行列や `ln_ViewProjection` とまったく同じ扱いなので、転置は不要です。
      * 全バックエンドで同じ結果になります。
      *
      * シェーダで `uniform float4x4 M;` と宣言し、`setMatrix("M", A)` した場合:
-     * - `mul(M, v)` は数学の A * v です。`mul(viewData.viewProj, v)` と同じ書き方で使え、
+     * - `mul(M, v)` は数学の A * v です。`mul(ln_ViewProjection, v)` と同じ書き方で使え、
      *   CPU で `Matrix4x4.multiply(A, B)` (B を先に適用) した結果とも一致します。
      * - `M[i]` は数学の i 行目 `(m[i], m[4 + i], m[8 + i], m[12 + i])` です。
      * - `M[i][j]` は A の i 行 j 列 `m[j * 4 + i]` です。

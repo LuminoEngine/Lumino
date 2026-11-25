@@ -31,8 +31,8 @@ struct VSOutput {
 [shader("vertex")]
 VSOutput vsMain(VSInput input) {
     VSOutput output;
-    float4 worldPos = mul(objectData.world, float4(input.position, 1.0));
-    output.position = mul(viewData.viewProj, worldPos);
+    float4 worldPos = mul(ln_World, float4(input.position, 1.0));
+    output.position = mul(ln_ViewProjection, worldPos);
     output.uv = input.uv;
     output.color = input.color;
     return output;

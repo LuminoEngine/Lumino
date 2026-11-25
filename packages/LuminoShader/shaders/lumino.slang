@@ -43,40 +43,42 @@ ParameterBlock<SceneParams>    sceneData;
 ParameterBlock<ObjectParams>   objectData;
 
 //------------------------------------------------------------------------------
-// 便利エイリアス (旧版互換の ln_ プレフィックス)
+// ln_ ビルトイン変数 (旧版互換の ln_ プレフィックス)
+//
+// #define は import 先のモジュールへ公開されないため、グローバル property で定義する。
 //------------------------------------------------------------------------------
 
 // View
 
 /** View 行列 */
-#define ln_View              viewData.view
+property float4x4 ln_View            { get { return viewData.view; } }
 
 /** Projection 行列 */
-#define ln_Projection        viewData.proj
+property float4x4 ln_Projection      { get { return viewData.proj; } }
 
 /** View-Projection 行列 */
-#define ln_ViewProjection    viewData.viewProj
+property float4x4 ln_ViewProjection  { get { return viewData.viewProj; } }
 
 /** Projection の逆行列 */
-#define ln_ProjectionI       viewData.invProj
+property float4x4 ln_ProjectionI     { get { return viewData.invProj; } }
 
 /** View-Projection の逆行列 */
-#define ln_ViewProjectionI   viewData.invViewProj
+property float4x4 ln_ViewProjectionI { get { return viewData.invViewProj; } }
 
 /** ワールド空間上のカメラ位置 */
-#define ln_CameraPosition    viewData.cameraPos.xyz
+property float3   ln_CameraPosition  { get { return viewData.cameraPos.xyz; } }
 
 /** スクリーン解像度 (width, height, 1/width, 1/height) */
-#define ln_Resolution        viewData.screenSize
+property float4   ln_Resolution      { get { return viewData.screenSize; } }
 
 // Scene
-// #define ln_MainLightDir      sceneData.lightDir.xyz
-// #define ln_MainLightColor    (sceneData.lightColor.xyz * sceneData.lightColor.w)
-// #define ln_AmbientColor      sceneData.ambientColor.xyz
+// property float3 ln_MainLightDir   { get { return sceneData.lightDir.xyz; } }
+// property float3 ln_MainLightColor { get { return sceneData.lightColor.xyz * sceneData.lightColor.w; } }
+// property float3 ln_AmbientColor   { get { return sceneData.ambientColor.xyz; } }
 
 // Object
-#define ln_World             objectData.world
-#define ln_NormalMatrix      objectData.normalMatrix
+property float4x4 ln_World           { get { return objectData.world; } }
+property float4x4 ln_NormalMatrix    { get { return objectData.normalMatrix; } }
 
 //------------------------------------------------------------------------------
 // GBuffer layout (Deferred / SSR 共通)

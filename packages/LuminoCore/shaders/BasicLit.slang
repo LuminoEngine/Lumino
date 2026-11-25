@@ -28,10 +28,10 @@ struct VSOutput {
 [shader("vertex")]
 VSOutput vsMain(VSInput input) {
     VSOutput output;
-    float4 worldPos = mul(objectData.world, float4(input.position, 1.0));
-    output.position  = mul(viewData.viewProj, worldPos);
+    float4 worldPos = mul(ln_World, float4(input.position, 1.0));
+    output.position  = mul(ln_ViewProjection, worldPos);
     output.worldPos  = worldPos.xyz;
-    output.worldNorm = normalize(mul((float3x3)objectData.normalMatrix, input.normal));
+    output.worldNorm = normalize(mul((float3x3)ln_NormalMatrix, input.normal));
     output.uv        = input.uv;
     output.color     = input.color;
     return output;
@@ -44,7 +44,7 @@ float4 fsMain(VSOutput input) : SV_TARGET {
 
     float3 N = normalize(input.worldNorm);
     float3 L = normalize(sceneData.lightDir.xyz);
-    float3 V = normalize(viewData.cameraPos.xyz - input.worldPos);
+    float3 V = normalize(ln_CameraPosition - input.worldPos);
     float3 H = normalize(L + V);
 
     // Diffuse (Lambert)

@@ -300,13 +300,13 @@ Material が持つ定数バッファは 1 本だけです。素の `uniform` と
 ### 行列パラメータ (`setMatrix`) の並び
 
 `setMatrix` は `Matrix4x4` の `m` (列優先の 16 要素。`m[12]`, `m[13]`, `m[14]` が平行移動) を
-並べ替えずに、定数バッファへ 64 バイトそのまま書き込みます。`viewData.viewProj` などシステムの行列と
+並べ替えずに、定数バッファへ 64 バイトそのまま書き込みます。`ln_ViewProjection` などシステムの行列と
 まったく同じ書き方なので、呼び出し側で転置する必要はありません。全バックエンド (Vulkan / WebGPU / WebGL2)
 で同じ結果になります。
 
 シェーダで `uniform float4x4 M;` と宣言し、`setMatrix("M", A)` した場合:
 
-- `mul(M, v)` は数学の A * v です。`mul(viewData.viewProj, v)` と同じ書き方で使え、
+- `mul(M, v)` は数学の A * v です。`mul(ln_ViewProjection, v)` と同じ書き方で使え、
   CPU で `Matrix4x4.multiply(A, B)` (B を先に適用) して点に掛けた結果とも一致します。
 - `M[i]` は数学の i 行目 `(m[i], m[4 + i], m[8 + i], m[12 + i])` です。
 - `M[i][j]` は A の i 行 j 列 `m[j * 4 + i]` です。

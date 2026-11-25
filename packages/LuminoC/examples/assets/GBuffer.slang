@@ -58,13 +58,13 @@ struct FSOutput {
 [shader("vertex")]
 VSOutput vsMain(VSInput input) {
     VSOutput output;
-    float4 worldPos = mul(objectData.world, float4(input.position, 1.0));
-    float4 viewPos4 = mul(viewData.view, worldPos);
-    output.position = mul(viewData.proj, viewPos4);
+    float4 worldPos = mul(ln_World, float4(input.position, 1.0));
+    float4 viewPos4 = mul(ln_View, worldPos);
+    output.position = mul(ln_Projection, viewPos4);
     output.viewPos  = viewPos4.xyz;
     // 法線をビュー空間へ変換
-    float3 worldNorm = normalize(mul((float3x3)objectData.normalMatrix, input.normal));
-    output.worldNormal = worldNorm;//normalize(mul((float3x3)viewData.view, worldNorm));
+    float3 worldNorm = normalize(mul((float3x3)ln_NormalMatrix, input.normal));
+    output.worldNormal = worldNorm;//normalize(mul((float3x3)ln_View, worldNorm));
     //output.viewPos4 = viewPos4;
     output.uv = input.uv;
     output.color = input.color;
