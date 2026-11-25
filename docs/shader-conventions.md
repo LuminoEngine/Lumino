@@ -278,6 +278,7 @@ Material が持つ定数バッファは 1 本だけです。素の `uniform` と
 | ベースカラー | `setColor(Color)` | `LNMaterial_SetColor` | `setColor(r,g,b,a)` |
 | 名前付き float4 | `setFloat4(name, float*)` | `LNMaterial_SetFloat4` | `setFloat4(name, [x,y,z,w])` |
 | 名前付き float | `setFloat(name, value)` | `LNMaterial_SetFloat` | `setFloat(name, value)` |
+| 名前付き float4x4 | `setMatrix(name, float*)` (16 要素) | `LNMaterial_SetMatrix` | `setMatrix(name, Matrix4x4)` |
 | 鏡面反射（BasicLit） | `setSpecular(color, shininess)` | — | — |
 | メインテクスチャ | `setTexture(tex)` | `LNMaterial_SetMainTexture` | `setMainTexture(tex)` |
 | 名前付きテクスチャ | `setNamedTexture(name, tex)` | `LNMaterial_SetNamedTexture` | `setNamedTexture(name, tex)` |
@@ -295,6 +296,35 @@ Material が持つ定数バッファは 1 本だけです。素の `uniform` と
 >
 > 組み込み Unlit は `setFloat("alphaCutoff", 0.5)` でアルファテストを有効にできます (既定 0 で無効)。
 > アルファがこの値未満のピクセルを捨てるので、アルファ付きテクスチャを `Normal` で描いて深度を書けます。
+
+### 行列パラメータ (`setMatrix`) の並び
+
+`setMatrix` は `Matrix4x4` の `m` (列優先の 16 要素。`m[12]`, `m[13]`, `m[14]` が平行移動) を
+並べ替えずに、定数バッファへ 64 バイトそのまま書き込みます。`viewData.viewProj` などシステムの行列と
+まったく同じ書き方なので、呼び出し側で転置する必要はありません。全バックエンド (Vulkan / WebGPU / WebGL2)
+で同じ結果になります。
+
+シェーダで `uniform float4x4 M;` と宣言し、`setMatrix("M", A)` した場合:
+
+- `mul(M, v)` は数学の A * v です。`mul(viewData.viewProj, v)` と同じ書き方で使え、
+  CPU で `Matrix4x4.multiply(A, B)` (B を先に適用) して点に掛けた結果とも一致します。
+- `M[i]` は数学の i 行目 `(m[i], m[4 + i], m[8 + i], m[12 + i])` です。
+- `M[i][j]` は A の i 行 j 列 `m[j * 4 + i]` です。
+
+```ts
+// TS: ワールド座標 -> ライトの clip 座標
+material.setMatrix("lightShadowMatrix", Matrix4x4.multiply(lightProj, lightView, new Matrix4x4()));
+```
+
+```hlsl
+uniform float4x4 lightShadowMatrix;
+float4 clip = mul(lightShadowMatrix, float4(worldPos, 1.0));
+float3 row0 = lightShadowMatrix[0].xyz; // 行 0 の xyz
+```
+
+名前が見つからない場合や、定数バッファの範囲に収まらない場合は何もしません (`setFloat4` と同じ)。
+他のパラメータと同じく、同じフレームでは後勝ちです。
+並びは `packages/LuminoC/test/Test_Graphics.cpp` の `MaterialSetMatrix*` テストで全バックエンドについて検証しています。
 
 ### 1 つのシェーダから複数の Material を作る
 
@@ -352,6 +382,7 @@ LNMaterial_CreateFromShader(shader, &matB);
 | シェーダ側の宣言 | 設定する API |
 |---|---|
 | `uniform float4 u_myColor;` | `setFloat4("u_myColor", [0,1,0,1])` |
+| `uniform float4x4 u_lightMatrix;` | `setMatrix("u_lightMatrix", matrix)` |
 | `struct SSRParams { float4 ssrSettings; }; ... u_params;` | `setFloat4("ssrSettings", [10,0.05,0.3,128])` |
 | `uniform Texture2D u_gbufferA;` | `setNamedTexture("u_gbufferA", tex)` |
 | `uniform Texture2D u_baseTexture;` | `setMainTexture(tex)`（慣例スロット） |

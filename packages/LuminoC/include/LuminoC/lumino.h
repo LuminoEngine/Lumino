@@ -776,6 +776,33 @@ extern LUMINO_API LNResult LNMaterial_SetFloat4(
 );
 
 /**
+ * シェーダの float4x4 パラメータを名前で設定します。
+ *
+ * values は LNMatrix::m と同じ列優先の 16 要素 (values[12], values[13], values[14] が平行移動) です。
+ * Lumino はこれを並べ替えずに定数バッファへ 64 バイトそのまま書き込みます。
+ * viewData.viewProj などシステムの行列 (LNCamera_SetMatrices で渡す行列) とまったく同じ書き方なので、
+ * 呼び出し側で転置する必要はありません。全バックエンドで同じ結果になります。
+ *
+ * シェーダで uniform float4x4 M と宣言し、行列 A を渡した場合:
+ * - mul(M, v) は数学の A * v です (mul(viewData.viewProj, v) と同じ書き方で使えます)。
+ * - M[i] は数学の i 行目 (values[i], values[4 + i], values[8 + i], values[12 + i]) です。
+ * - M[i][j] は A の i 行 j 列 = values[j * 4 + i] です。
+ *
+ * 名前が見つからない、または定数バッファの範囲に収まらない場合は何もせず LN_OK を返します。
+ * パラメータは GPU で描画されるときに読まれるため、同じフレームでは後勝ちです
+ * (1 フレームの中で別の値で描きたい場合は Material を分けてください)。
+ *
+ * @param[in] material マテリアルのハンドル
+ * @param[in] name     シェーダ内の uniform 変数名 (UTF-8)
+ * @param[in] values   設定する値 (列優先の float x 16)
+ */
+extern LUMINO_API LNResult LNMaterial_SetMatrix(
+    LNHandle material,
+    const char* name,
+    const float* values
+);
+
+/**
  * シェーダの float パラメータを名前で設定します。
  *
  * 組み込みの Unlit では "alphaCutoff" (アルファテストの閾値) に使います。

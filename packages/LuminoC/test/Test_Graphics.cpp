@@ -7,6 +7,7 @@
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
+#include <cmath>
 
 #define TEST_W 320
 #define TEST_H 240
@@ -75,6 +76,49 @@ protected:
         ASSERT_NE(nullptr, data);
         const uint8_t* p = data + (static_cast<size_t>(y) * w + x) * 4;
         outRgb[0] = p[0]; outRgb[1] = p[1]; outRgb[2] = p[2];
+    }
+
+    /** mesh を単位変換で黒背景に 1 つ描画し、バックバッファの RGBA8 を out へコピーする。camera は無くてもよい。 */
+    void drawMeshAndCapture(LNHandle mesh, LNHandle camera, std::vector<uint8_t>* out) {
+        LNHandle renderer, colorBuffer, depthBuffer;
+        ASSERT_EQ(LN_OK, LNGraphicsContext_BeginFrame(
+            graphicsContext, TEST_W, TEST_H, &renderer, &colorBuffer, &depthBuffer));
+        LNRenderPassDesc rpDesc;
+        LNRenderPassDesc_Init(&rpDesc);
+        rpDesc.colorAttachments[0].clearColor[3] = 1.0f;
+        ASSERT_EQ(LN_OK, LNRenderer_BeginRenderPass(renderer, graphicsContext, &rpDesc, camera));
+        LNTransform identity = { 0,0,0,  0,0,0,1,  1,1,1 };
+        ASSERT_EQ(LN_OK, LNRenderer_DrawMesh(renderer, mesh, &identity, 0));
+        ASSERT_EQ(LN_OK, LNRenderer_EndRenderPass(renderer));
+
+        const uint8_t* data = nullptr;
+        int32_t w = 0, h = 0;
+        endFrameAndCapture(&data, &w, &h);
+        ASSERT_NE(nullptr, data);
+        ASSERT_EQ(TEST_W, w);
+        ASSERT_EQ(TEST_H, h);
+        out->assign(data, data + static_cast<size_t>(w) * h * 4);
+    }
+
+    /**
+     * Data/MatrixParam.slang の色出力モード (1-3) で全画面の矩形を描き、出力された float4 を復元する。
+     * RGB で xyz を読み、u_mode.y = 1 で描き直して w を R で読む。
+     */
+    void readMatrixParamOutput(LNHandle material, LNHandle quadMesh, float mode, float out[4]) {
+        auto decode = [](uint8_t c) { return (c / 255.0f - 0.5f) * 4.0f; };
+        const size_t center = (static_cast<size_t>(TEST_H / 2) * TEST_W + TEST_W / 2) * 4;
+        std::vector<uint8_t> pixels;
+        for (int page = 0; page < 2; page++) {
+            const float modeValue[4] = { mode, static_cast<float>(page), 0.0f, 0.0f };
+            ASSERT_EQ(LN_OK, LNMaterial_SetFloat4(material, "u_mode", modeValue));
+            drawMeshAndCapture(quadMesh, LN_NULL_HANDLE, &pixels);
+            ASSERT_EQ(static_cast<size_t>(TEST_W) * TEST_H * 4, pixels.size());
+            if (page == 0) {
+                for (int i = 0; i < 3; i++) out[i] = decode(pixels[center + i]);
+            } else {
+                out[3] = decode(pixels[center]);
+            }
+        }
     }
 };
 
@@ -2166,4 +2210,268 @@ TEST_F(Test_Graphics, UnlitAlphaCutoff) {
     LNObject_Release(farMat);
     LNObject_Release(nearMat);
     LNObject_Release(texture);
+}
+
+//------------------------------------------------------------------------------
+// LNMaterial_SetMatrix の行列の並びのテスト。
+//
+// 並びの取り違え (転置など) は絵の形がずれるだけで気づきにくいため、次の 3 点を確かめる。
+//   a. シェーダの mul(M, p) が、CPU で A を p に掛けた結果と一致する
+//   b. M[1] や M[i][j] が、数学の行 1 や i 行 j 列になる
+//   c. Camera の viewData.viewProj と setMatrix の M で、同じ頂点が同じ画素に描かれる
+// シェーダは Data/MatrixParam.slang。値は色として読み戻す (詳細はシェーダのコメント)。
+//------------------------------------------------------------------------------
+
+namespace {
+
+/** 列優先の行列積 a * b (b を先に適用する)。 */
+LNMatrix mulMatrix(const LNMatrix& a, const LNMatrix& b) {
+    LNMatrix r = {};
+    for (int col = 0; col < 4; col++) {
+        for (int row = 0; row < 4; row++) {
+            float s = 0.0f;
+            for (int k = 0; k < 4; k++) s += a.m[k * 4 + row] * b.m[col * 4 + k];
+            r.m[col * 4 + row] = s;
+        }
+    }
+    return r;
+}
+
+/** 列優先の行列とベクトルの積 a * v。 */
+void mulVector(const LNMatrix& a, const float v[4], float out[4]) {
+    for (int row = 0; row < 4; row++) {
+        out[row] = 0.0f;
+        for (int k = 0; k < 4; k++) out[row] += a.m[k * 4 + row] * v[k];
+    }
+}
+
+LNMatrix transposeMatrix(const LNMatrix& a) {
+    LNMatrix r = {};
+    for (int i = 0; i < 4; i++) {
+        for (int j = 0; j < 4; j++) r.m[j * 4 + i] = a.m[i * 4 + j];
+    }
+    return r;
+}
+
+LNMatrix scaleMatrix(float x, float y, float z) {
+    LNMatrix m = {{ x, 0, 0, 0,  0, y, 0, 0,  0, 0, z, 0,  0, 0, 0, 1 }};
+    return m;
+}
+
+LNMatrix rotationXMatrix(float rad) {
+    const float c = std::cos(rad), s = std::sin(rad);
+    LNMatrix m = {{ 1, 0, 0, 0,  0, c, s, 0,  0, -s, c, 0,  0, 0, 0, 1 }};
+    return m;
+}
+
+LNMatrix rotationYMatrix(float rad) {
+    const float c = std::cos(rad), s = std::sin(rad);
+    LNMatrix m = {{ c, 0, -s, 0,  0, 1, 0, 0,  s, 0, c, 0,  0, 0, 0, 1 }};
+    return m;
+}
+
+LNMatrix rotationZMatrix(float rad) {
+    const float c = std::cos(rad), s = std::sin(rad);
+    LNMatrix m = {{ c, s, 0, 0,  -s, c, 0, 0,  0, 0, 1, 0,  0, 0, 0, 1 }};
+    return m;
+}
+
+/** Matrix4x4.makePerspective と同じ透視射影 (RH, depth [0,1])。 */
+LNMatrix perspectiveMatrix(float fovY, float aspect, float nearZ, float farZ) {
+    const float t = std::tan(fovY * 0.5f);
+    LNMatrix m = {{
+        1.0f / (aspect * t), 0, 0, 0,
+        0, 1.0f / t, 0, 0,
+        0, 0, farZ / (nearZ - farZ), -1.0f,
+        0, 0, nearZ * farZ / (nearZ - farZ), 0,
+    }};
+    return m;
+}
+
+/**
+ * 転置すると結果が変わる行列。平行移動、非一様な拡大、回転に加えて、
+ * 行 3 が (0, 0, 0, 1) にならないよう弱い射影成分も含める。
+ * 成分と、テストで掛ける点との積は色に写せる [-2, 2] に収まる。
+ */
+LNMatrix asymmetricMatrix() {
+    LNMatrix projective = {{ 1, 0, 0, 0.1f,  0, 1, 0, -0.2f,  0, 0, 1, 0.15f,  0, 0, 0, 1 }};
+    return mulMatrix(projective,
+           mulMatrix(translationMatrix(0.3f, -0.2f, 0.4f),
+           mulMatrix(rotationZMatrix(0.5f),
+           mulMatrix(rotationXMatrix(0.7f), scaleMatrix(0.5f, 1.5f, 0.75f)))));
+}
+
+// 色 (8 bit) から値へ戻したときの許容誤差。1 階調は 4 / 255 = 0.016。
+const float kMatrixParamTolerance = 0.04f;
+
+// 取り違えた並びと区別できることを保証する差の下限。
+const float kMatrixParamMinDiff = 0.2f;
+
+float maxAbsDiff(const float* a, const float* b, int n) {
+    float d = 0.0f;
+    for (int i = 0; i < n; i++) d = std::fmax(d, std::fabs(a[i] - b[i]));
+    return d;
+}
+
+LNHandle createMatrixParamMaterial(LNHandle graphicsContext) {
+    LNHandle mat = LN_NULL_HANDLE;
+    EXPECT_EQ(LN_OK, LNMaterial_CreateFromShaderSourceFile(
+        graphicsContext,
+        TEST_DATA_DIR "/Data/MatrixParam.slang",
+        LN_REPO_ROOT_DIR "/packages/LuminoShader/shaders",
+        &mat));
+    // 行列で裏返っても描けるようにする
+    if (mat != LN_NULL_HANDLE) EXPECT_EQ(LN_OK, LNMaterial_SetCullMode(mat, LN_CULL_MODE_NONE));
+    return mat;
+}
+
+/** 全画面を覆う矩形 (頂点は NDC)。 */
+LNHandle createFullscreenQuadMesh(LNHandle graphicsContext, LNHandle material) {
+    LNVertex verts[4] = {
+        { -1.0f, -1.0f, 0.0f,  0,0,1,  0,1,  1,1,1,1,  1,0,0,0 },
+        {  1.0f, -1.0f, 0.0f,  0,0,1,  1,1,  1,1,1,1,  1,0,0,0 },
+        { -1.0f,  1.0f, 0.0f,  0,0,1,  0,0,  1,1,1,1,  1,0,0,0 },
+        {  1.0f,  1.0f, 0.0f,  0,0,1,  1,0,  1,1,1,1,  1,0,0,0 },
+    };
+    uint32_t indices[6] = { 0, 1, 2, 2, 1, 3 };
+    LNSubMesh sub = { 0, 6, 0 };
+    LNHandle mesh = LN_NULL_HANDLE;
+    EXPECT_EQ(LN_OK, LNMesh_Create(graphicsContext, verts, 4, indices, 6, &sub, 1, &mesh));
+    if (mesh != LN_NULL_HANDLE) EXPECT_EQ(LN_OK, LNMesh_SetMaterial(mesh, 0, material));
+    return mesh;
+}
+
+} // namespace
+
+// a. 掛け算の結果: シェーダの mul(M, p) が、CPU で A を p に掛けた結果と一致する。
+TEST_F(Test_Graphics, MaterialSetMatrixMultiply) {
+    const LNMatrix a = asymmetricMatrix();
+    const float p[4] = { 0.6f, -0.4f, 0.8f, 1.0f };
+    float expected[4], transposed[4];
+    mulVector(a, p, expected);
+    mulVector(transposeMatrix(a), p, transposed);
+    // 前提: 色に写せる範囲に収まり、転置した場合と区別できること
+    for (float v : expected) ASSERT_LT(std::fabs(v), 2.0f);
+    ASSERT_GT(maxAbsDiff(expected, transposed, 4), kMatrixParamMinDiff);
+
+    LNHandle mat = createMatrixParamMaterial(graphicsContext);
+    ASSERT_NE(LN_NULL_HANDLE, mat);
+    LNHandle quad = createFullscreenQuadMesh(graphicsContext, mat);
+    ASSERT_NE(LN_NULL_HANDLE, quad);
+    ASSERT_EQ(LN_OK, LNMaterial_SetMatrix(mat, "u_matrix", a.m));
+    ASSERT_EQ(LN_OK, LNMaterial_SetFloat4(mat, "u_point", p));
+
+    // 無い名前、範囲に収まらないメンバ (u_point は float4 で末尾にある)、null は何も書かない
+    const LNMatrix garbage = scaleMatrix(9.0f, 9.0f, 9.0f);
+    EXPECT_EQ(LN_OK, LNMaterial_SetMatrix(mat, "u_notExist", garbage.m));
+    EXPECT_EQ(LN_OK, LNMaterial_SetMatrix(mat, "u_point", garbage.m));
+    EXPECT_EQ(LN_ERROR_INVALID_ARGUMENT, LNMaterial_SetMatrix(mat, "u_matrix", nullptr));
+    EXPECT_EQ(LN_ERROR_INVALID_ARGUMENT, LNMaterial_SetMatrix(mat, nullptr, garbage.m));
+
+    float actual[4] = {};
+    readMatrixParamOutput(mat, quad, 1.0f, actual);
+    for (int i = 0; i < 4; i++) {
+        EXPECT_NEAR(expected[i], actual[i], kMatrixParamTolerance)
+            << "成分 " << i << " (転置した場合は " << transposed[i] << ")";
+    }
+
+    LNObject_Release(quad);
+    LNObject_Release(mat);
+}
+
+// b. 行の取り出し: M[1] が数学の行 1 = (m[1], m[5], m[9], m[13]) になり、
+//    M[i][j] が A の i 行 j 列 = m[j * 4 + i] になる。
+TEST_F(Test_Graphics, MaterialSetMatrixRowAccess) {
+    const LNMatrix a = asymmetricMatrix();
+    const float row1[4] = { a.m[1], a.m[5], a.m[9], a.m[13] };
+    const float column1[4] = { a.m[4], a.m[5], a.m[6], a.m[7] }; // 取り違えた場合の値
+    // シェーダの (M[1][3], M[0][1], M[2][0], M[3][2])
+    const float elements[4] = { a.m[3 * 4 + 1], a.m[1 * 4 + 0], a.m[0 * 4 + 2], a.m[2 * 4 + 3] };
+    const float elementsTransposed[4] = { a.m[1 * 4 + 3], a.m[0 * 4 + 1], a.m[2 * 4 + 0], a.m[3 * 4 + 2] };
+    ASSERT_GT(maxAbsDiff(row1, column1, 4), kMatrixParamMinDiff);
+    ASSERT_GT(maxAbsDiff(elements, elementsTransposed, 4), kMatrixParamMinDiff);
+
+    LNHandle mat = createMatrixParamMaterial(graphicsContext);
+    ASSERT_NE(LN_NULL_HANDLE, mat);
+    LNHandle quad = createFullscreenQuadMesh(graphicsContext, mat);
+    ASSERT_NE(LN_NULL_HANDLE, quad);
+    ASSERT_EQ(LN_OK, LNMaterial_SetMatrix(mat, "u_matrix", a.m));
+
+    float actual[4] = {};
+    readMatrixParamOutput(mat, quad, 2.0f, actual);
+    for (int i = 0; i < 4; i++) {
+        EXPECT_NEAR(row1[i], actual[i], kMatrixParamTolerance) << "M[1] の成分 " << i;
+    }
+
+    readMatrixParamOutput(mat, quad, 3.0f, actual);
+    const char* names[4] = { "M[1][3]", "M[0][1]", "M[2][0]", "M[3][2]" };
+    for (int i = 0; i < 4; i++) {
+        EXPECT_NEAR(elements[i], actual[i], kMatrixParamTolerance) << names[i];
+    }
+
+    LNObject_Release(quad);
+    LNObject_Release(mat);
+}
+
+// c. カメラの行列との一致: 同じ行列 VP (= proj * view) を Camera.setMatrices で viewData.viewProj として
+//    渡して Unlit で描いた絵と、setMatrix で渡して mul(M, ...) で描いた絵が、画素単位で一致する。
+TEST_F(Test_Graphics, MaterialSetMatrixMatchesCameraViewProj) {
+    const LNMatrix view = mulMatrix(translationMatrix(0.2f, -0.1f, -3.0f),
+                          mulMatrix(rotationYMatrix(0.4f), rotationXMatrix(-0.3f)));
+    const LNMatrix proj = perspectiveMatrix(
+        60.0f * 3.14159265f / 180.0f, (float)TEST_W / (float)TEST_H, 0.1f, 100.0f);
+    const LNMatrix vp = mulMatrix(proj, view);
+    const LNMatrix identity = translationMatrix(0.0f, 0.0f, 0.0f);
+
+    // view を単位行列にして、viewData.viewProj が vp とビット単位で同じになるようにする
+    LNHandle camera = LN_NULL_HANDLE;
+    ASSERT_EQ(LN_OK, LNCamera_Create(&camera));
+    ASSERT_EQ(LN_OK, LNCamera_SetMatrices(camera, identity.m, vp.m, LN_FALSE));
+
+    // 非対称な三角形 (ワールド座標)
+    LNVertex verts[3] = {
+        { -0.6f, -0.4f,  0.0f,  0,0,1,  0,0,  1,1,1,1,  1,0,0,0 },
+        {  0.7f, -0.2f,  0.3f,  0,0,1,  1,0,  1,1,1,1,  1,0,0,0 },
+        { -0.1f,  0.8f, -0.2f,  0,0,1,  0,1,  1,1,1,1,  1,0,0,0 },
+    };
+    uint32_t indices[3] = { 0, 1, 2 };
+    LNSubMesh sub = { 0, 3, 0 };
+    LNHandle mesh = LN_NULL_HANDLE;
+    ASSERT_EQ(LN_OK, LNMesh_Create(graphicsContext, verts, 3, indices, 3, &sub, 1, &mesh));
+
+    LNHandle unlit = LN_NULL_HANDLE;
+    ASSERT_EQ(LN_OK, LNMaterial_CreateFromBuiltinShader(graphicsContext, LN_BUILTIN_SHADER_UNLIT, &unlit));
+    ASSERT_EQ(LN_OK, LNMaterial_SetColor(unlit, 1.0f, 1.0f, 1.0f, 1.0f));
+    ASSERT_EQ(LN_OK, LNMaterial_SetCullMode(unlit, LN_CULL_MODE_NONE));
+
+    LNHandle matrixMat = createMatrixParamMaterial(graphicsContext);
+    ASSERT_NE(LN_NULL_HANDLE, matrixMat);
+    const float mode0[4] = { 0.0f, 0.0f, 0.0f, 0.0f };
+    ASSERT_EQ(LN_OK, LNMaterial_SetFloat4(matrixMat, "u_mode", mode0));
+    ASSERT_EQ(LN_OK, LNMaterial_SetMatrix(matrixMat, "u_matrix", vp.m));
+
+    std::vector<uint8_t> byCamera, byMatrix;
+    ASSERT_EQ(LN_OK, LNMesh_SetMaterial(mesh, 0, unlit));
+    drawMeshAndCapture(mesh, camera, &byCamera);
+    ASSERT_EQ(LN_OK, LNMesh_SetMaterial(mesh, 0, matrixMat));
+    drawMeshAndCapture(mesh, camera, &byMatrix);
+    ASSERT_EQ(byCamera.size(), byMatrix.size());
+
+    int litCount = 0, mismatchCount = 0;
+    for (size_t i = 0; i < byCamera.size(); i += 4) {
+        const bool a = byCamera[i] > 128;
+        const bool b = byMatrix[i] > 128;
+        if (a) litCount++;
+        if (a != b) mismatchCount++;
+    }
+    // 三角形が画面の一部に描かれている (視錐台から外れたり、画面全体を覆ったりしていない)
+    EXPECT_GT(litCount, TEST_W * TEST_H / 50);
+    EXPECT_LT(litCount, TEST_W * TEST_H / 2);
+    // 縁のラスタライズの揺れだけを許す
+    EXPECT_LE(mismatchCount, 4) << "lit=" << litCount;
+
+    LNObject_Release(matrixMat);
+    LNObject_Release(unlit);
+    LNObject_Release(mesh);
+    LNObject_Release(camera);
 }

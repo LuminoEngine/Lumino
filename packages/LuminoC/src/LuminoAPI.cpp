@@ -1063,6 +1063,18 @@ extern LUMINO_API LNResult LNMaterial_SetFloat4(LNHandle material, const char* n
     return LN_OK;
 }
 
+extern LUMINO_API LNResult LNMaterial_SetMatrix(LNHandle material, const char* name, const float* values) {
+    auto* mat = resolveObject<ln::Material>(material);
+    if (!mat) return LN_ERROR_INVALID_HANDLE;
+    if (!name || !values) return LN_ERROR_INVALID_ARGUMENT;
+    if (isStaleResource(mat)) {
+        warnStaleResourceSkipped("material");
+        return LN_OK;
+    }
+    mat->setMatrix(name, values);
+    return LN_OK;
+}
+
 extern LUMINO_API LNResult LNMaterial_SetFloat(LNHandle material, const char* name, float value) {
     auto* mat = resolveObject<ln::Material>(material);
     if (!mat) return LN_ERROR_INVALID_HANDLE;

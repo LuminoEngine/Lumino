@@ -45,6 +45,15 @@ void Material::setFloat(const std::string& name, float value) {
     markParamDirty();
 }
 
+void Material::setMatrix(const std::string& name, const float* values) {
+    // Renderer が viewData.viewProj へ書くのと同じく、列優先の 16 要素を並べ替えずにコピーする。
+    // シェーダは列優先レイアウトでコンパイルされるので、全バックエンドで同じ解釈になる。
+    int offset = findMemberOffset(name);
+    if (offset < 0 || static_cast<size_t>(offset) + sizeof(float) * 16 > m_paramBuffer.size()) return;
+    std::memcpy(m_paramBuffer.data() + offset, values, sizeof(float) * 16);
+    markParamDirty();
+}
+
 void Material::setColor(const Color& color) {
     m_baseColor = color;
     // $Global スコープで名前付けされた CB メンバ内の "color" フィールドに書き込む。

@@ -1,5 +1,6 @@
 import { LuminoObject } from "./LuminoObject";
 import type { GraphicsContext } from "./GraphicsContext";
+import type { Matrix4x4 } from "./Matrix4x4";
 import type { Texture } from "./Texture";
 import { Shader } from "./Shader";
 import type { ResidentResource } from "./ResidencyManager";
@@ -33,6 +34,7 @@ export class Material extends LuminoObject implements ResidentResource {
     private _color: [number, number, number, number] | null = null;
     private _float4s: Map<string, [number, number, number, number]> = new Map();
     private _floats: Map<string, number> = new Map();
+    private _matrices: Map<string, Float32Array> = new Map();
     private _samplerState: SamplerState | null = null;
     private _namedSamplerStates: Map<string, SamplerState> = new Map();
     private _cullMode: CullMode | null = null;
@@ -127,6 +129,29 @@ export class Material extends LuminoObject implements ResidentResource {
     /** 名前付き float シェーダパラメータを設定します。同じフレームでは後勝ちです。 */
     setFloat(name: string, value: number): void {
         this._floats.set(name, value);
+        this._paramsDirty = true;
+    }
+
+    /**
+     * 名前付き float4x4 シェーダパラメータを設定します。同じフレームでは後勝ちです。
+     *
+     * `value.m` (列優先の 16 要素。`m[12]`, `m[13]`, `m[14]` が平行移動) を並べ替えずにそのまま渡します。
+     * `Camera.setMatrices` に渡す行列や `viewData.viewProj` とまったく同じ扱いなので、転置は不要です。
+     * 全バックエンドで同じ結果になります。
+     *
+     * シェーダで `uniform float4x4 M;` と宣言し、`setMatrix("M", A)` した場合:
+     * - `mul(M, v)` は数学の A * v です。`mul(viewData.viewProj, v)` と同じ書き方で使え、
+     *   CPU で `Matrix4x4.multiply(A, B)` (B を先に適用) した結果とも一致します。
+     * - `M[i]` は数学の i 行目 `(m[i], m[4 + i], m[8 + i], m[12 + i])` です。
+     * - `M[i][j]` は A の i 行 j 列 `m[j * 4 + i]` です。
+     *
+     * シェーダに無い名前や、定数バッファの範囲に収まらない場合は何もしません。
+     * 値は呼び出し時にコピーするので、呼び出し後に `value` を書き換えても反映されません。
+     * @param name  シェーダ内の uniform 変数名
+     * @param value 設定する行列
+     */
+    setMatrix(name: string, value: Matrix4x4): void {
+        this._matrices.set(name, Float32Array.from(value.m));
         this._paramsDirty = true;
     }
 
@@ -277,6 +302,7 @@ export class Material extends LuminoObject implements ResidentResource {
         this._namedSamplerStates.clear();
         this._float4s.clear();
         this._floats.clear();
+        this._matrices.clear();
     }
 
     //--------------------------------------------------------------------------
@@ -344,6 +370,22 @@ export class Material extends LuminoObject implements ResidentResource {
                     m.HEAPF32[floatOffset + 3] = v[3];
                     Runtime.safeCall(() =>
                         (API.LNMaterial_SetFloat4 as (
+                            mat: number, name: string, values: number,
+                        ) => number)(this._handle, name, ptr));
+                }
+            } finally {
+                m._free(ptr);
+            }
+        }
+
+        if (this._matrices.size > 0) {
+            const m = Runtime.module;
+            const ptr = m._malloc(64);
+            try {
+                for (const [name, v] of this._matrices) {
+                    m.HEAPF32.set(v, ptr >> 2);
+                    Runtime.safeCall(() =>
+                        (API.LNMaterial_SetMatrix as (
                             mat: number, name: string, values: number,
                         ) => number)(this._handle, name, ptr));
                 }

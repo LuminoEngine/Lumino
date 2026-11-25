@@ -100,6 +100,18 @@ public:
     /** マテリアルの $Global 定数バッファ内の名前付き float パラメータを設定します。 */
     void setFloat(const std::string& name, float value);
 
+    /**
+     * マテリアルの $Global 定数バッファ内の名前付き float4x4 パラメータを設定します。
+     *
+     * values は Matrix4x4::m と同じ列優先の 16 要素 (values[12..14] が平行移動) です。
+     * 並べ替えずに 64 バイトそのまま書き込むので、viewData.viewProj などシステムの行列と
+     * 同じ解釈になります。シェーダで uniform float4x4 M と宣言した場合、
+     * mul(M, v) は数学の A * v、M[i] は i 行目 (values[i], values[4 + i], values[8 + i], values[12 + i])、
+     * M[i][j] は values[j * 4 + i] です。
+     * 名前が無い、またはバッファの範囲に収まらない場合は何もしません。
+     */
+    void setMatrix(const std::string& name, const float* values);
+
     /** 簡易版: "u_params" という名前の CB の "color" フィールドを設定します。 */
     void setColor(const Color& color);
 
