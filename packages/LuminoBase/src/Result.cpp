@@ -1,5 +1,7 @@
 ﻿#include <LuminoBase/Logger.hpp>
 #include <LuminoBase/Result.hpp>
+#include <cstdarg>
+#include <cstdio>
 
 #ifdef _MSC_VER
 #define WIN32_LEAN_AND_MEAN

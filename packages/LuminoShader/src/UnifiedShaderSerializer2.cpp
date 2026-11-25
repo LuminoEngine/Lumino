@@ -2,6 +2,8 @@
 #include "pch.hpp"
 #include <LuminoShader/UnifiedShader2.hpp>
 #include <LuminoShader/UnifiedShaderSerializer2.hpp>
+#include <istream>
+#include <ostream>
 
 namespace ln {
 namespace shader {

@@ -54,7 +54,7 @@ ctest --test-dir build/lumino-x64-windows -C Release --output-on-failure
 
 ```sh
 # wasm ビルド
-git clone -b 5.0.5 https://github.com/emscripten-core/emsdk.git ./build/emsdk
+git clone https://github.com/emscripten-core/emsdk.git ./build/emsdk
 ./build/emsdk/emsdk install 5.0.5
 ./build/emsdk/emsdk activate 5.0.5
 python scripts/build_wasm.py           # Release ビルド (最適化 -O2)、build/lumino-wasm32-emscripten に生成
