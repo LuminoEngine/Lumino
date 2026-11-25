@@ -488,10 +488,10 @@ Result<void> Renderer::drawSubmesh(
     auto alloc = m_objectAllocator->allocate();
     {
         Matrix4x4 worldMatrix  = transform.matrix();
-        Matrix4x4 normalMatrix = transform.normalMatrix();
+        Matrix4x4 worldIT     = transform.normalMatrix();
         ObjectParamsUBO objParams{};
         std::memcpy(objParams.world,        worldMatrix.m,  sizeof(float) * 16);
-        std::memcpy(objParams.normalMatrix, normalMatrix.m, sizeof(float) * 16);
+        std::memcpy(objParams.worldIT,      worldIT.m,      sizeof(float) * 16);
         std::memcpy(alloc.cpuPtr, &objParams, sizeof(objParams));
     }
 
@@ -607,10 +607,10 @@ Result<void> Renderer::drawStencilMaskMesh(
         auto alloc = m_objectAllocator->allocate();
         {
             Matrix4x4 worldMatrix  = transform.matrix();
-            Matrix4x4 normalMatrix = transform.normalMatrix();
+            Matrix4x4 worldIT     = transform.normalMatrix();
             ObjectParamsUBO objParams{};
             std::memcpy(objParams.world,        worldMatrix.m,  sizeof(float) * 16);
-            std::memcpy(objParams.normalMatrix, normalMatrix.m, sizeof(float) * 16);
+            std::memcpy(objParams.worldIT,      worldIT.m,      sizeof(float) * 16);
             std::memcpy(alloc.cpuPtr, &objParams, sizeof(objParams));
         }
 

@@ -65,7 +65,7 @@ VSOutputGB vsGBufferMain(VSInput input) {
     float4 viewPos4 = mul(ln_View, worldPos);
     o.position = mul(ln_Projection, viewPos4);
     o.viewPos  = viewPos4.xyz;
-    o.worldNormal = normalize(mul((float3x3)ln_NormalMatrix, input.normal));
+    o.worldNormal = normalize(mul((float3x3)ln_WorldIT, input.normal));
     o.uv = input.uv;
     o.color = input.color;
     return o;

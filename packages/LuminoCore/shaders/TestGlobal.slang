@@ -30,7 +30,7 @@ VSOutput vsMain(VSInput input) {
     float4 worldPos = mul(ln_World, float4(input.position, 1.0));
     output.position  = mul(ln_ViewProjection, worldPos);
     output.worldPos  = worldPos.xyz;
-    output.worldNorm = normalize(mul((float3x3)ln_NormalMatrix, input.normal));
+    output.worldNorm = normalize(mul((float3x3)ln_WorldIT, input.normal));
     output.uv        = input.uv;
     output.color     = input.color;
     return output;

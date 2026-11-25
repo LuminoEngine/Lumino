@@ -63,7 +63,7 @@ VSOutput vsMain(VSInput input) {
     output.position = mul(ln_Projection, viewPos4);
     output.viewPos  = viewPos4.xyz;
     // 法線をビュー空間へ変換
-    float3 worldNorm = normalize(mul((float3x3)ln_NormalMatrix, input.normal));
+    float3 worldNorm = normalize(mul((float3x3)ln_WorldIT, input.normal));
     output.worldNormal = worldNorm;//normalize(mul((float3x3)ln_View, worldNorm));
     //output.viewPos4 = viewPos4;
     output.uv = input.uv;

@@ -90,7 +90,7 @@ float4 fsMain(VSOutput input) : SV_TARGET {
 | ビルトイン変数 | 内容 |
 |---|---|
 | `ln_World` | ワールド行列（モデル → ワールド） |
-| `ln_NormalMatrix` | 法線変換行列 |
+| `ln_WorldIT` | ワールド行列の逆転置（法線の変換用。`normalize(mul((float3x3)ln_WorldIT, n))`） |
 | `ln_View` | View 行列（ワールド → ビュー） |
 | `ln_Projection` | Projection 行列（ビュー → クリップ） |
 | `ln_ViewProjection` | View × Projection（ワールド → クリップ） |

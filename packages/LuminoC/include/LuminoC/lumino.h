@@ -1252,10 +1252,10 @@ extern LUMINO_API LNResult LNRenderer_DrawScreenRect(
  * 軽量に変えるためのオフセットです (行列を毎回作らずに済みます)。
  *
  * 頂点の法線は、transform の逆転置でローカルの法線 (0, 0, 1) を変換して正規化した
- * ワールド座標の法線です (LNRenderer_DrawMesh の normalMatrix と同じ考え方)。頂点はワールド座標で
- * まとめて描くため、シェーダの ln_World と ln_NormalMatrix は単位行列です。
+ * ワールド座標の法線です (LNRenderer_DrawMesh で使う ln_WorldIT と同じ考え方)。頂点はワールド座標で
+ * まとめて描くため、シェーダの ln_World と ln_WorldIT は単位行列です。
  * したがってシェーダでは、メッシュと同じ式
- * normalize(mul(ln_NormalMatrix, float4(input.normal, 0)).xyz) でスプライトも扱えます。
+ * normalize(mul(ln_WorldIT, float4(input.normal, 0)).xyz) でスプライトも扱えます。
  * 2D の変換 (z 軸まわりの回転、x・y の拡大や反転、平行移動) では法線は (0, 0, 1) のままです。
  * 行列式が 0 (拡大率 0 など) で向きが決まらないときは (0, 0, 1) になります。
  * 接ベクトル (tangent) は transform によらず (1, 0, 0, 1) の固定値です。

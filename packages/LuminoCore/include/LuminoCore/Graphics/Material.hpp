@@ -79,7 +79,7 @@ struct SceneParamsUBO {
 /** GPU アライメント済みのオブジェクトパラメータ (Set N)。シェーダの ObjectParams 構造体と一致させること。 */
 struct ObjectParamsUBO {
     float world[16];
-    float normalMatrix[16];
+    float worldIT[16]; // world の逆転置 (法線の変換用)
 };
 
 /**

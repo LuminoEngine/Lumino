@@ -19,12 +19,12 @@ struct SceneParams {
     float4 ambientColor;   // xyz = 環境光の色
 };
 
-// drawSprite の頂点はワールド座標でまとめて描くため world / normalMatrix は単位行列で、
+// drawSprite の頂点はワールド座標でまとめて描くため world / worldIT は単位行列で、
 // 頂点の法線は transform の逆転置で変換済みのワールド座標の法線として届く。
-// そのためメッシュと同じく normalize(mul(normalMatrix, float4(input.normal, 0)).xyz) で扱える。
+// そのためメッシュと同じく normalize(mul(ln_WorldIT, float4(input.normal, 0)).xyz) で扱える。
 struct ObjectParams {
     float4x4 world;
-    float4x4 normalMatrix;
+    float4x4 worldIT; // ln_World の逆転置 (法線の変換用)
 };
 
 struct VSInput {
@@ -78,7 +78,7 @@ property float4   ln_Resolution      { get { return viewData.screenSize; } }
 
 // Object
 property float4x4 ln_World           { get { return objectData.world; } }
-property float4x4 ln_NormalMatrix    { get { return objectData.normalMatrix; } }
+property float4x4 ln_WorldIT         { get { return objectData.worldIT; } }
 
 //------------------------------------------------------------------------------
 // GBuffer layout (Deferred / SSR 共通)

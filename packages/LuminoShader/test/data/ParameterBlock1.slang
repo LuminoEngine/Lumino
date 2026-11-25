@@ -3,7 +3,7 @@
 // BindGroup レイアウト (ParameterBlock 経由):
 //   Set 0 (ビュー単位):       ViewParams  { viewProj, cameraPos, lightDir, lightColor, ambientColor }
 //   Set 1 (マテリアル単位):   MaterialData { params, baseTexture, baseSampler }
-//   Set 2 (オブジェクト単位): ObjectParams { world, normalMatrix }
+//   Set 2 (オブジェクト単位): ObjectParams { world, worldIT }
 
 struct ViewParams {
     float4x4 viewProj;
@@ -26,7 +26,7 @@ struct MaterialData {
 
 struct ObjectParams {
     float4x4 world;
-    float4x4 normalMatrix;
+    float4x4 worldIT;
 };
 
 struct VSInput {
@@ -55,7 +55,7 @@ VSOutput vsMain(VSInput input) {
     float4 worldPos = mul(objectData.world, float4(input.position, 1.0));
     output.position  = mul(viewData.viewProj, worldPos);
     output.worldPos  = worldPos.xyz;
-    output.worldNorm = normalize(mul((float3x3)objectData.normalMatrix, input.normal));
+    output.worldNorm = normalize(mul((float3x3)objectData.worldIT, input.normal));
     output.uv        = input.uv;
     output.color     = input.color;
     return output;
