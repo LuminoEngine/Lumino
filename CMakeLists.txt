@@ -199,3 +199,15 @@ add_subdirectory(packages/LuminoC)
 if (LUMINO_BUILD_TOOLS)
     add_subdirectory(packages/luminosc)
 endif()
+
+#-------------------------------------------------------------------------------
+# Extra subdirectories
+#-------------------------------------------------------------------------------
+# Lumino の外にあるディレクトリ (Lumino を使うテストやアプリなど) を、このビルドツリーに
+# 追加する。パスはこのディレクトリからの相対パスか絶対パスで、; 区切りで複数指定できる。
+# 例: -DLUMINO_EXTRA_SUBDIRS=../my-tests
+set(LUMINO_EXTRA_SUBDIRS "" CACHE STRING "Additional source directories to add to the build")
+foreach(dir IN LISTS LUMINO_EXTRA_SUBDIRS)
+    get_filename_component(name ${dir} NAME)
+    add_subdirectory(${dir} ${CMAKE_BINARY_DIR}/extra/${name})
+endforeach()
