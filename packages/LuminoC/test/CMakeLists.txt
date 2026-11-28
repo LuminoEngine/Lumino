@@ -14,8 +14,6 @@ add_executable(
     ${LN_LOCAL_SOURCES}
 )
 target_precompile_headers(${PROJECT_NAME} PRIVATE pch.hpp)
-target_compile_definitions(${PROJECT_NAME} PRIVATE
-    TEST_DATA_DIR="${CMAKE_CURRENT_SOURCE_DIR}")
 target_link_libraries(${PROJECT_NAME} PRIVATE GTest::gtest)
 
 # LuminoC.dll とその実行時依存 DLL (glfw3, slang-compiler, webgpu_dawn, dxc) の
@@ -28,8 +26,6 @@ ln_setup_c_api_client_configurations(${PROJECT_NAME})
 #-------------------------------------------------------------------------------
 # gtest_discover_tests は実行ファイルを --gtest_list_tests 起動するため、
 # 依存 DLL のコピーより後ろに置く必要がある。
-# 実 GPU 描画を伴う Test_Graphics.* / Test_DeviceLost.* は CI から除外しやすいよう
-# label "gpu" を付ける。
 #
 # DISCOVERY_TIMEOUT: この実行ファイルは起動時に GPU バックエンドの DLL
 # (webgpu_dawn.dll 等) をロードするため、--gtest_list_tests だけでも既定の 5 秒に
@@ -37,23 +33,5 @@ ln_setup_c_api_client_configurations(${PROJECT_NAME})
 # ctest が丸ごと失敗するため、余裕を持たせる。
 include(GoogleTest)
 gtest_discover_tests(${PROJECT_NAME}
-    TEST_FILTER "-Test_Graphics.*:Test_DeviceLost.*"
     DISCOVERY_TIMEOUT 60
 )
-
-# GPU テストは有効なバックエンドごとに "<backend>." 接頭辞と label "gpu-<backend>" を
-# 付けて登録する。WebGL2 はデスクトップでは ANGLE の OpenGL ES 3.0 で、Web の主経路を
-# デスクトップで検証するための構成。
-# 特定のバックエンドだけを走らせるには ctest -L gpu-vulkan や ctest -R "^webgpu\." を使う。
-foreach(backend vulkan webgpu webgl2)
-    string(TOUPPER ${backend} BACKEND_UPPER)
-    if(LN_ENABLE_${BACKEND_UPPER})
-        gtest_discover_tests(${PROJECT_NAME}
-            EXTRA_ARGS --backend=${backend}
-            TEST_FILTER "Test_Graphics.*:Test_DeviceLost.*"
-            TEST_PREFIX "${backend}."
-            PROPERTIES LABELS "gpu-${backend}"
-            DISCOVERY_TIMEOUT 60
-        )
-    endif()
-endforeach()

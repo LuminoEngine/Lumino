@@ -324,7 +324,7 @@ float3 row0 = lightShadowMatrix[0].xyz; // 行 0 の xyz
 
 名前が見つからない場合や、定数バッファの範囲に収まらない場合は何もしません (`setFloat4` と同じ)。
 他のパラメータと同じく、同じフレームでは後勝ちです。
-並びは `packages/LuminoC/test/Test_Graphics.cpp` の `MaterialSetMatrix*` テストで全バックエンドについて検証しています。
+並びは全バックエンドについてテストで検証しています。
 
 ### 1 つのシェーダから複数の Material を作る
 

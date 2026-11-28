@@ -1,6 +1,5 @@
 ﻿#include "pch.hpp"
 #include <LuminoC/lumino.h>
-#include "VisualTestHelper.hpp"
 
 class Test_Object : public ::testing::Test {};
 
